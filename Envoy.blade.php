@@ -2,7 +2,7 @@
 
 @setup
 echo "Connect to server";
-$repository = 'git@github.com:TouradGithub/himaya.git';
+$repository = 'git@github.com:TouradGithub/company-management.git';
 $branch = isset($branch) ? $branch : "master";
 $app_dir = "u334693063";
 
@@ -13,12 +13,12 @@ $env_file_name = ".env.$branch";
 $env_path = "$branch_path/$env_file_name";
 echo '{{$env_path}}';
 $keep = 1;
-$new_release_dir = "/home/u334693063/domains/touradmedlemin.me/public_html/himaya";
-$composer = "/home/u334693063/domains/touradmedlemin.me/public_html/himaya/composer.json";
+$new_release_dir = "/home/u334693063/domains/touradmedlemin.me/public_html/company-management";
+$composer = "/home/u334693063/domains/touradmedlemin.me/public_html/company-management/composer.json";
 @endsetup
 
 <?php
-$composer = '/home/u334693063/domains/touradmedlemin.me/public_html/himaya/composer.json';
+$composer = '/home/u334693063/domains/touradmedlemin.me/public_html/company-management/composer.json';
 echo file_exists($composer) ? 'Exists' : 'Does not exist';
 ?>
 
@@ -30,7 +30,7 @@ check_composer
 @endstory
 
 @task('check_composer')
-    if [ -f "/home/u334693063/domains/touradmedlemin.me/public_html/himaya/composer.json" ]; then
+    if [ -f "/home/u334693063/domains/touradmedlemin.me/public_html/company-management/composer.json" ]; then
         echo "composer.json exists."
         echo 'Pulling latest changes.'
         cd {{ $new_release_dir }}
