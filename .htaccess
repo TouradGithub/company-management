@@ -1,0 +1,15 @@
+<!-- RewriteEngine on
+RewriteCond %{REQUEST_URI} !^public
+RewriteRule ^(.*)$ public/$1 [L]
+
+
+
+ <FilesMatch "^\.env">
+    Order allow,deny
+    Deny from all
+ </FilesMatch>
+hhhh -->
+<!-- <IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule> -->
