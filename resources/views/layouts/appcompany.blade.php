@@ -7,7 +7,8 @@
     </head>
     <body>
 /*  */
-@include('layouts.sidebaradmin')
+
+@include('layouts.sidebarcompany')
         @yield('content')
     <script>
         </script>

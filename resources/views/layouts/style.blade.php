@@ -21,7 +21,7 @@
 
     .nav-item {
       background: white;
-      padding: 20px;
+      padding: 10px;
       border-radius: 15px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
       text-align: center;
@@ -30,6 +30,13 @@
       text-decoration: none;
       color: #2c3e50;
     }
+    .nav-item h3 a {
+    text-decoration: none; /* Removes underline */
+    color: #333; /* Default text color */
+    font-size: 1.25rem; /* Font size for the link */
+    font-weight: bold; /* Makes the text bold */
+    transition: color 0.3s ease, transform 0.3s ease; /* Smooth transition on hover */
+}
 
     .nav-item:hover {
       transform: translateY(-5px);

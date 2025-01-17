@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('password'); // Password
             $table->date('start_date'); // Start date
             $table->date('end_date'); // End date
-            $table->enum('status', ['active', 'inactive'])->default('active'); // Status
-            $table->timestamps(); 
+            $table->enum('status',['active', 'inactive', 'cancelled'])->default('inactive');
+            $table->timestamps();
         });
     }
 

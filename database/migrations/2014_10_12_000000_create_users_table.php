@@ -18,6 +18,10 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('role')->default('user'); // Default role is 'user'
+            $table->string('model_type')->nullable(); // Default role is 'user'
+            $table->string('model_id')->nullable(); // Default role is 'user'
+            $table->string('is_admin')->nullable(); // Default role is 'user'
+            $table->string('status')->nullable();
 
             $table->rememberToken();
             $table->timestamps();
