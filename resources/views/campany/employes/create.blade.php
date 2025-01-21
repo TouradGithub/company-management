@@ -100,7 +100,7 @@
         {{-- <input type="date" name="hire_date" id="hire_date" required> --}}
     </div>
     <div class="search-bar fade-in">
-        <button type="submit">إنشاء الموظف</button>
+        <button   class="btn btn-primary mb-3"  type="submit">إنشاء الموظف</button>
     </div>
 </form>
 </div>
