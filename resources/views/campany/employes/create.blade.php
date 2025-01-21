@@ -1,4 +1,4 @@
-@extends('layouts.employee')
+@extends('layouts.overtime')
 
 @section('content')
 {{-- <div class="container"> --}}
@@ -19,6 +19,8 @@
             <option value="{{ $category->id }}">{{ $category->name }}</option>
             @endforeach
         </select>
+    </div>
+        <div class="search-filtersForm fade-in">
         <select name="branch_id" id="branch_id" required>
             <option value="" disabled selected>اختر الموظف</option>
 
@@ -26,8 +28,6 @@
                 <option value="{{ $branch->id }}">{{ $branch->name }}</option>
             @endforeach
         </select>
-
-
 
       </div>
     <div>

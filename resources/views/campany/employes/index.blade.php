@@ -339,6 +339,7 @@
           {{-- <button class="header-btn" onclick="navigateToSection(&apos;employee-registration&apos;)">&#x62a;&#x633;&#x62c;&#x64a;&#x644; &#x645;&#x648;&#x638;&#x641; &#x62c;&#x62f;&#x64a;&#x62f;</button>
           <button class="header-btn" onclick="navigateToSection(&apos;overtime-registration&apos;)">&#x62a;&#x633;&#x62c;&#x64a;&#x644; &#x633;&#x627;&#x639;&#x627;&#x62a; &#x625;&#x636;&#x627;&#x641;&#x64a;&#x629;</button> --}}
           <a class="header-btn" href="{{route('company.dashboard')}}">الرجوع</a>
+          <a class="header-btn" href="{{route('company.employees.create')}}">إضافة موظف</a>
         </div>
       </div>
     </div>
