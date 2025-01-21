@@ -12,8 +12,14 @@ class UserController extends Controller
      * Display a listing of the resource.
      */
     public function index()
+
     {
-        $users = User::where('model_type','COMPANY')->get(); // Fetch all users
+
+        // dd(auth()->check());
+
+        $users = User::where('model_type','USER_COMPANY')
+                        ->where('model_id' ,auth()->user()->model_id)
+        ->get();
         return view('campany.users.index', compact('users'));
     }
 
@@ -34,7 +40,6 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'role' => 'required|string',
         ]);
 
         User::create([
@@ -87,6 +92,6 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
-        return redirect()->route('campany.users.index')->with('success', 'User deleted successfully!');
+        return redirect()->route('users.index')->with('success', 'User deleted successfully!');
     }
 }

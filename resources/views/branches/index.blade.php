@@ -1,20 +1,22 @@
-@extends('layouts.appcompany')
+@extends('layouts.overtime')
 
 @section('content')
-<div style="margin-top: 150px;">
-    <h1>Branches List</h1>
-
+<section id="overtime-form" class="content-section active">
+<div >
+    <h1>الفروع</h1>
+    <a href="{{ route('branches.create') }}" class="btn btn-primary">إضافة فرع </a>
     @if(session('success'))
         <div style="color: green;">{{ session('success') }}</div>
     @endif
+    <div id="entriesContainer">
 
-    <table>
+        <table class="records-table">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Admin Name</th>
-                <th>Email</th>
-                <th>Actions</th>
+                <th>الاسم</th>
+                <th>اسم المدير</th>
+                <th>الايميل</th>
+                <th>الاجراءات</th>
             </tr>
         </thead>
         <tbody>
@@ -24,15 +26,16 @@
                 <td>{{ $company->name_admin_company }}</td>
                 <td>{{ $company->email }}</td>
                 <td>
-                    <a href="{{ route('branches.edit', $company->id) }}">Edit</a>
+                    <a class="btn-primary btn-edit" href="{{ route('branches.edit', $company->id) }}">Edit</a>
                     <form action="{{ route('branches.destroy', $company->id) }}" method="POST" style="display: inline-block;">
                         @csrf
-                        <button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
+                        <button class="btn-primary btn-delete" type="submit" onclick="return confirm('Are you sure?')">Delete</button>
                     </form>
                 </td>
             </tr>
             @endforeach
         </tbody>
     </table>
+    </div>
 </div>
 @endsection

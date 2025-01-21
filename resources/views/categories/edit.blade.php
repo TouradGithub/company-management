@@ -1,8 +1,8 @@
-@extends('layouts.appcompany')
+@extends('layouts.overtime')
 
 @section('content')
 <div style="margin-top: 150px;">
-    <h1>Edit Category</h1>
+    <h1>تعديل الفئة </h1>
 
     @if($errors->any())
         <div style="color: red;">
@@ -18,13 +18,13 @@
         @csrf
         @method('PUT')
 
-        <label>Name:</label>
+        <label>الاسم:</label>
         <input type="text" name="name" value="{{ $category->name }}" required>
 
-        <label>Code:</label>
+        <label>الكود:</label>
         <input type="text" name="code" value="{{ $category->code }}" required>
 
-        <button type="submit">Update Category</button>
+        <button  class="btn btn-primary mb-3" type="submit">تحديث</button>
     </form>
 </div>
 @endsection

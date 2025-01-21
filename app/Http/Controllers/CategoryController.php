@@ -8,7 +8,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::where('company_id',auth()->user()->model_id)->get();
         return view('categories.index', compact('categories'));
     }
 
@@ -30,7 +30,13 @@ class CategoryController extends Controller
             'code' => 'required|string|unique:categories,code|max:255',
         ]);
 
-        Category::create($validated);
+        Category::create([
+            'name'=> $validated['name'],
+            'code'=> $validated['code'],
+            'company_id'=> auth()->user()->model_id,
+        ]
+        );
+
 
         return redirect()->route('categories.index')->with('success', 'Category added successfully!');
     }

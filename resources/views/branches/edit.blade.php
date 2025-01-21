@@ -1,28 +1,37 @@
-@extends('layouts.appcompany')
+@extends('layouts.overtime')
 
 @section('content')
-<div style="margin-top: 150px;">
-    <h1>Edit Branch</h1>
+<div class="form-container active" id="form-container">
+    <h1>تعديل الفرع</h1>
 
     @if(session('success'))
         <div style="color: green;">{{ session('success') }}</div>
     @endif
+    @if($errors->any())
+        <div style="color: red;">
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <form action="{{ route('branches.update', $company->id) }}" method="POST">
         @csrf
-        <label>Name:</label>
+        <label>الاسم:</label>
         <input type="text" name="name" value="{{ $company->name }}" required>
 
-        <label>Name of Admin Branch:</label>
+        <label>اسم مدير الفرع:</label>
         <input type="text" name="name_admin_company" value="{{ $company->name_admin_company }}" required>
 
-        <label>Email:</label>
+        <label>الايميل:</label>
         <input type="email" name="email" value="{{ $company->email }}" required>
 
-        <label>Password (leave blank if not changing):</label>
+        <label>كبمة المرور:</label>
         <input type="password" name="password">
 
-        <button type="submit">Update</button>
+        <button  class="btn btn-primary mb-3" type="submit">تحديث</button>
     </form>
 </div>
 @endsection

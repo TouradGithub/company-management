@@ -1,13 +1,11 @@
 @
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
-<div style="margin-top:150px; " class="employees-container" id="employees-container">
-    <h2>List Of Company</h2>
-    <div class="search-export-container">
+<section id="overtime-form" class="content-section active">
+    <div class="container">
+    <h1>الشركات</h1>
 
-
-    </div>
 
     @if(session('success'))
     <div style="color: green; margin-bottom: 20px;">
@@ -20,7 +18,10 @@
             {{ session('error') }}
         </div>
     @endif
-    <table id="employeesTable">
+    <div id="entriesContainer">
+        <a  class="btn btn-primary" href="{{ route('company.create') }}">إضافة شركة</a>
+
+        <table class="records-table">
       <thead>
         <tr>
           <th>Name</th>
@@ -83,5 +84,6 @@
         @endforeach
       </tbody>
     </table>
+    </div>
   </div>
   @endsection

@@ -22,7 +22,7 @@
     </form>
   </div>
 @endsection --}}
-<html><head><base href "."; <meta charset="UTF-8">
+{{-- <html><head><base href "."; <meta charset="UTF-8">
     <title>;&#x646;&#x638;&#x627;&#x645; &#x62a;&#x633;&#x62c;&#x64a;&#x644; &#x627;&#x644;&#x645;&#x648;&#x638;&#x641;&#x64a;&#x646;</title>
     <style>
         body {
@@ -816,4 +816,92 @@
 
 
 
-    </body></html>
+    </body></html> --}}
+
+
+    <html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام الإضافي</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+  <link rel="stylesheet" href="{{asset('auth/style.css')}}">
+</head>
+<body class="auth-body">
+  <div id="loginPage" class="login-page">
+    <div class="login-container">
+      <div class="login-header">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='48' height='48'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z' fill='%231a237e'/%3E%3C/svg%3E" alt="Logo" class="login-logo">
+        <h1>تسجيل الدخول</h1>
+      </div>
+      <form id="loginForm" action="" method="POST"  class="login-form">
+        @if($errors->any())
+            <div style="color: red;">
+                <ul>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @csrf
+        <div class="form-group">
+          <label for="username">اسم المستخدم:</label>
+          <div class="input-group">
+            <i class="bi bi-person"></i>
+            <input type="email" id="email" name="email" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">كلمة المرور:</label>
+          <div class="input-group">
+            <i class="bi bi-lock"></i>
+            <input type="password" id="password" name="password" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="userType">نوع المستخدم:</label>
+          <div class="input-group">
+            <i class="bi bi-person-badge"></i>
+            <select id="userType" required>
+              <option value="admin">مدير النظام</option>
+              <option value="company">مدير الشركة</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary login-btn">دخول</button>
+      </form>
+    </div>
+  </div>
+
+
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const userType = document.getElementById('userType');
+
+    // Update the form action based on the selected user type
+    userType.addEventListener('change', () => {
+        if (userType.value === 'admin') {
+            loginForm.action = "{{ route('login') }}"; // Route for admin login
+        } else if (userType.value === 'company') {
+            loginForm.action = "{{ route('company.login') }}"; // Route for company login
+        }
+    });
+
+    // Set default action on page load
+    window.addEventListener('load', () => {
+        if (userType.value === 'admin') {
+            loginForm.action = "{{ route('login') }}";
+        } else if (userType.value === 'company') {
+            loginForm.action = "{{ route('company.login') }}";
+        }
+    });
+</script>
+  {{-- <script src="{{asset('auth/script.js')}}"></script> --}}
+</body>
+</html>

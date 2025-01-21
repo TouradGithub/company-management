@@ -11,17 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Schema::create('employees', function (Blueprint $table) {
-        //     $table->id();
-        //     $table->string('name'); // الاسم
-        //     $table->string('company_id'); // الاسم
-        //     $table->string('job'); // المهنة
-        //     $table->decimal('basic_salary', 10, 2); // الراتب الأساسي
-        //     $table->decimal('housing_allowance', 10, 2); // بدل السكن
-        //     $table->decimal('food_allowance', 10, 2); // بدل الإعاشة
-        //     $table->decimal('transportation_allowance', 10, 2); // بدل المواصلات
-        //     $table->timestamps();
-        // });
+        Schema::create('employees', function (Blueprint $table) {
+            $table->id();
+            $table->string('name'); // الاسم
+            $table->string('iqamaNumber'); // الاسم
+            $table->string('category_id'); // الاسم
+            $table->string('branch_id'); // الاسم
+            $table->string('job'); // المهنة
+            $table->decimal('basic_salary', 10, 2); // الراتب الأساسي
+            $table->decimal('housing_allowance', 10, 2); // بدل السكن
+            $table->decimal('food_allowance', 10, 2); // بدل الإعاشة
+            $table->decimal('transportation_allowance', 10, 2); // بدل المواصلات
+            $table->string('hire_date'); // بدل المواصلات
+            $table->timestamps();
+        });
     }
 
     /**

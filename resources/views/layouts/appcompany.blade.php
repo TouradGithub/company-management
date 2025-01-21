@@ -12,4 +12,6 @@
         @yield('content')
     <script>
         </script>
+
+        @yield('js')
     </body></html>

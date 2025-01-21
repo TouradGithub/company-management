@@ -1,15 +1,18 @@
-@extends('layouts.appcompany')
+@extends('layouts.overtime')
 
 @section('content')
+<section id="overtime-form" class="content-section active">
 <div class="container">
-    <h1>Users</h1>
-    <a href="{{ route('users.create') }}" class="btn btn-primary">Add User</a>
-    <table class="table table-striped">
+    <h1>المستخدمين</h1>
+    <a href="{{ route('users.create') }}" class="btn btn-primary">إضافة مستخدم</a>
+    <div id="entriesContainer">
+
+        <table class="records-table">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Actions</th>
+                <th>الاسم</th>
+                <th>الايميل</th>
+                <th>الاجراءات</th>
             </tr>
         </thead>
         <tbody>
@@ -18,11 +21,11 @@
                 <td>{{ $user->name }}</td>
                 <td>{{ $user->email }}</td>
                 <td>
-                    <a href="{{ route('users.edit', $user) }}" class="btn btn-warning btn-sm" >Edit</a>
+                    <a class="btn-primary btn-edit" href="{{ route('users.edit', $user) }}" class="btn btn-warning btn-sm" >Edit</a>
                     <form action="{{ route('users.destroy', $user) }}" method="POST" style="display: inline-block;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+                        <button type="submit" class="btn-primary btn-delete" onclick="return confirm('Are you sure?')">Delete</button>
                     </form>
                 </td>
             </tr>
@@ -30,4 +33,6 @@
         </tbody>
     </table>
 </div>
+</div>
+</section>
 @endsection

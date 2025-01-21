@@ -25,24 +25,27 @@ class BranchController extends Controller
         ]);
         // dd(auth()->user());
 
-        // Create a new company
-        $branch =  Branch::create([
-            'name' => $validated['name'],
-            'name_admin_company' => $validated['name_admin_company'],
-            'email' => $validated['email'],
-            'company_id'=>auth()->user()->model_id,
-            'password' => Hash::make($validated['password']),
-        ]);
+        try {
+            // Create a new company
+            $branch =  Branch::create([
+                'name' => $validated['name'],
+                'name_admin_company' => $validated['name_admin_company'],
+                'email' => $validated['email'],
+                'company_id'=>auth()->user()->model_id,
+                'password' => Hash::make($validated['password']),
+            ]);
 
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'model_type' =>"BRANCH",
-            'model_id' =>$branch->id,
-            'is_admin' =>1,
-        ]);
-
+            User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'model_type' =>"BRANCH",
+                'model_id' =>$branch->id,
+                'is_admin' =>1,
+            ]);
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Some this wrong');
+        }
 
         return redirect()->back()->with('success', 'Branch added successfully!');
     }
@@ -93,11 +96,6 @@ class BranchController extends Controller
             'is_admin' =>1,
         ])->first();
 
-        dd( $user);
-
-        // $user->email =$validated['email'];
-        // $user->password =Hash::make($request->password);
-        // $user->save();
 
         return redirect()->route('branches.index')->with('success', 'Branch updated successfully!');
     }

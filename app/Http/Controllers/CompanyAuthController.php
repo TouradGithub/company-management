@@ -27,7 +27,6 @@ class CompanyAuthController extends Controller
             return redirect()->route('company.dashboard')->with('success', 'Logged in successfully!');
 
         }
-dd("MO");
         return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
     }
 

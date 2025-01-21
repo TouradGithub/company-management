@@ -1,0 +1,309 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --primary: #1a237e;
+  --primary-light: #534bae;
+  --primary-dark: #000051;
+  --secondary: #00897b;
+  --warning: #fb8c00;
+  --danger: #d32f2f;
+  --background: #f0f2f5;
+  --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background: linear-gradient(135deg, var(--background) 0%, #e3f2fd 100%);
+  min-height: auto;
+}
+
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+  transform: translateY(0);
+  transition: var(--transition);
+}
+
+.container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+h1 {
+  color: var(--primary);
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+  border-radius: 2px;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  position: relative;
+  transition: var(--transition);
+}
+
+.form-group:hover label {
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+input[type="date"],
+input[type="number"],
+select,
+.select2-container--default .select2-selection--multiple {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: var(--transition);
+  background: white;
+}
+
+input[type="date"]:focus,
+input[type="number"]:focus,
+select:focus,
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(26, 35, 126, 0.1);
+  transform: translateY(-1px);
+}
+
+.employee-details {
+  background: linear-gradient(to bottom right, #ffffff, #f8f9ff);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-top: 2rem;
+  border: 1px solid rgba(26, 35, 126, 0.1);
+  transition: var(--transition);
+}
+
+.info-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: var(--transition);
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid #e3e8ff;
+  transition: var(--transition);
+}
+
+.info-row:hover {
+  background-color: #f8f9ff;
+  border-radius: 8px;
+}
+
+.radio-group {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  background: white;
+  transition: var(--transition);
+  border: 2px solid transparent;
+}
+
+.radio-group label:hover {
+  background: #f8f9ff;
+  border-color: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+.total-section {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin: 1rem 0;
+  text-align: center;
+  box-shadow: var(--card-shadow);
+  transition: var(--transition);
+}
+
+.total-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(26, 35, 126, 0.2);
+}
+
+.btn-primary, .btn-secondary {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(26, 35, 126, 0.3);
+}
+
+.entry-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.entry-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-light);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  transition: var(--transition);
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(26, 35, 126, 0.2);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.saved-entries {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.multiplier-group {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.multiplier-group label {
+  background: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  transition: var(--transition);
+  border: 2px solid transparent;
+}
+
+.multiplier-group label:hover {
+  background: #f8f9ff;
+  border-color: var(--secondary);
+  transform: translateY(-2px);
+}
+
+.days-rate-container {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.half-width {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+#dailyRateSection.form-group {
+  margin-bottom: 1rem;
+}
+
+#dailyRateSection .form-group {
+  margin-bottom: 0;
+}
+
+/* Smooth show/hide transitions */
+.hidden {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: var(--transition);
+  pointer-events: none;
+}
+
+[id$="Section"]:not(.hidden) {
+  opacity: 1;
+  transform: translateY(0);
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Adjust responsive design for small screens */
+@media (max-width: 640px) {
+  .container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+}

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name'); // اسم الفئة
             $table->string('code'); // الكود الفريد
+            $table->string('company_id'); 
             $table->timestamps(); // تاريخ الإنشاء والتحديث
         });
     }
