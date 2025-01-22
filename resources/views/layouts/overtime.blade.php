@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
   <link rel="stylesheet" href="{{asset('overtime.css')}}">
+  <link rel="stylesheet" href="{{asset('payroll/style.css')}}">
   <style>
     .menu-item a {
     display: flex;
@@ -72,7 +73,7 @@
       </div>
       <div class="nav-right">
 
-        
+
         <div class="user-menu">
           <button class="user-btn" onclick="toggleUserMenu()">
             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z' fill='%23ffffff'/%3E%3C/svg%3E" alt="User" class="user-avatar">
@@ -140,6 +141,12 @@
         <li class="menu-item " data-section="records">
             <span class="menu-icon"><i class="bi bi-table"></i></span>
             <a href="{{route('company.employees.index')}}">الموظفين</a>
+
+        </li>
+
+        <li class="menu-item " data-section="records">
+            <span class="menu-icon"><i class="bi bi-table"></i></span>
+            <a href="{{route('company.payrolls.create')}}">كشوف الرواتب</a>
 
         </li>
 

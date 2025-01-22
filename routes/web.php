@@ -31,16 +31,20 @@ Route::patch('/companies/{id}/update-status', [CompanyController::class, 'update
 });
 use App\Http\Controllers\CompanyAuthController;
 
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\PayrollController;
 // Route::get('/company/login', [CompanyAuthController::class, 'showLoginForm'])->name('company.login');
 Route::post('/company/login', [CompanyAuthController::class, 'login'])->name('company.login');
 Route::post('/company/logout', [CompanyAuthController::class, 'logout'])->name('company.logout');
 
 
 Route::get('/company/dashboard', [CompanyAuthController::class, 'dashboard'])->name('company.dashboard');
+Route::get('/company/dashboard', [CompanyAuthController::class, 'dashboard'])->name('company.dashboard');
+
+Route::get('/company/payrolls/create', [PayrollController::class, 'create'])->name('company.payrolls.create');
 
 
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\BranchController;
 
 Route::get('/branches/create', [BranchController::class, 'create'])->name('branches.create');
 Route::post('/branches/store', [BranchController::class, 'store'])->name('branches.store');
@@ -62,6 +66,7 @@ Route::get('/leaves/index', [LeaveController::class, 'index'])->name('company.le
 Route::get('/leaves/create', [LeaveController::class, 'create'])->name('company.leaves.create');
 
 Route::get('/branches/{branch}/employees', [EmployeeController::class, 'getEmployeesByBranch'])->name('branches.employees');
+Route::get('/employees-by-branch', [EmployeeController::class, 'getEmployeesByBranchWithRelationShip'])->name('branches.employees.getEmployeesByBranchWithRelationShip');
 
 // Edit leave form
 Route::get('/leaves/{leave}/edit', [LeaveController::class, 'edit'])->name('company.leaves.edit');

@@ -22,10 +22,10 @@ class EmployeeController extends Controller
         // $categories = Category::all();
         $branches = Branch::where('company_id',auth()->user()->model_id)->get();
         $employees = Employee:: with(['branch' => function ($query) {
-        $query->select('id', 'name');
-    },'loans','leaves','overtimes', 'deducations',
-    ])->
-     whereHas('branch', function ($query) {
+                    $query->select('id', 'name');
+                },'loans','leaves','overtimes', 'deducations',
+                ])->
+                whereHas('branch', function ($query) {
             $query->where('company_id', auth()->user()->model_id);
         })
 
@@ -36,6 +36,43 @@ class EmployeeController extends Controller
     public function getEmployeesByBranch($branchId)
     {
         $employees = Employee::where('branch_id', $branchId)->get();
+
+        return response()->json($employees);
+    }
+
+    public function getEmployeesByBranchWithRelationShip(Request $request)
+    {
+        $branches = $request->branches;
+
+        $monthYear = $request->month;
+
+        [$year, $month] = explode('-', $monthYear);
+
+        $employees = Employee::whereIn('branch_id', $branches)
+        ->with('branch') // Load branch relationship
+        ->with([
+            'loans' => function ($query) use ($year, $month) {
+                $query->whereYear('loan_date', $year)
+                      ->whereMonth('loan_date', $month)
+                      ->selectRaw(' SUM(amount) as total_amount')
+                      ->groupBy('employee_id');
+            },
+            'overtimes' => function ($query) use ($year, $month) {
+                $query->whereYear('date', $year)
+                      ->whereMonth('date', $month)
+                      ->selectRaw(' SUM(total_amount) as total_amount')
+                      ->groupBy('employee_id');
+            },
+            'deducations' => function ($query) use ($year, $month) {
+                $query->whereYear('deduction_date', $year)
+                      ->whereMonth('deduction_date', $month)
+                      ->selectRaw(' SUM(deduction_value) as total_amount')
+                      ->groupBy('employee_id');
+            },
+        ])
+
+
+                ->get();
 
         return response()->json($employees);
     }
