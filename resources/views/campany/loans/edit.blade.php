@@ -52,7 +52,7 @@
             <input type="date" name="loan_date" id="loan_date" class="form-control" value="{{ $loan->loan_date }}">
         </div>
 
-        <button class="btn btn-success">Update</button>
+        <button class="btn btn-primary mb-3">تحديث</button>
     </form>
 </div>
 @endsection

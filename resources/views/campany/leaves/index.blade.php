@@ -21,11 +21,11 @@
     <tbody>
         @foreach($leaves as $leave)
             <tr>
-                <td>{{ $leave->employee->name }}</td>
-                <td>{{ $leave->branch->name }}</td>
+                <td>{{ $leave->employee->name??'' }}</td>
+                <td>{{ $leave->branch->name??'' }}</td>
                 <td>{{ $leave->start_date }}</td>
                 <td>{{ $leave->end_date }}</td>
-                <td>{{ $leave->reson }}</td>
+                <td>{{ $leave->reason }}</td>
                 <td>
                     <a  class="btn-primary btn-edit" href="{{ route('company.leaves.edit', $leave->id) }}">تعديل</a>
                     <form action="{{ route('company.leaves.destroy', $leave->id) }}" method="POST" style="display: inline;">

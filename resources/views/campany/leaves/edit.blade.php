@@ -48,7 +48,7 @@
 
             <div>
                 <label for="reason">سبب الإجازة</label>
-                <textarea name="reason" id="reason">{{ $leave->reason }}</textarea>
+                <textarea name="reason" id="reason" style="width: 100%" >{{ $leave->reason }}</textarea>
             </div>
 
             <button type="submit">تحديث الإجازة</button>

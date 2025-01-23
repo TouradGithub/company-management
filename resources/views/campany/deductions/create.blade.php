@@ -36,12 +36,12 @@
             </div>
 
         <div class="form-group">
-            <label for="deduction_date">Deduction Date</label>
+            <label for="deduction_date">التاريخ </label>
             <input type="date" name="deduction_date" id="deduction_date" class="form-control">
         </div>
 
         <div class="form-group">
-            <label for="deduction_days">Deduction Days</label>
+            <label for="deduction_days">عدد الايام </label>
             <input type="number" name="deduction_days" id="deduction_days" class="form-control">
         </div>
 
@@ -57,7 +57,7 @@
             <input type="number" name="deduction_value" id="deduction_value" class="form-control">
         </div>
 
-        <button  class="btn btn-primary mb-3">Save</button>
+        <button  class="btn btn-primary mb-3">حفظ</button>
     </form>
 </div>
 @endsection

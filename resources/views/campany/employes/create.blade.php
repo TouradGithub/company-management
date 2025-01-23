@@ -9,100 +9,87 @@
 
     </div>
 @endif
-<form action="{{ route('company.employees.store') }}" method="POST">
-    @csrf
+<h1>إضافه موظف</h1>
+{{-- <form action="{{ route('company.employees.store') }}" method="POST">
+    @csrf --}}
 
-    <div class="search-filtersForm fade-in">
-        <select name="category_id" id="category_id" required>
-            <option >Select</option>
-            @foreach($categories as $category)
-            <option value="{{ $category->id }}">{{ $category->name }}</option>
-            @endforeach
-        </select>
-    </div>
-        <div class="search-filtersForm fade-in">
-        <select name="branch_id" id="branch_id" required>
-            <option value="" disabled selected>اختر الموظف</option>
+    <div class="form-container">
 
-            @foreach($branches as $branch)
-                <option value="{{ $branch->id }}">{{ $branch->name }}</option>
-            @endforeach
-        </select>
+        <form action="{{ route('company.employees.store') }}" method="POST">
+            @csrf
 
-      </div>
-    <div>
-
-
-
-    </div>
-    <div class="search-bar fade-in">
-        <label for="iqamaNumber"> رقم البطاقه</label>
-        <input type="number" name="iqamaNumber" id="iqamaNumber" >
-      </div>
-
-    <div>
-        <div class="search-filtersForm fade-in">
-
-            <div class="search-bar fade-in">
-                <label for="job">الاسم</label>
-                <input type="text" name="name" id="name" required>
+            <div class="row-employe">
+                <div class="form-group-employe">
+                    <label for="category_id">الفئة</label>
+                    <select name="category_id" id="category_id" required>
+                        <option>اختر الفئة</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group-employe">
+                    <label for="branch_id">الفرع</label>
+                    <select name="branch_id" id="branch_id" required>
+                        <option value="" disabled selected>اختر الفرع</option>
+                        @foreach($branches as $branch)
+                            <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-            <div class="search-bar fade-in">
-                <label for="job">المهنة</label>
-                <input type="text" name="job" id="job" required>
+
+            <div class="row-employe">
+                <div class="form-group-employe">
+                    <label for="iqamaNumber">رقم البطاقة</label>
+                    <input type="number" name="iqamaNumber" id="iqamaNumber">
+                </div>
+                <div class="form-group-employe">
+                    <label for="name">الاسم</label>
+                    <input type="text" name="name" id="name" required>
+                </div>
             </div>
-        </div>
 
-
-
-    </div>
-
-        <div>
-            <div class="search-filtersForm fade-in">
-
-                <div class="search-bar fade-in">
+            <div class="row-employe">
+                <div class="form-group-employe">
+                    <label for="job">المهنة</label>
+                    <input type="text" name="job" id="job" required>
+                </div>
+                <div class="form-group-employe">
                     <label for="basic_salary">الراتب الأساسي</label>
-                    <input  type="number" name="basic_salary" id="searchInput" >
-                </div>
-
-                <div class="search-bar fade-in">
-                    <label for="housing_allowance">بدل السكن</label>
-                    <input type="number" name="housing_allowance" id="searchInput">
+                    <input type="number" name="basic_salary" id="basic_salary">
                 </div>
             </div>
 
-        </div>
-    <div>
-    <div class="search-filtersForm fade-in">
+            <div class="row-employe">
+                <div class="form-group-employe">
+                    <label for="housing_allowance">بدل السكن</label>
+                    <input type="number" name="housing_allowance" id="housing_allowance">
+                </div>
+                <div class="form-group-employe">
+                    <label for="food_allowance">بدل الإعاشة</label>
+                    <input type="number" name="food_allowance" id="food_allowance">
+                </div>
+            </div>
 
-        <div class="search-bar fade-in">
-            <label for="food_allowance">بدل الإعاشة</label>
-            <input type="number" name="food_allowance" id="searchInput" >
-          </div>
-        <div class="search-bar fade-in">
-            <label for="transportation_allowance">بدل المواصلات</label>
-            <input type="number" name="transportation_allowance" id="searchInput" >
-          </div>
+            <div class="row-employe">
+                <div class="form-group-employe">
+                    <label for="transportation_allowance">بدل المواصلات</label>
+                    <input type="number" name="transportation_allowance" id="transportation_allowance">
+                </div>
+                <div class="form-group-employe">
+                    <label for="hire_date">تاريخ التعيين</label>
+                    <input type="date" name="hire_date" id="hire_date">
+                </div>
+            </div>
+
+            <div class="form-group-employe">
+                <button class="btn btn-primary" type="submit">إنشاء الموظف</button>
+            </div>
+        </form>
     </div>
 
-    <div>
-
-
-    </div>
-    </div>
-
-    <div>
-
-        <div class="search-bar fade-in">
-            <label for="hire_date">تاريخ التعيين</label>
-            <input type="date" name="hire_date"  id="searchInput" >
-          </div>
-        {{-- <input type="date" name="hire_date" id="hire_date" required> --}}
-    </div>
-    <div class="search-bar fade-in">
-        <button   class="btn btn-primary mb-3"  type="submit">إنشاء الموظف</button>
-    </div>
-</form>
+{{-- </form> --}}
 </div>
 
 @endsection

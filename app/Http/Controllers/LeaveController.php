@@ -17,7 +17,7 @@ class LeaveController extends Controller
 
     public function create()
     {
-        $branches = Branch::all();
+        $branches = Branch::where('company_id',auth()->user()->model_id)->get();
         return view('campany.leaves.create', compact('branches'));
     }
     public function store(Request $request)
@@ -36,7 +36,7 @@ class LeaveController extends Controller
     }
     public function edit(Leave $leave)
     {
-        $branches = Branch::all(); // Fetch all branches
+        $branches = Branch::where('company_id',auth()->user()->model_id)->get();
         $employees = Employee::where('branch_id', $leave->branch_id)->get(); // Employees for the branch
         return view('campany.leaves.edit', compact('leave', 'branches', 'employees'));
     }

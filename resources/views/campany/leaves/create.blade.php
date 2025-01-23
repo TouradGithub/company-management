@@ -51,9 +51,9 @@
             <input type="date" name="end_date" id="end_date" required>
         </div>
 
-        <div>
+        <div class="form-group">
             <label for="reason">سبب الإجازة</label>
-            <textarea name="reason" id="reason"></textarea>
+            <textarea name="reason" id="reason" class="form-control" style="width: 100%"  rows="5"></textarea>
         </div>
 
         <button  class="btn btn-primary mb-3" type="submit">تسجيل الإجازة</button>

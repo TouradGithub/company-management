@@ -52,7 +52,7 @@ class BranchController extends Controller
 
     public function index()
     {
-        $companies = Branch::all();
+        $companies = Branch::where('company_id',auth()->user()->model_id)->get();
         return view('branches.index', compact('companies')); // Adjust view path as needed
     }
 

@@ -7,7 +7,64 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
   <link rel="stylesheet" href="{{asset('overtime.css')}}">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+
   <link rel="stylesheet" href="{{asset('payroll/style.css')}}">
+  <style>
+    /* .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    } */
+
+    .row-employe {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+
+    .form-group-employe {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group-employe label {
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .form-group-employe input,
+    .form-group-employe select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 14px;
+        width: 100%;
+    }
+
+    .form-group-employe input:focus,
+    .form-group-employe select:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0px 0px 4px rgba(0, 123, 255, 0.5);
+    }
+
+    .btn-employe {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .btn-employe:hover {
+        background-color: #0056b3;
+    }
+</style>
+
   <style>
     .menu-item a {
     display: flex;
@@ -62,6 +119,35 @@
     color: #007bff;
 }
 
+<style>
+    .styled-textarea {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        resize: none;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .styled-textarea:focus {
+        border-color: #007bff;
+        background-color: #fff;
+        outline: none;
+        box-shadow: 0px 4px 10px rgba(0, 123, 255, 0.2);
+    }
+/*
+    .form-group label {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: inline-block;
+    } */
+</style>
+
+
   </style>
 </head>
 <body>
@@ -100,7 +186,8 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <h2>نظام الشركه</h2>
+        <a href="{{route('company.dashboard')}}"> <h2>نظام الشركه</h2></a>
+
       </div>
       <ul class="menu-items">
         <li class="menu-item {{ Request::routeIs('company.overtimes.create') || Request::routeIs('company.overtimes.index') ? 'active' : '' }}" data-section="overtime-form">
@@ -146,7 +233,7 @@
 
         <li class="menu-item " data-section="records">
             <span class="menu-icon"><i class="bi bi-table"></i></span>
-            <a href="{{route('company.payrolls.create')}}">كشوف الرواتب</a>
+            <a href="{{route('company.payrolls.index')}}">كشوف الرواتب</a>
 
         </li>
 

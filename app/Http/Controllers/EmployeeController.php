@@ -16,10 +16,16 @@ class EmployeeController extends Controller
         $branches = Branch::where('company_id',auth()->user()->model_id)->get();
         return view('campany.employes.create' , compact('branches' ,'categories' ));
     }
+    public function edit($id)
+    {
+        $categories = Category::where('company_id',auth()->user()->model_id)->get();
+        $branches = Branch::where('company_id',auth()->user()->model_id)->get();
+        $employee = Employee::find($id);
+        return view('campany.employes.edit' , compact('branches' ,'categories' , 'employee' ));
+    }
     public function index()
     {
 
-        // $categories = Category::all();
         $branches = Branch::where('company_id',auth()->user()->model_id)->get();
         $employees = Employee:: with(['branch' => function ($query) {
                     $query->select('id', 'name');
@@ -94,5 +100,38 @@ class EmployeeController extends Controller
         ]);
 
         Employee::create($validated);
-        return redirect()->back()->with('success', 'تم إنشاء الموظف بنجاح.');    }
+        return redirect()->back()->with('success', 'تم إنشاء الموظف بنجاح.');
+     }
+     public function update(Request $request, $id)
+    {
+        // Find the employee by ID
+        $employee = Employee::findOrFail($id);
+
+        // Validate the incoming data
+        $validated = $request->validate([
+            'iqamaNumber' => 'required',
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id', // Ensure the category exists
+            'branch_id' => 'required|exists:branches,id', // Ensure the branch exists
+            'job' => 'required|string|max:255',
+            'basic_salary' => 'required|numeric|min:0',
+            'housing_allowance' => 'nullable|numeric|min:0',
+            'food_allowance' => 'nullable|numeric|min:0',
+            'transportation_allowance' => 'nullable|numeric|min:0',
+            'hire_date' => 'required|date',
+        ]);
+
+        $employee->update($validated);
+        return redirect()->route('company.employees.index')->with('success', 'تم تحديث بيانات الموظف بنجاح.');
+    }
+    public function delete($id)
+    {
+        $employee = Employee::findOrFail($id);
+
+        $employee->delete();
+
+        return redirect()->route('company.employees.index')->with('success', 'تم حذف الموظف بنجاح.');
+    }
+
+
 }

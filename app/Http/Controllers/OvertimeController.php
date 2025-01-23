@@ -16,13 +16,13 @@ class OvertimeController extends Controller
     }
     public function create()
     {
-        $branches = Branch::all();
+        $branches = Branch::where('company_id',auth()->user()->model_id)->get();
         return view('campany.overtimes.create', compact('branches'));
     }
 
     public function store(Request $request)
     {
-        
+
         // Validate incoming data
         $validated = $request->validate([
             'date' => 'required|date',
@@ -60,43 +60,57 @@ class OvertimeController extends Controller
             'overtime' => $overtime
         ]);
             }
-    public function edit(Overtime $overtime)
+    public function edit( $id)
     {
-        $branches = Branch::all();
-        return view('campany.overtimes.edit', compact('overtime', 'branches'));
+        $branches = Branch::where('company_id',auth()->user()->model_id)->get();
+        $employees = Employee::whereIn('branch_id', branchId())->get();
+        $overtime = Overtime::with('employee')->findOrFail($id);
+
+        // dd( $id);
+        return view('campany.overtimes.edit', compact('overtime','employees', 'branches'));
     }
 
-    public function update(Request $request, Overtime $overtime)
+    public function update(Request $request,  $id)
     {
         $validated = $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'branch_id' => 'required|exists:branches,id',
-            'fixed_amount' => 'required|numeric|min:0',
-            'percentage_of_salary' => 'required|numeric|min:0|max:100',
-            'overtime_hours' => 'required|integer|min:0',
+            'date' => 'required|date',
+            'employe_id' => 'required',
+            'overtimeType' => 'required|string',
+            'fixedAmount' => 'nullable|numeric',
+            'hours' => 'nullable|numeric',
+            'hourMultiplier' => 'nullable|string',
+            'days' => 'nullable|numeric',
+            'dailyRate' => 'nullable|numeric',
+            'totalAmount' => 'required|numeric',
         ]);
 
-        $employee = Employee::findOrFail($validated['employee_id']);
-        $basic_salary = $employee->basic_salary;
+        $employee = Employee::findOrFail($validated['employe_id']);
+        // $basic_salary = $employee->basic_salary;
 
-        $overtime_value = $validated['fixed_amount'] +
-                        ($validated['percentage_of_salary'] / 100) * $basic_salary * $validated['overtime_hours'];
+        // $overtime_value = $validated['fixed_amount'] +
+        //                 ($validated['percentage_of_salary'] / 100) * $basic_salary * $validated['overtime_hours'];
 
-        $overtime->update([
-            'employee_id' => $validated['employee_id'],
-            'branch_id' => $validated['branch_id'],
-            'fixed_amount' => $validated['fixed_amount'],
-            'percentage_of_salary' => $validated['percentage_of_salary'],
-            'overtime_hours' => $validated['overtime_hours'],
-            'overtime_value' => $overtime_value,
-            'basic_salary' => $basic_salary,
-        ]);
+
+
+            $overtime =  Overtime::find($id);
+            $overtime->date = $validated['date'];
+            $overtime->branch_id =  $employee->branch->id; // You can store branches as a JSON
+            $overtime->employee_id = $validated['employe_id'];
+            $overtime->overtime_type = $validated['overtimeType'];
+            $overtime->fixed_amount = $validated['fixedAmount'] ?? null;
+            $overtime->hours = $validated['hours'] ?? null;
+            $overtime->hour_multiplier = $validated['hourMultiplier'] ?? null;
+            $overtime->days = $validated['days'] ?? null;
+            $overtime->daily_rate = $validated['dailyRate'] ?? null;
+            $overtime->total_amount = $validated['totalAmount'];
+            $overtime->save();
 
         return redirect()->route('company.overtimes.index')->with('success', 'تم تعديل الإضافي بنجاح');
     }
 
-    public function destroy(Overtime $overtime)
+    public function destroy( $id)
     {
+        $overtime =  Overtime::find($id);
         $overtime->delete();
         return redirect()->route('company.overtimes.index')->with('success', 'تم حذف الإضافي بنجاح');
     }

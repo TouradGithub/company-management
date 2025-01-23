@@ -20,16 +20,16 @@
         <tbody>
             @foreach ($loans as $loan)
                 <tr>
-                    <td>{{ $loan->employee->name }}</td>
-                    <td>{{ $loan->branch->name }}</td>
+                    <td>{{ $loan->employee->name??'' }}</td>
+                    <td>{{ $loan->branch->name??'' }}</td>
                     <td>{{ $loan->amount }}</td>
                     <td>{{ $loan->loan_date }}</td>
                     <td>
-                        <a class="btn-primary btn-edit" href="{{ route('loans.edit', $loan) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <a class="btn-primary btn-edit" href="{{ route('loans.edit', $loan) }}" class="btn btn-sm btn-warning">تحديث</a>
                         <form action="{{ route('loans.destroy', $loan) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button  class="btn-primary btn-delete">Delete</button>
+                            <button  class="btn-primary btn-delete">حذف</button>
                         </form>
                     </td>
                 </tr>

@@ -16,8 +16,8 @@ class DeductionController extends Controller
 
     public function create()
     {
-        $employees = Employee::all();
-        $branches = Branch::all();
+        $employees = Employee::whereIn('branch_id', branchId())->get();
+        $branches = Branch::where('company_id',auth()->user()->model_id)->get();
         return view('campany.deductions.create', compact('employees', 'branches'));
     }
 
@@ -52,21 +52,19 @@ class DeductionController extends Controller
 
     public function edit(Deduction $deduction)
     {
-        $employees = Employee::all();
-        $branches = Branch::all();
+        $employees = Employee::whereIn('branch_id', branchId())->get();
+        $branches = Branch::where('company_id',auth()->user()->model_id)->get();
         return view('campany.deductions.edit', compact('deduction', 'employees', 'branches'));
     }
 
     public function update(Request $request, Deduction $deduction)
     {
         $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'branch_id' => 'required|exists:branches,id',
+           'employe_id' => 'required|exists:employees,id',
             'deduction_date' => 'required|date',
-            'basic_salary' => 'required|numeric',
-            'deduction_days' => 'required|integer',
-            'deduction_value' => 'nullable|numeric',
-            'is_fixed_amount' => 'boolean',
+            'deduction_days' => 'required|numeric|min:1',
+            'deduction_type' => 'required',
+            'deduction_value' => 'nullable|numeric|min:0',
         ]);
 
         $deduction->update($request->all());

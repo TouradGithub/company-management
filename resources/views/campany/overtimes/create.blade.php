@@ -114,18 +114,13 @@
 
         <div class="form-actions">
           <button type="submit" class="btn-primary">حفظ</button>
-          <button type="button" class="btn-secondary" id="resetBtn">إعادة تعيين</button>
         </div>
       </div>
     </form>
 
 </section>
 
-    {{-- <div id="savedEntries" class="saved-entries">
-      <h2>السجلات المحفوظة</h2>
-      <div id="entriesContainer"></div>
-    </div> --}}
-  {{-- </div> --}}
+}
 
 @endsection
 
@@ -140,24 +135,6 @@
       $('#branches').select2();
       $('#employees').select2();
 
-    //   // Example of populating the employees dropdown
-    //   $('#employees').append(new Option("محمد علي", 1));
-    //   $('#employees').append(new Option("أحمد يوسف", 2));
-
-    //   // Handle overtime type change
-    //   $("input[name='overtimeType']").change(function() {
-    //     $(".hidden").hide(); // Hide all sections
-    //     const selectedType = $("input[name='overtimeType']:checked").val();
-    //     if (selectedType === "fixed") {
-    //       $("#fixedAmountSection").show();
-    //     } else if (selectedType === "hours") {
-    //       $("#hoursSection").show();
-    //     } else if (selectedType === "daily") {
-    //       $("#dailyRateSection").show();
-    //     }
-    //   });
-
-      // Form submission
 
     });
 

@@ -19,6 +19,7 @@
                     <tr>
                         <th>اسم الموظف</th>
                         <th>اسم الفرع</th>
+                        <th>نوع الإضافي</th>
                         <th> المجموع</th>
                         <th>الإجراءات</th>
                     </tr>
@@ -26,15 +27,31 @@
                 <tbody>
                     @foreach($overtimes as $overtime)
                         <tr>
-                            <td>{{ $overtime->employee->name }}</td>
-                            <td>{{ $overtime->branch->name }}</td>
+                            <td>{{ $overtime->employee->name??'' }}</td>
+                            <td>{{ $overtime->branch->name??'' }}</td>
+                            <td>
+                                @switch($overtime->overtime_type)
+                                    @case('fixed')
+                                     مبلغ ثابت  ({{$overtime->fixed_amount }})
+                                        @break
+                                    @case('hours')
+                                     عدد ساعات  ({{$overtime->hours }})
+                                        @break
+                                    @case('daily')
+                                       قيمة اليوم ({{$overtime->hours }})
+                                        @break
+                                    @default
+                                        غير محدد
+                                @endswitch
+                            </td>
+
                             <td>{{ $overtime->total_amount }}</td>
                             <td>
                                 <a class="btn-primary btn-edit" href="{{ route('company.overtimes.edit', $overtime->id) }}">تعديل</a>
                                 <form action="{{ route('company.overtimes.destroy', $overtime->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <butto class="btn-primary btn-delete"n type="submit">حذف</button>
+                                    <button class="btn-primary btn-delete" type="submit">حذف</button>
                                 </form>
                             </td>
                         </tr>

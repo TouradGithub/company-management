@@ -26,10 +26,10 @@
                 <td>{{ $company->name_admin_company }}</td>
                 <td>{{ $company->email }}</td>
                 <td>
-                    <a class="btn-primary btn-edit" href="{{ route('branches.edit', $company->id) }}">Edit</a>
+                    <a class="btn-primary btn-edit" href="{{ route('branches.edit', $company->id) }}">تحديث</a>
                     <form action="{{ route('branches.destroy', $company->id) }}" method="POST" style="display: inline-block;">
                         @csrf
-                        <button class="btn-primary btn-delete" type="submit" onclick="return confirm('Are you sure?')">Delete</button>
+                        <button class="btn-primary btn-delete" type="submit" onclick="return confirm('Are you sure?')">حذف</button>
                     </form>
                 </td>
             </tr>

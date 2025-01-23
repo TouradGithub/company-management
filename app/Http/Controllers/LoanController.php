@@ -17,7 +17,7 @@ class LoanController extends Controller
     public function create()
     {
         $employees = Employee::all();
-        $branches = Branch::all();
+        $branches = Branch::where('company_id',auth()->user()->model_id)->get();
         return view('campany.loans.create', compact('employees', 'branches'));
     }
 

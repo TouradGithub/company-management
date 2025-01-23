@@ -6,7 +6,22 @@
 
 <div class="container">
     <h1>كشف الرواتب</h1>
+    @if($errors->any())
+        <div style="color: red;">
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
+    @if (session('success'))
+        <div style="color: green;text-align: center;">
+            <h2 style="color: green;">  {{ session('success') }}</h2>
+
+        </div>
+    @endif
     <form id="salaryForm">
       <div class="form-group">
         <label for="month">الشهر:</label>
@@ -60,6 +75,8 @@
 
     <div id="salaryTable" class="hidden">
       <h2>كشف الرواتب - <span id="reportTitle"></span></h2>
+      <form action="{{route('company.payrolls.store')}}" method="POST">@csrf
+        <input type="hidden" id="monthYear" value="" name="date">
       <table>
         <thead id="tableHeader">
           <!-- سيتم إنشاء العناوين ديناميكياً -->
@@ -68,6 +85,8 @@
           <!-- سيتم إنشاء الصفوف ديناميكياً -->
         </tbody>
       </table>
+      <button type="submit" class="btn-secondary hidden" id="formvalidat">إضافة</button>
+      </form>
     </div>
 
     <div id="approvedReports" class="approved-reports">
@@ -80,6 +99,7 @@
     <script>
 
         document.addEventListener('DOMContentLoaded', () => {
+            const formvalidat = document.getElementById('formvalidat');
             const form = document.getElementById('salaryForm');
             const printBtn = document.getElementById('printBtn');
             const salaryTable = document.getElementById('salaryTable');
@@ -89,13 +109,6 @@
             const approvedReportsContainer = document.getElementById('approvedReports');
 
             // Map of branch values to their display names
-            // const branchesMap = {
-            // main: 'الفرع الرئيسي',
-            // north: 'الفرع الشمالي',
-            // south: 'الفرع الجنوبي'
-            // };
-
-            // Map of field names to their display names
             const fieldsMap = {
             basicSalary: 'الراتب الأساسي',
             workHours: 'عدد ساعات العمل',
@@ -140,7 +153,7 @@
 
             }
 
-            function generateEmployeeReport(data , selectedFields ) {
+            function generateEmployeeReport(data ,month , selectedFields ) {
 
                 reportTitle.textContent = `- `;
 
@@ -174,17 +187,25 @@
                 data.forEach(employee => {
                     let total = 0;
                     let row = `<tr>
-                        <td>${employee.id}</td> <td>${employee.name}</td> <td>${employee.branch.name}</td>
-                        <td >${employee.basic_salary}</td>`;
+                        <td>${employee.id}
+                            <input type="hidden" name="employee[][id]" value="${employee.id}" />
+                        </td> <td>${employee.name}</td> <td>${employee.branch.name}</td>
+                        <td >${employee.basic_salary}</td> <input type="hidden" name="branches[][id]" value='${employee.branch.id}' />
+                         <input type="hidden" name="basic_salary[][amount]" value='${ parseFloat(employee.basic_salary)}' />`;
+
+
                         total += parseFloat(employee.basic_salary);
                         if (selectedFields.includes('transportation')) {
                             row += `<td>${employee.transportation_allowance}</td>`;
                             total += parseFloat(employee.transportation_allowance);
+                          row += `  <input type="hidden" name="transportation[][amount]" value='${employee.transportation_allowance}' />`;
                         }
 
                         if (selectedFields.includes('food')) {
                             row += `<td>${employee.food_allowance}</td>`;
                             total += parseFloat(employee.food_allowance);
+                          row += `  <input type="hidden" name="food[][amount]" value='${employee.food_allowance}' />`;
+
                         }
                         if (selectedFields.includes('overtime')) {
                             const overtimeAmount =
@@ -193,6 +214,8 @@
                                     : 0;
 
                             row += `<td style="color:green;">${overtimeAmount.toFixed(2)}</td>`;
+                           row += ` <input type="hidden" name="overtime[][amount]" value='${overtimeAmount.toFixed(2)}' />`;
+
                             total += overtimeAmount;
                         }
 
@@ -203,30 +226,21 @@
                                     : 0;
 
                             row += `<td style="color:red;">${deductionsAmount.toFixed(2)}</td>`;
+                            row +=` <input type="hidden" name="deductions[][amount]" value='${deductionsAmount.toFixed(2)}' />`;
+
                             total += deductionsAmount;
                         }
 
+                    row += `<td>${total}</td><input type="hidden" name="total[][amount]" value='${total}' /></tr>`;
 
-
-
-                    row += `<td>${total}</td></tr>`;
                     tbody += row;
-                    // });
                 });
 
                 tableBody.innerHTML = tbody;
+                document.getElementById('monthYear').value =month;
+
+                formvalidat.classList.remove('hidden');
                 salaryTable.classList.remove('hidden');
-
-                // // Add approve button if not already present
-                if (!document.querySelector('.btn-approve')) {
-                    const approveBtn = document.createElement('button');
-                    approveBtn.className = 'btn-primary btn-approve';
-                    approveBtn.type = 'submit';
-                    approveBtn.textContent = 'اعتماد الكشف';
-                    document.querySelector('.form-actions').appendChild(approveBtn);
-
-
-                }
             }
             function getEmployeesByBranch(branch, month,selectedFields ,  callback) {
 
@@ -236,7 +250,7 @@
                     data: { branches: branch ,month:month },
                     success: function(response) {
                         console.log(   response);
-                        generateEmployeeReport(response , selectedFields);
+                        generateEmployeeReport(response , month ,  selectedFields);
 
 
 

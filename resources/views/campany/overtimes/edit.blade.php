@@ -1,61 +1,140 @@
-@extends('layouts.appcompany')
+@extends('layouts.overtime')
 
 @section('content')
-<h1>تعديل العمل الإضافي</h1>
 
-<form action="{{ route('company.overtimes.update', $overtime->id) }}" method="POST">
-    @csrf
-    @method('PUT')
+<section id="overtime-form" class="content-section active">
+<div class="container">
+      <!-- Overtime Form Section -->
+          <h1>تعديل الإضافي</h1>
+    <form action="{{route('company.overtimes.update' , $overtime->id)}}" method="POST">
 
-    <div>
-        <label for="employee_id">الموظف</label>
-        <select name="employee_id" id="employee_id" required>
-            <option value="" disabled>اختر الموظف</option>
-            @foreach($employees as $employee)
-                <option value="{{ $employee->id }}" {{ $employee->id == $overtime->employee_id ? 'selected' : '' }}>
-                    {{ $employee->name }}
-                </option>
+        @if (session('success'))
+        <div style="color: green;text-align: center;">
+            <h2 style="color: green;">{{ session('success') }}</h2>
+        </div>
+        @endif
+        @csrf
+
+      <div class="form-group">
+        <label for="date">التاريخ:</label>
+        <input type="date" name="date" id="date" value="{{ $overtime->date }}" required>
+      </div>
+      <div class="search-bar fade-in">
+      <div class="form-group">
+
+        <label for="branches">الفروع:</label>
+        <select id="branches" multiple required>
+            @foreach ($branches as $item)
+            <option value="{{$item->id}}" {{ $item->id== $overtime->branch_id ? 'selected' : '' }}>
+                {{$item->name}}
+            </option>
             @endforeach
         </select>
-    </div>
+      </div>
+      </div>
 
-    <div>
-        <label for="branch_id">الفرع</label>
-        <select name="branch_id" id="branch_id" required>
-            <option value="" disabled>اختر الفرع</option>
-            @foreach($branches as $branch)
-                <option value="{{ $branch->id }}" {{ $branch->id == $overtime->branch_id ? 'selected' : '' }}>
-                    {{ $branch->name }}
-                </option>
+      <div class="form-group">
+        <label for="employees">الموظفين:</label>
+        <select id="employees" name="employe_id" required>
+            @foreach ($employees as $employee)
+            <option value="{{$employee->id}}" {{ $overtime->employe_id == $employee->id ? 'selected' : '' }}>
+                {{$employee->name}}
+            </option>
             @endforeach
         </select>
-    </div>
+      </div>
 
-    <div>
-        <label for="fixed_amount">مبلغ الإضافي ثابت</label>
-        <input type="number" name="fixed_amount" id="fixed_amount" value="{{ $overtime->fixed_amount }}" required>
-    </div>
+      <div class="employee-details {{ $overtime->overtime_type ? '' : 'hidden' }}">
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">رقم الإقامة:</span>
+            <span id="iqamaNumber" class="info-value">{{$overtime->employee->iqamaNumber}}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">الراتب الأساسي:</span>
+            <span id="basicSalary" class="info-value">{{$overtime->employee->basic_salary}}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">قيمة الساعة:</span>
+            <span id="hourlyRate" class="info-value">{{$overtime->hourlyRate}}</span>
+          </div>
+        </div>
 
-    <div>
-        <label for="percentage_of_salary">مبلغ الإضافي حسب الراتب</label>
-        <input type="number" name="percentage_of_salary" id="percentage_of_salary" value="{{ $overtime->percentage_of_salary }}" required>
-    </div>
+        <div class="overtime-type">
+          <h3>نوع تسجيل الإضافي</h3>
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="overtimeType" value="fixed" {{ $overtime->overtime_type == 'fixed' ? 'checked' : '' }}>
+              مبلغ ثابت
+            </label>
+            <label>
+              <input type="radio" name="overtimeType" value="hours" {{ $overtime->overtime_type == 'hours' ? 'checked' : '' }}>
+              عدد ساعات
+            </label>
+            <label>
+              <input type="radio" name="overtimeType" value="daily" {{ $overtime->overtime_type == 'daily' ? 'checked' : '' }}>
+              قيمة اليوم
+            </label>
+          </div>
+        </div>
 
-    <div>
-        <label for="overtime_hours">عدد ساعات الإضافي</label>
-        <input type="number" name="overtime_hours" id="overtime_hours" value="{{ $overtime->overtime_hours }}" required>
-    </div>
+        <div id="fixedAmountSection" class="form-group {{ $overtime->overtime_type == 'fixed' ? '' : 'hidden' }}">
+          <label for="fixedAmount">المبلغ الثابت:</label>
+          <input type="number" name="fixedAmount" id="fixedAmount" value="{{ $overtime->fixed_amount }}" min="0" step="0.01">
+        </div>
 
-    <div>
-        <label for="overtime_value">قيمة الإضافي</label>
-        <input type="number" name="overtime_value" id="overtime_value" value="{{ $overtime->overtime_value }}" readonly>
-    </div>
+        <div id="hoursSection" class="form-group {{ $overtime->overtime_type == 'hours' ? '' : 'hidden' }}">
+          <label for="hours">عدد الساعات:</label>
+          <input type="number" id="hours" name="hours" value="{{ $overtime->hours }}" min="0" step="0.5">
+          <div class="multiplier-group">
+            <label>
+              <input type="radio" name="hourMultiplier" value="1" {{ $overtime->hour_multiplier == 1.00 ? 'checked' : '' }}>
+              × 1 (عادي)
+            </label>
+            <label>
+              <input type="radio" name="hourMultiplier" value="1.5" {{ $overtime->hour_multiplier == 1.5 ? 'checked' : '' }}>
+              × 1.5 (إضافي)
+            </label>
+          </div>
+        </div>
 
-    <div>
-        <label for="basic_salary">الراتب الأساسي</label>
-        <input type="number" name="basic_salary" id="basic_salary" value="{{ $overtime->basic_salary }}" readonly>
-    </div>
+        <div id="dailyRateSection" class="form-group {{ $overtime->overtime_type == 'daily' ? '' : 'hidden' }}">
+          <div class="days-rate-container">
+            <div class="form-group half-width">
+              <label for="days">عدد الأيام:</label>
+              <input type="number" name="days" id="days" value="{{ $overtime->days }}" min="0" step="0.5">
+            </div>
+            <div class="form-group half-width">
+              <label for="dailyRate">قيمة اليوم:</label>
+              <input type="number" name="dailyRate" id="dailyRate" value="{{ $overtime->daily_rate }}" min="0" step="0.01">
+            </div>
+          </div>
+        </div>
 
-    <button type="submit">تعديل الإضافي</button>
-</form>
+        <div class="total-section">
+          <input type="hidden" name="totalAmount" id="totalAmountHidden" value="{{ $overtime->total_amount }}">
+          <h3>الإجمالي: <span id="totalAmount">{{$overtime->total_amount}}</span> ريال</h3>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">تحديث</button>
+        </div>
+      </div>
+    </form>
+
+</section>
+
+@endsection
+
+@section('js')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+      $('#branches').select2();
+      $('#employees').select2();
+    });
+</script>
+{{-- <script src="{{asset('employee/script.js')}}"></script> --}}
 @endsection

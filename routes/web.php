@@ -43,6 +43,15 @@ Route::get('/company/dashboard', [CompanyAuthController::class, 'dashboard'])->n
 Route::get('/company/dashboard', [CompanyAuthController::class, 'dashboard'])->name('company.dashboard');
 
 Route::get('/company/payrolls/create', [PayrollController::class, 'create'])->name('company.payrolls.create');
+Route::get('/company/payrolls/index', [PayrollController::class, 'index'])->name('company.payrolls.index');
+Route::post('/company/payrolls/store', [PayrollController::class, 'store'])->name('company.payrolls.store');
+Route::delete('/company/payrolls/delete/{id}/{date}', [PayrollController::class, 'delete'])->name('company.payrolls.stodeletere');
+
+
+Route::get('/company/payrolls/data', [PayrollController::class, 'getPayrollData'])->name('company.payrolls.data');
+
+
+Route::post('/company/payrolls/export/pdf', [PayrollController::class, 'exportPdf'])->name('company.payrolls.export.pdf');
 
 
 
@@ -57,7 +66,10 @@ Route::post('/branches/{id}/delete', [BranchController::class, 'destroy'])->name
 
 Route::get('/employees/index', [EmployeeController::class, 'index'])->name('company.employees.index');
 Route::get('/employees/create', [EmployeeController::class, 'create'])->name('company.employees.create');
+Route::get('/employees/edit/{id}', [EmployeeController::class, 'edit'])->name('company.employees.edit');
 Route::post('/employees/store', [EmployeeController::class, 'store'])->name('company.employees.store');
+Route::post('/employees/update/{id}', [EmployeeController::class, 'update'])->name('company.employees.update');
+Route::delete('/employees/delete/{id}', [EmployeeController::class, 'delete'])->name('company.employees.delete');
 use App\Http\Controllers\LeaveController;
 
 
@@ -81,7 +93,8 @@ Route::delete('/leaves/{leave}', [LeaveController::class, 'destroy'])->name('com
 use App\Http\Controllers\OvertimeController;
 // Overtime Routes
 Route::get('/overtimes/edit/{id}', [OvertimeController::class, 'edit'])->name('company.overtimes.edit');
-Route::get('/overtimes/destroy/{id}', [OvertimeController::class, 'destroy'])->name('company.overtimes.destroy');
+Route::delete('/overtimes/destroy/{id}', [OvertimeController::class, 'destroy'])->name('company.overtimes.destroy');
+Route::post('/overtimes/update/{id}', [OvertimeController::class, 'update'])->name('company.overtimes.update');
 Route::get('/overtimes/index', [OvertimeController::class, 'index'])->name('company.overtimes.index');
 Route::get('/overtimes/create', [OvertimeController::class, 'create'])->name('company.overtimes.create');
 Route::post('/overtimes', [OvertimeController::class, 'store'])->name('company.overtimes.store');

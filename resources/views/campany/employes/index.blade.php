@@ -329,6 +329,48 @@
       color: #3498db;
     }
 </style>
+<style>
+    .action-section {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .btn-edit,
+    .btn-delete {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none; /* For anchor button */
+    }
+
+    .btn-edit {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-delete {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background-color: #a71d2a;
+    }
+
+    form {
+      margin: 0; /* To prevent extra spacing */
+    }
+  </style>
+
     </head>
     <body>
 
@@ -385,8 +427,9 @@
           <div class="tab" onclick="switchTab(event, &apos;leaves&apos;)">&#x627;&#x644;&#x627;&#x62c;&#x627;&#x632;&#x627;&#x62a;</div>
           <div class="tab" onclick="switchTab(event, &apos;overtime&apos;)">&#x627;&#x644;&#x633;&#x627;&#x639;&#x627;&#x62a; &#x627;&#x644;&#x625;&#x636;&#x627;&#x641;&#x64a;&#x629;</div>
           <div class="tab" onclick="switchTab(event, &apos;deductions&apos;)">&#x627;&#x644;&#x62e;&#x635;&#x648;&#x645;&#x627;&#x62a;</div>
-          <div class="tab" onclick="switchTab(event, &apos;loans&apos;)">&#x627;&#x644;&#x642;&#x631;&#x648;&#x636;</div>
+          {{-- <div class="tab" onclick="switchTab(event, &apos;loans&apos;)">&#x627;&#x644;&#x642;&#x631;&#x648;&#x636;</div> --}}
           <div class="tab" onclick="switchTab(event, &apos;salary&apos;)">&#x627;&#x644;&#x631;&#x648;&#x627;&#x62a;&#x628;</div>
+          <div class="tab" onclick="switchTab(event, &apos;action&apos;)">الاجراءات</div>
         </div>
         <div id="modalContent">
           <!-- Modal content will be inserted here by JavaScript -->
@@ -680,6 +723,27 @@
                 </div>
               </div>
             </div>
+          `;
+          break;
+        case 'action':
+        let urlEdit = `/employees/edit/${ employee.id}`;
+        // let urlEdit =   urlEdit.replace(':id', employee.id)
+        let urlDelete = `/employees/delete/${ employee.id}`;
+        // urlDelete = urlDelete.replace(':id', employee.id)
+
+          content = `
+           <div class="action-section">
+            <!-- Edit Button -->
+            <a href="${urlEdit}" class="btn-edit">تعديل</a>
+
+            <!-- Delete Button Inside a Form -->
+            <form action="${urlDelete}" method="POST" onsubmit="return confirm('هل أنت متأكد أنك تريد حذف هذا الموظف؟')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn-delete">حذف</button>
+            </form>
+            </div>
+
           `;
           break;
       }

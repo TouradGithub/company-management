@@ -23,8 +23,8 @@
         <tbody>
             @foreach ($deductions as $deduction)
                 <tr>
-                    <td>{{ $deduction->employee->name }}</td>
-                    <td>{{ $deduction->branch->name }}</td>
+                    <td>{{ $deduction->employee->name??''}}</td>
+                    <td>{{ $deduction->branch->name??'' }}</td>
                     <td>{{ $deduction->deduction_date }}</td>
                     <td>{{ $deduction->deduction_days }}</td>
                     <td>
