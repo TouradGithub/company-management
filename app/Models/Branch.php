@@ -16,4 +16,9 @@ class Branch extends Model
         'name_admin_company',
     ];
 
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
 }

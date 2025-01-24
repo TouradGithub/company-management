@@ -1,4 +1,4 @@
-@extends('layouts.overtime')
+@extends('layouts.branch')
 
 @section('content')
 @if(session('success'))
@@ -8,7 +8,7 @@
 <section>
     <div class="container">
         <h1>سجل كشف الرواتب</h1>
-        <a class="btn btn-primary" href="{{ route('company.payrolls.create') }}">إضافة كشف راتب</a>
+        <a class="btn btn-primary" href="{{ route('company.overtimes.create') }}">إضافة كشف راتب</a>
 
         <!-- Filter Form -->
         <form id="filterForm">

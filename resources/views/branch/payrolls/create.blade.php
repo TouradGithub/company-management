@@ -1,5 +1,5 @@
 
-@extends('layouts.overtime')
+@extends('layouts.branch')
 
 @section('content')
 
@@ -89,9 +89,9 @@
       </form>
     </div>
 
-    {{-- <div id="approvedReports" class="approved-reports">
+    <div id="approvedReports" class="approved-reports">
       <!-- سيتم إضافة الكشوفات المعتمدة هنا -->
-    </div> --}}
+    </div>
   </div>
 @endsection
 @section('js')

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Branch;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Branch;
 use App\Models\Payroll;
@@ -10,13 +11,13 @@ class PayrollController extends Controller
     public function create()
     {
         $branches = Branch::where('company_id',auth()->user()->model_id)->get(); // Assuming you have an Employee model
-        return view('campany.payrolls.create', compact('branches'));
+        return view('branch.payrolls.create', compact('branches'));
     }
 
     public function index()
     {
         $branches = Branch::where('company_id' , auth()->user()->model_id)->get(); // Assuming you have an Employee model
-        return view('campany.payrolls.index', compact('branches'));
+        return view('branch.payrolls.index', compact('branches'));
     }
 
     public function store(request $request)
@@ -70,7 +71,7 @@ class PayrollController extends Controller
 
 
         }
-        return  redirect()->back()->with(['success' => 'تم اعتماد كشف الرواتب بنجاح']);
+        return  redirect()->back()->with(['success' => 'Payroll successfully created or updated for all employees.']);
     }
 
     public function getPayrollData(Request $request)
@@ -130,7 +131,7 @@ class PayrollController extends Controller
             $mpdf->SetAutoPageBreak(TRUE, 20);
             $mpdf->AddPage('P', 'A4');
 
-            $html = view('campany.exports.exportpdf',
+            $html = view('branch.exports.exportpdf',
                 [
                     'month' => $month,
                     'payrolls' => $payrolls,
@@ -140,7 +141,6 @@ class PayrollController extends Controller
             $mpdf->Output();
             ob_end_flush();
     }
-
 
 
 }

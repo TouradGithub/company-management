@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Branch;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -11,19 +11,19 @@ class LoanController extends Controller
 {
     public function index()
     {
-        $loans = Loan::with('employee', 'branch')->get();
-        return view('campany.loans.index', compact('loans'));
+        $loans = Loan::where('branch_id', getBranch()->id)->with('employee')->get();
+        return view('branch.loans.index', compact('loans'));
     }
 
     public function create()
     {
-        $employees = Employee::all();
-        $branches = Branch::where('company_id',auth()->user()->model_id)->get();
-        return view('campany.loans.create', compact('employees', 'branches'));
+        $employees = Employee::where('branch_id', getBranch()->id)->get();
+        return view('branch.loans.create', compact('employees'));
     }
 
     public function store(Request $request)
     {
+
         $request->validate([
             'employe_id' => 'required',
             'amount' => 'required',
@@ -33,19 +33,18 @@ class LoanController extends Controller
 
         $loan = new Loan();
         $loan->employee_id = $request->employe_id;
-        $loan->branch_id =  $employee->branch->id;
+        $loan->branch_id = getBranch()->id;
         $loan->amount = $request->amount;
         $loan->loan_date = $request->loan_date ?? null;
         $loan->save();
 
-        return redirect()->route('loans.index')->with('success', 'Loan created successfully.');
+        return redirect()->route('branch.loans.index')->with('success', 'Loan created successfully.');
     }
 
     public function edit(Loan $loan)
     {
-        $employees = Employee::all();
-        $branches = Branch::all();
-        return view('campany.loans.edit', compact('loan', 'employees', 'branches'));
+        $employees = Employee::where('branch_id', getBranch()->id)->get();
+        return view('branch.loans.edit', compact('loan', 'employees'));
     }
 
     public function update(Request $request, Loan $loan)
@@ -57,13 +56,13 @@ class LoanController extends Controller
         ]);
 
         $loan->update($request->all());
-        return redirect()->route('loans.index')->with('success', 'Loan updated successfully.');
+        return redirect()->route('branch.loans.index')->with('success', 'Loan updated successfully.');
     }
 
     public function destroy(Loan $loan)
     {
         $loan->delete();
-        return redirect()->route('loans.index')->with('success', 'Loan deleted successfully.');
+        return redirect()->route('branch.loans.index')->with('success', 'Loan deleted successfully.');
     }
 
 }

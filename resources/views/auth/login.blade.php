@@ -868,6 +868,7 @@
             <select id="userType" required>
               <option value="admin">مدير النظام</option>
               <option value="company">مدير الشركة</option>
+              <option value="branch">مستخدم فرع </option>
             </select>
           </div>
         </div>
@@ -887,9 +888,11 @@
     // Update the form action based on the selected user type
     userType.addEventListener('change', () => {
         if (userType.value === 'admin') {
-            loginForm.action = "{{ route('login') }}"; // Route for admin login
+            loginForm.action = "{{ route('login') }}";
         } else if (userType.value === 'company') {
-            loginForm.action = "{{ route('company.login') }}"; // Route for company login
+            loginForm.action = "{{ route('company.login') }}";
+        }else if (userType.value === 'branch') {
+            loginForm.action = "{{ route('branch.login') }}";
         }
     });
 
@@ -899,6 +902,8 @@
             loginForm.action = "{{ route('login') }}";
         } else if (userType.value === 'company') {
             loginForm.action = "{{ route('company.login') }}";
+        }else if (userType.value === 'branch') {
+            loginForm.action = "{{ route('branch.login') }}";
         }
     });
 </script>

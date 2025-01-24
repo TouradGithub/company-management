@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Branch;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+
 use App\Models\Deduction;
 use App\Models\Employee;
 use App\Models\Branch;
@@ -10,15 +12,14 @@ class DeductionController extends Controller
 {
     public function index()
     {
-        $deductions = Deduction::whereIn('branch_id', branchId())->with('employee', 'branch')->get();
-        return view('campany.deductions.index', compact('deductions'));
+        $deductions = Deduction::where('branch_id', getBranch()->id)->with('employee')->get();
+        return view('branch.deductions.index', compact('deductions'));
     }
 
     public function create()
     {
-        $employees = Employee::whereIn('branch_id', branchId())->get();
-        $branches = Branch::where('company_id',auth()->user()->model_id)->get();
-        return view('campany.deductions.create', compact('employees', 'branches'));
+        $employees = Employee::where('branch_id', getBranch()->id)->get();
+        return view('branch.deductions.create', compact('employees'));
     }
 
     public function store(Request $request)
@@ -47,14 +48,13 @@ class DeductionController extends Controller
             'deduction_value' => $validatedData['deduction_value']??null
         ]);
 
-        return redirect()->route('deductions.index')->with('success', 'Deduction created successfully.');
+        return redirect()->route('branch.deductions.index')->with('success', 'Deduction created successfully.');
     }
 
     public function edit(Deduction $deduction)
     {
-        $employees = Employee::whereIn('branch_id', branchId())->get();
-        $branches = Branch::where('company_id',auth()->user()->model_id)->get();
-        return view('campany.deductions.edit', compact('deduction', 'employees', 'branches'));
+        $employees = Employee::where('branch_id', getBranch()->id)->get();
+        return view('branch.deductions.edit', compact('deduction', 'employees'));
     }
 
     public function update(Request $request, Deduction $deduction)
@@ -69,12 +69,12 @@ class DeductionController extends Controller
 
         $deduction->update($request->all());
 
-        return redirect()->route('deductions.index')->with('success', 'Deduction updated successfully.');
+        return redirect()->route('branch.deductions.index')->with('success', 'Deduction updated successfully.');
     }
 
     public function destroy(Deduction $deduction)
     {
         $deduction->delete();
-        return redirect()->route('deductions.index')->with('success', 'Deduction deleted successfully.');
+        return redirect()->route('branch.deductions.index')->with('success', 'Deduction deleted successfully.');
     }
 }
