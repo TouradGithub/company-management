@@ -42,10 +42,10 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($payrolls as $payroll)
+            @forelse ($payrolls as $payroll)
                 <tr>
-                    <td>{{ $payroll->employee->name }}</td>
-                    <td>{{ $payroll->branch->name }}</td>
+                    <td>{{ $payroll->employee->name??'' }}</td>
+                    <td>{{ $payroll->branch->name??'' }}</td>
                     <td>{{ $payroll->basic_salary }}</td>
                     <td>{{ $payroll->transportation }}</td>
                     <td>{{ $payroll->food }}</td>
@@ -53,7 +53,13 @@
                     <td>{{ $payroll->deduction }}</td>
                     <td>{{ $payroll->net_salary }}</td>
                 </tr>
-            @endforeach
+                @empty
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: gray;">
+                            لا توجد بيانات لعرضها لهذا الشهر
+                        </td>
+                    </tr>
+                @endforelse
         </tbody>
     </table>
 </body>

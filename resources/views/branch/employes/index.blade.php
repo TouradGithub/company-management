@@ -722,10 +722,13 @@
           `;
           break;
         case 'action':
-        let urlEdit = `branch/employees/edit/${ employee.id}`;
-        // let urlEdit =   urlEdit.replace(':id', employee.id)
-        let urlDelete = `branch/employees/delete/${ employee.id}`;
+        // let urlEdit = `branch/employees/edit/${ employee.id}`;
+        // // let urlEdit =   urlEdit.replace(':id', employee.id)
+        // let urlDelete = `branch/employees/delete/${ employee.id}`;
         // urlDelete = urlDelete.replace(':id', employee.id)
+        let urlEdit = `{{ route('branch.employees.edit', ':id') }}`.replace(':id', employee.id);
+    let urlDelete = `{{ route('branch.employees.delete', ':id') }}`.replace(':id', employee.id);
+
 
           content = `
            <div class="action-section">

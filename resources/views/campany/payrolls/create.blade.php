@@ -235,11 +235,18 @@
 
                     tbody += row;
                 });
-
+                if (data.length == 0) {
+                    tbody = `<tr>
+                                <td colspan="${selectedFields.length + 4}" style="text-align: center; color: gray;">
+                                    لا توجد بيانات لعرضها
+                                </td>
+                            </tr>`;
+                }
                 tableBody.innerHTML = tbody;
                 document.getElementById('monthYear').value =month;
-
-                formvalidat.classList.remove('hidden');
+                if(data.length != 0){
+                    formvalidat.classList.remove('hidden');
+                }
                 salaryTable.classList.remove('hidden');
             }
             function getEmployeesByBranch(branch, month,selectedFields ,  callback) {
@@ -264,12 +271,6 @@
 
             function approveReport(month, branches, selectedFields) {
             const date = new Date(month);
-                // const gregorianDate = new Intl.DateTimeFormat('en-US', {
-                //     month: 'long',
-                //     year: 'numeric'
-                // }).format(date);
-
-            // const branchNames = branches.map(b => branchesMap[b]).join(' - ');
 
                 const report = {
                     id: Date.now(),

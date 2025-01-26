@@ -28,18 +28,6 @@
         <input type="month" id="month" required>
       </div>
 
-      <div class="form-group">
-        <label>الفروع:</label>
-        <div class="checkbox-group branches-group">
-            @foreach ($branches as $item)
-                <label>
-                    <input type="checkbox" name="branches" value="{{ $item->id}}">
-                     {{ $item->name}}
-                </label>
-            @endforeach
-
-        </div>
-      </div>
 
       <div class="fields-selection">
         <h3>حدد الحقول المطلوبة في الكشف:</h3>
@@ -75,7 +63,7 @@
 
     <div id="salaryTable" class="hidden">
       <h2>كشف الرواتب - <span id="reportTitle"></span></h2>
-      <form action="{{route('company.payrolls.store')}}" method="POST">@csrf
+      <form action="{{route('branch.payrolls.store')}}" method="POST">@csrf
         <input type="hidden" id="monthYear" value="" name="date">
       <table>
         <thead id="tableHeader">
@@ -128,37 +116,32 @@
             form.addEventListener('submit', (e) => {
             e.preventDefault();
             const month = document.getElementById('month').value;
-            const selectedBranches = Array.from(document.querySelectorAll('input[name="branches"]:checked'))
-                .map(checkbox => checkbox.value);
-                console.log(selectedBranches);
+
             const selectedFields = Array.from(document.querySelectorAll('input[name="fields"]:checked'))
                 .map(checkbox => checkbox.value);
 
-            if (selectedBranches.length === 0) {
-                alert('الرجاء اختيار فرع واحد على الأقل');
-                return;
-            }
 
-            generateReport(month, selectedBranches, selectedFields);
+
+            generateReport(month, selectedFields);
             });
 
             printBtn.addEventListener('click', () => {
                 window.print();
             });
 
-            function generateReport(month, branches, selectedFields) {
+            function generateReport(month, selectedFields) {
 
-                getEmployeesByBranch(branches, month , selectedFields , (employees) => {});
+                getEmployeesByBranch( month , selectedFields , (employees) => {});
 
 
             }
 
             function generateEmployeeReport(data ,month , selectedFields ) {
 
-                reportTitle.textContent = `- `;
+                reportTitle.textContent = `- ${month}`;
 
                 // Generate table header
-                let headerRow = '<tr><th>الرقم</th><th>اسم الموظف</th><th>الفرع</th>';
+                let headerRow = '<tr><th>الرقم</th><th>اسم الموظف</th>';
 
                         headerRow += `<th>الراتب</th>`;
 
@@ -189,8 +172,8 @@
                     let row = `<tr>
                         <td>${employee.id}
                             <input type="hidden" name="employee[][id]" value="${employee.id}" />
-                        </td> <td>${employee.name}</td> <td>${employee.branch.name}</td>
-                        <td >${employee.basic_salary}</td> <input type="hidden" name="branches[][id]" value='${employee.branch.id}' />
+                        </td> <td>${employee.name}</td>
+                        <td >${employee.basic_salary}</td>
                          <input type="hidden" name="basic_salary[][amount]" value='${ parseFloat(employee.basic_salary)}' />`;
 
 
@@ -235,24 +218,29 @@
 
                     tbody += row;
                 });
-
+                if (data.length == 0) {
+                    tbody = `<tr>
+                                <td colspan="${selectedFields.length + 4}" style="text-align: center; color: gray;">
+                                    لا توجد بيانات لعرضها
+                                </td>
+                            </tr>`;
+                }
                 tableBody.innerHTML = tbody;
                 document.getElementById('monthYear').value =month;
+                if(data.length != 0){
+                    formvalidat.classList.remove('hidden');
+                }
 
-                formvalidat.classList.remove('hidden');
                 salaryTable.classList.remove('hidden');
             }
-            function getEmployeesByBranch(branch, month,selectedFields ,  callback) {
+            function getEmployeesByBranch( month,selectedFields ,  callback) {
 
                 $.ajax({
-                    url: '/employees-by-branch',
+                    url: '/branch/employees-by-branch',
                     method: 'GET',
-                    data: { branches: branch ,month:month },
+                    data: { month:month },
                     success: function(response) {
-                        console.log(   response);
                         generateEmployeeReport(response , month ,  selectedFields);
-
-
 
                     },
                     error: function(xhr, status, error) {

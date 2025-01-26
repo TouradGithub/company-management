@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام الإضافي</title>
+  <title>نظام الفروع</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
   <link rel="stylesheet" href="{{asset('overtime.css')}}">
@@ -155,7 +155,7 @@
     <div class="nav-content">
       <div class="nav-brand">
         <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z' fill='%23ffffff'/%3E%3C/svg%3E" alt="Logo" class="nav-logo">
-        <span>نظام الشركه</span>
+        <span>نظام الفروع</span>
       </div>
       <div class="nav-right">
 
@@ -186,7 +186,7 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <a href="{{route('branch.dashboard')}}"> <h2>نظام الشركه</h2></a>
+        <a href="{{route('branch.dashboard')}}"> <h2>نظام الفروع</h2></a>
 
       </div>
       <ul class="menu-items">

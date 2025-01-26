@@ -17,6 +17,7 @@ class Deduction extends Model
         'deduction_days',
         'deduction_value',
         'deduction_type',
+        'reason',
     ];
 
     public function employee()

@@ -2,9 +2,19 @@
 
 @section('content')
 @if (session('success'))
-    <div style="color: green; text-align: center;">
-        <h2>{{ session('success') }}</h2>
-    </div>
+<div style="color: green;text-align: center;">
+    <h2 style="color: green;">  {{ session('success') }}</h2>
+
+</div>
+@endif
+@if($errors->any())
+<div style="color: red;">
+<ul>
+    @foreach($errors->all() as $error)
+        <li>{{ $error }}</li>
+    @endforeach
+</ul>
+</div>
 @endif
 
 <h1>تعديل موظف</h1>
@@ -28,18 +38,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="form-group-employe">
-                <label for="branch_id">الفرع</label>
-                <select name="branch_id" id="branch_id" required>
-                    <option value="" disabled selected>اختر الفرع</option>
-                    @foreach($branches as $branch)
-                        <option value="{{ $branch->id }}"
-                            {{ $employee->branch_id == $branch->id ? 'selected' : '' }}>
-                            {{ $branch->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+
         </div>
 
         <!-- Row 2: ID Number and Name -->

@@ -17,6 +17,7 @@
                 <th>  عدد ايام الخصم</th>
                 <th> نوع الخصم</th>
                 <th>المبلغ </th>
+                <th>السبب </th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -37,6 +38,7 @@
                         @endif
                     </td>
                     <td>{{ $deduction->deduction_value }}</td>
+                    <td>{{ $deduction->reason }}</td>
                     <td>
                         <a class="btn-primary btn-edit" href="{{ route('deductions.edit', $deduction) }}" class="btn btn-sm btn-warning">Edit</a>
                         <form action="{{ route('deductions.destroy', $deduction) }}" method="POST" style="display: inline-block;">

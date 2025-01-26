@@ -8,7 +8,7 @@
 <section>
     <div class="container">
         <h1>سجل كشف الرواتب</h1>
-        <a class="btn btn-primary" href="{{ route('company.overtimes.create') }}">إضافة كشف راتب</a>
+        <a class="btn btn-primary" href="{{ route('branch.payrolls.create') }}">إضافة كشف راتب</a>
 
         <!-- Filter Form -->
         <form id="filterForm">
@@ -17,17 +17,7 @@
                 <input type="month" id="month" name="month" required>
             </div>
 
-            <div class="form-group">
-                <label>الفروع:</label>
-                <div class="checkbox-group branches-group">
-                    @foreach ($branches as $item)
-                        <label>
-                            <input type="checkbox" name="branches[]" value="{{ $item->id }}">
-                            {{ $item->name }}
-                        </label>
-                    @endforeach
-                </div>
-            </div>
+
 
             <button type="button" id="filterButton" class="btn btn-primary">تصفية</button>
         </form>
@@ -35,10 +25,9 @@
 
         <div>
             <form style=" display: flex; justify-content: left; align-items: left;"
-                id="exportPdfForm" method="POST" action="{{ route('company.payrolls.export.pdf') }}" target="_blank">
+                id="exportPdfForm" method="POST" action="{{ route('branch.payrolls.export.pdf') }}" >
                 @csrf
                 <input type="hidden" name="month" id="hiddenMonth">
-                <input type="hidden" name="branches" id="hiddenBranches">
                 <button type="submit" style="text-align: left" id="filterExportPdf" class="btn btn-primary">طباعة</button>
             </form>
             <div id="entriesContainer">
@@ -48,7 +37,6 @@
                     <thead>
                         <tr>
                             <th>اسم الموظف</th>
-                            <th>اسم الفرع</th>
                             <th>المجموع</th>
                             <th>الإجراءات</th>
                         </tr>
@@ -71,19 +59,16 @@
         function fetchPayrollData() {
             // Get the selected month and branches
             const month = $("#month").val();
-            const branches = $("input[name='branches[]']:checked").map(function () {
-                return this.value;
-            }).get();
-            if (!month || branches.length === 0) {
+
+            if (!month ) {
                 return;
             }
 
             $.ajax({
-                url: "{{ route('company.payrolls.data') }}",
+                url: "{{ route('branch.payrolls.data') }}",
                 method: "GET",
                 data: {
                     month: month,
-                    branches: branches
                 },
                 dataType: "json",
                 success: function (response) {
@@ -92,11 +77,10 @@
 
                     // Loop through the data and append rows to the table
                     response.forEach(function (payroll) {
-                        let deleteUrl = `/company/payrolls/delete/${payroll.id}/${payroll.date}`;
+                        let deleteUrl = `/branch/payrolls/delete/${payroll.id}/${payroll.date}`;
                         let row = `
                             <tr>
                                 <td>${payroll.employee.name}</td>
-                                <td>${payroll.branch.name}</td>
                                 <td>${payroll.net_salary}</td>
                                 <td>
                                     <form action="${deleteUrl}" method="POST" style="display:inline;">
@@ -109,6 +93,15 @@
                         `;
                         $("#payrollTable tbody").append(row);
                     });
+                    if(response.length == 0){
+                        let row = `
+                            <tr>
+                                <td  colspan="3" style="text-align: center; color: gray;">لاتوجد كشوف في هذا الشهر</td>
+
+                            </tr>
+                        `;
+                        $("#payrollTable tbody").append(row);
+                    }
                 },
                 error: function (xhr, status, error) {
                     console.error("Error fetching payroll data:", error);
@@ -127,22 +120,15 @@
     $("#filterExportPdf").click(function () {
     // Get the selected month and branches
         const month = $("#month").val();
-        const branches = $("input[name='branches[]']:checked").map(function () {
-            return this.value;
-        }).get();
+
         if (!month) {
             alert("قم باختيار الشهر.");
             return; // Stop execution
         }
 
-        if (branches.length === 0) {
-            alert("قم باختيار الفروع.");
-            return; // Stop execution
-        }
 
         // Set the values in the hidden form fields
         $("#hiddenMonth").val(month);
-        $("#hiddenBranches").val(branches);
 
         // Submit the form
         $("#exportPdfForm").submit();

@@ -10,13 +10,13 @@ class PayrollController extends Controller
 {
     public function create()
     {
-        $branches = Branch::where('company_id',auth()->user()->model_id)->get(); // Assuming you have an Employee model
+        $branches = Branch::where('company_id',auth()->user()->model_id)->get();
         return view('branch.payrolls.create', compact('branches'));
     }
 
     public function index()
     {
-        $branches = Branch::where('company_id' , auth()->user()->model_id)->get(); // Assuming you have an Employee model
+        $branches = Branch::where('company_id' , auth()->user()->model_id)->get();
         return view('branch.payrolls.index', compact('branches'));
     }
 
@@ -25,7 +25,6 @@ class PayrollController extends Controller
         $validated = $request->validate([
             'date' => 'required|string',
             'employee' => 'required|array|min:1',  // Ensure employee is an array and not empty
-            'branches' => 'required|array|min:1',  // Ensure employee is an array and not empty
              'branches.*.id' => 'required',
             'employee.*.id' => 'required|integer|exists:employees,id',  // Validate each employee's ID
             'basic_salary' => 'required',  // Ensure basic salary is numeric
@@ -35,7 +34,6 @@ class PayrollController extends Controller
             'deductions' => 'nullable',  // Ensure deductions are numeric if present
             'total' => 'nullable',
         ]);
-        // return $validated['date'];
         foreach ($validated['employee'] as  $index => $empData) {
             $employeeId = $empData['id'];
 
@@ -45,9 +43,8 @@ class PayrollController extends Controller
                                 ->first();
 
             if ($payroll) {
-                // If record exists, update it
                 $payroll->update([
-                    'branch_id' => $validated['branches'][$index]['id'],
+                    'branch_id' => getBranch()->id,
                     'basic_salary' => $validated['basic_salary'][$index]['amount'],
                     'transportation' => $validated['transportation'][$index]['amount'] ?? 0,
                     'food' => $validated['food'][$index]['amount'] ?? 0,
@@ -59,7 +56,7 @@ class PayrollController extends Controller
                 Payroll::create([
                     'date' => $validated['date'],
                     'employee_id' => $employeeId,
-                    'branch_id' => $validated['branches'][$index]['id'],
+                    'branch_id' =>  getBranch()->id,
                     'basic_salary' => $validated['basic_salary'][$index]['amount'],
                     'transportation' => $validated['transportation'][$index]['amount'] ?? 0,
                     'food' => $validated['food'][$index]['amount'] ?? 0,
@@ -71,24 +68,22 @@ class PayrollController extends Controller
 
 
         }
-        return  redirect()->back()->with(['success' => 'Payroll successfully created or updated for all employees.']);
+        return  redirect()->back()->with(['success' => 'تم إضافة الكشف بنجاح']);
     }
 
     public function getPayrollData(Request $request)
     {
         $monthYear = $request->input('month'); // Format: YYYY-MM
-        $branches = $request->input('branches');
 
 
-        $query = Payroll::with(['employee', 'branch']);
+        $query = Payroll::with(['employee']);
 
         if ($monthYear) {
             $query->where('date', $monthYear);
         }
 
-        if ($branches) {
-            $query->whereIn('branch_id', $branches);
-        }
+        $query->where('branch_id', getBranch()->id);
+
 
 
         $payrolls = $query->get();
@@ -100,7 +95,7 @@ class PayrollController extends Controller
 
         // return $id;
             Payroll::find($id)->delete();
-        return redirect()->back()->with(['succes' => 'Payroll records deleted successfully for the selected employees.']);
+        return redirect()->back()->with(['succes' => 'تم حذف الكشف بنجاح.']);
     }
 
     // use Mpdf\Mpdf;
@@ -110,18 +105,15 @@ class PayrollController extends Controller
         // return "OK";
         $validated = $request->validate([
             'month' => 'required', // Validate the month
-            'branches' => 'nullable|string', // Branch IDs as a comma-separated string
         ]);
 
         $month = $validated['month'];
         $branchIds = explode(',', $validated['branches'] ?? '');
 
         // Fetch payroll data based on the filters
-        $payrolls = Payroll::with(['employee', 'branch'])
+        $payrolls = Payroll::with(['employee'])
             ->where('date', $month)
-            ->when(!empty($branchIds), function ($query) use ($branchIds) {
-                $query->whereIn('branch_id', $branchIds);
-            })
+            ->where('branch_id' , getBranch()->id)
             ->get();
 
             ob_start();

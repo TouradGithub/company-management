@@ -17,10 +17,9 @@ class EmployeeController extends Controller
     }
     public function edit($id)
     {
-        $categories = Category::where('company_id',auth()->user()->model_id)->get();
-        $branches = Branch::where('company_id',auth()->user()->model_id)->get();
+        $categories = Category::where('company_id' , getBranch()->company->id)->get();
         $employee = Employee::find($id);
-        return view('branch.employes.edit' , compact('branches' ,'categories' , 'employee' ));
+        return view('branch.employes.edit' , compact( 'categories' , 'employee' ));
     }
     public function index()
     {
@@ -31,9 +30,7 @@ class EmployeeController extends Controller
                 ])->
                 whereHas('branch', function ($query) {
             $query->where('company_id', getBranch()->company->id);
-        })
-
-        ->get();
+        })->get();
         return view('branch.employes.index' , compact('employees' , 'categories') );
     }
 
@@ -46,14 +43,12 @@ class EmployeeController extends Controller
 
     public function getEmployeesByBranchWithRelationShip(Request $request)
     {
-        $branches = $request->branches;
 
         $monthYear = $request->month;
 
         [$year, $month] = explode('-', $monthYear);
 
-        $employees = Employee::whereIn('branch_id', $branches)
-        ->with('branch') // Load branch relationship
+        $employees = Employee::where('branch_id', getBranch()->id)
         ->with([
             'loans' => function ($query) use ($year, $month) {
                 $query->whereYear('loan_date', $year)
@@ -98,7 +93,7 @@ class EmployeeController extends Controller
         $employee->iqamaNumber = $validated['iqamaNumber'];
         $employee->name = $validated['name'];
         $employee->category_id = $validated['category_id'];
-        $employee->branch_id =getBranch()->id;
+        $employee->branch_id = getBranch()->id;
         $employee->job = $validated['job'];
         $employee->basic_salary = $validated['basic_salary'];
         $employee->housing_allowance = $validated['housing_allowance'] ?? null;
@@ -120,7 +115,6 @@ class EmployeeController extends Controller
             'iqamaNumber' => 'required',
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id', // Ensure the category exists
-            'branch_id' => 'required|exists:branches,id', // Ensure the branch exists
             'job' => 'required|string|max:255',
             'basic_salary' => 'required|numeric|min:0',
             'housing_allowance' => 'nullable|numeric|min:0',
@@ -130,7 +124,7 @@ class EmployeeController extends Controller
         ]);
 
         $employee->update($validated);
-        return redirect()->route('company.employees.index')->with('success', 'تم تحديث بيانات الموظف بنجاح.');
+        return redirect()->route('branch.employees.index')->with('success', 'تم تحديث بيانات الموظف بنجاح.');
     }
     public function delete($id)
     {
@@ -138,6 +132,6 @@ class EmployeeController extends Controller
 
         $employee->delete();
 
-        return redirect()->route('company.employees.index')->with('success', 'تم حذف الموظف بنجاح.');
+        return redirect()->route('branch.employees.index')->with('success', 'تم حذف الموظف بنجاح.');
     }
 }

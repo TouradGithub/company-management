@@ -49,7 +49,7 @@ Route::get('/company/payrolls/index', [PayrollController::class, 'index'])->name
 Route::post('/company/payrolls/store', [PayrollController::class, 'store'])->name('company.payrolls.store');
 Route::delete('/company/payrolls/delete/{id}/{date}', [PayrollController::class, 'delete'])->name('company.payrolls.stodeletere');
 Route::resource('loans', LoanController::class);
-Route::resource('deductions',DeductionController::class);
+Route::resource('deductions',App\Http\Controllers\DeductionController::class);
 
 Route::get('/company/payrolls/data', [PayrollController::class, 'getPayrollData'])->name('company.payrolls.data');
 
@@ -168,6 +168,8 @@ Route::post('payrolls/export/pdf', [App\Http\Controllers\Branch\PayrollControlle
 
 Route::name('branch.')->group(function () {
     Route::post('loans/store', [App\Http\Controllers\Branch\LoanController::class, 'store'])->name('loans.branch.store');
+    Route::delete('loans/delete/{id}', [App\Http\Controllers\Branch\LoanController::class, 'destroy'])->name('loans.branch.delete');
+    Route::get('loans/edit/{id}', [App\Http\Controllers\Branch\LoanController::class, 'edit'])->name('loans.edit.com');
     Route::resource('loans', App\Http\Controllers\Branch\LoanController::class);
     Route::resource('deductions', App\Http\Controllers\Branch\DeductionController::class);
 });
