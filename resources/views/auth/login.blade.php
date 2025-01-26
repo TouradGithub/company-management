@@ -826,7 +826,7 @@
   <title>نظام الإضافي</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
-  <link rel="stylesheet" href="{{asset('auth/style.css')}}">
+  <link rel="stylesheet" href="{{asset('auth/style.css?v=1.1')}}">
 </head>
 <body class="auth-body">
   <div id="loginPage" class="login-page">
