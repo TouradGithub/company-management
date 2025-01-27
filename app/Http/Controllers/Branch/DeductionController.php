@@ -50,7 +50,7 @@ class DeductionController extends Controller
             'reason' => $validatedData['reason']??null
         ]);
 
-        return redirect()->route('branch.deductions.index')->with('success', 'Deduction created successfully.');
+        return redirect()->route('branch.deductions.index')->with('success', 'تم إضافة الخصم بنجاح');
     }
 
     public function edit(Deduction $deduction)
@@ -73,12 +73,12 @@ class DeductionController extends Controller
 
         $deduction->update($request->all());
 
-        return redirect()->route('branch.deductions.index')->with('success', 'Deduction updated successfully.');
+        return redirect()->route('branch.deductions.index')->with('success', 'تم تحديث الخصم بنجاح');
     }
 
     public function destroy(Deduction $deduction)
     {
         $deduction->delete();
-        return redirect()->route('branch.deductions.index')->with('success', 'Deduction deleted successfully.');
+        return redirect()->route('branch.deductions.index')->with('success', 'تم حذف الخصم بنجاح');
     }
 }

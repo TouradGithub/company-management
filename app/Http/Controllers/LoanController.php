@@ -38,7 +38,7 @@ class LoanController extends Controller
         $loan->loan_date = $request->loan_date ?? null;
         $loan->save();
 
-        return redirect()->route('loans.index')->with('success', 'Loan created successfully.');
+        return redirect()->route('loans.index')->with('success', 'تم إضافة السلف بنجاح');
     }
 
     public function edit(Loan $loan)
@@ -57,13 +57,13 @@ class LoanController extends Controller
         ]);
 
         $loan->update($request->all());
-        return redirect()->route('loans.index')->with('success', 'Loan updated successfully.');
+        return redirect()->route('loans.index')->with('success', 'تم تحديث السلف بنجاح');
     }
 
     public function destroy(Loan $loan)
     {
         $loan->delete();
-        return redirect()->route('loans.index')->with('success', 'Loan deleted successfully.');
+        return redirect()->route('loans.index')->with('success', 'تم حذف السلف بنجاح');
     }
 
 }

@@ -48,7 +48,7 @@ Route::get('/company/payrolls/create', [PayrollController::class, 'create'])->na
 Route::get('/company/payrolls/index', [PayrollController::class, 'index'])->name('company.payrolls.index');
 Route::post('/company/payrolls/store', [PayrollController::class, 'store'])->name('company.payrolls.store');
 Route::delete('/company/payrolls/delete/{id}/{date}', [PayrollController::class, 'delete'])->name('company.payrolls.stodeletere');
-Route::resource('loans', LoanController::class);
+Route::resource('loans', App\Http\Controllers\LoanController::class);
 Route::resource('deductions',App\Http\Controllers\DeductionController::class);
 
 Route::get('/company/payrolls/data', [PayrollController::class, 'getPayrollData'])->name('company.payrolls.data');

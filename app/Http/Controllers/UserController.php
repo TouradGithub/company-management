@@ -12,10 +12,7 @@ class UserController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-
     {
-
-        // dd(auth()->check());
 
         $users = User::where('model_type','USER_COMPANY')
                         ->where('model_id' ,auth()->user()->model_id)

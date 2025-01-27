@@ -11,6 +11,7 @@ class OvertimeController extends Controller
 
     public function index()
     {
+
         $overtimes = Overtime::with('employee', 'branch')->get(); // جلب بيانات الإضافي مع الموظف والفرع
         return view('campany.overtimes.index', compact('overtimes'));
     }
@@ -56,7 +57,7 @@ class OvertimeController extends Controller
 
         // Return a success response
         return redirect()->back()->with([
-            'message' => 'Overtime saved successfully',
+            'success' => 'تم إضافة الاضافي بنجاح',
             'overtime' => $overtime
         ]);
             }
@@ -85,12 +86,6 @@ class OvertimeController extends Controller
         ]);
 
         $employee = Employee::findOrFail($validated['employe_id']);
-        // $basic_salary = $employee->basic_salary;
-
-        // $overtime_value = $validated['fixed_amount'] +
-        //                 ($validated['percentage_of_salary'] / 100) * $basic_salary * $validated['overtime_hours'];
-
-
 
             $overtime =  Overtime::find($id);
             $overtime->date = $validated['date'];

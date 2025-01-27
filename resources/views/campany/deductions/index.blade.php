@@ -40,11 +40,11 @@
                     <td>{{ $deduction->deduction_value }}</td>
                     <td>{{ $deduction->reason }}</td>
                     <td>
-                        <a class="btn-primary btn-edit" href="{{ route('deductions.edit', $deduction) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <a class="btn-primary btn-edit" href="{{ route('deductions.edit', $deduction) }}" class="btn btn-sm btn-warning">تعديل</a>
                         <form action="{{ route('deductions.destroy', $deduction) }}" method="POST" style="display: inline-block;">
                             @csrf
                             @method('DELETE')
-                            <button class="btn-primary btn-delete">Delete</button>
+                            <button class="btn-primary btn-delete">حذف</button>
                         </form>
                     </td>
                 </tr>

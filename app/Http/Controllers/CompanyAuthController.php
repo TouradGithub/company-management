@@ -24,7 +24,7 @@ class CompanyAuthController extends Controller
 
         if (Auth::attempt($request->only('email', 'password'))) {
 
-            return redirect()->route('company.dashboard')->with('success', 'Logged in successfully!');
+            return redirect()->route('company.dashboard')->with('success', 'تم تسجيل الدخول بنجاح!');
 
         }
         return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
@@ -34,7 +34,7 @@ class CompanyAuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('company.login')->with('success', 'Logged out successfully!');
+        return redirect()->route('company.login')->with('success', 'تم تسجيل الخروج!');
     }
 
     // Dashboard

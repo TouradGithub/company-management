@@ -97,9 +97,8 @@ class PayrollController extends Controller
     public function delete( $id ,$date)
     {
 
-        // return $id;
-            Payroll::find($id)->delete();
-        return redirect()->back()->with(['succes' => 'Payroll records deleted successfully for the selected employees.']);
+        Payroll::find($id)->delete();
+        return redirect()->back()->with(['succes' => 'تم حذف الكشف بنجاح']);
     }
 
     // use Mpdf\Mpdf;

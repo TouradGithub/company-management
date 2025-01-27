@@ -124,6 +124,7 @@ class EmployeeController extends Controller
         $employee->update($validated);
         return redirect()->route('company.employees.index')->with('success', 'تم تحديث بيانات الموظف بنجاح.');
     }
+    
     public function delete($id)
     {
         $employee = Employee::findOrFail($id);

@@ -11,11 +11,6 @@
 
   <link rel="stylesheet" href="{{asset('payroll/style.css')}}">
   <style>
-    /* .form-container {
-        max-width: 800px;
-        margin: 0 auto;
-    } */
-
     .row-employe {
         display: flex;
         gap: 20px;
