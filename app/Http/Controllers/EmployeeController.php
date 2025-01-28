@@ -124,10 +124,26 @@ class EmployeeController extends Controller
         $employee->update($validated);
         return redirect()->route('company.employees.index')->with('success', 'تم تحديث بيانات الموظف بنجاح.');
     }
-    
+
     public function delete($id)
     {
         $employee = Employee::findOrFail($id);
+
+        if ($employee->leaves()->exists()) {
+            return redirect()->route('company.employees.index')->with('error', 'لا يمكن حذف الموظف لأنه يحتوي على إجازات مرتبطة.');
+        }
+
+        if ($employee->deducations()->exists()) {
+            return redirect()->route('company.employees.index')->with('error', 'لا يمكن حذف الموظف لأنه يحتوي على خصومات مرتبطة.');
+        }
+
+        if ($employee->overtimes()->exists()) {
+            return redirect()->route('company.employees.index')->with('error', 'لا يمكن حذف الموظف لأنه يحتوي على إضافيات مرتبطة.');
+        }
+
+        if ($employee->loans()->exists()) {
+            return redirect()->route('company.employees.index')->with('error', 'لا يمكن حذف الموظف لأنه يحتوي على سلف مرتبط.');
+        }
 
         $employee->delete();
 

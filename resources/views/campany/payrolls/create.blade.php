@@ -155,7 +155,7 @@
 
             function generateEmployeeReport(data ,month , selectedFields ) {
 
-                reportTitle.textContent = `- `;
+                reportTitle.textContent = `${month}`;
 
                 // Generate table header
                 let headerRow = '<tr><th>الرقم</th><th>اسم الموظف</th><th>الفرع</th>';
@@ -285,7 +285,6 @@
 
             approvedReports.push(report);
             localStorage.setItem('approvedReports', JSON.stringify(approvedReports));
-            renderApprovedReports();
             }
 
             function generateReportTable(report) {
@@ -367,11 +366,8 @@
             window.deleteReport = function(reportId) {
             approvedReports = approvedReports.filter(r => r.id !== reportId);
             localStorage.setItem('approvedReports', JSON.stringify(approvedReports));
-            renderApprovedReports();
             };
 
-            // Initialize approved reports display
-            renderApprovedReports();
         });
 
     </script>

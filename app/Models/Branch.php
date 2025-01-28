@@ -16,9 +16,29 @@ class Branch extends Model
         'name_admin_company',
     ];
 
-    public function company()
+
+    public function leaves()
     {
-        return $this->belongsTo(Company::class);
+        return $this->hasMany(Leave::class, 'branch_id');
+    }
+
+    public function deducations()
+    {
+        return $this->hasMany(Deduction::class, 'branch_id');
+    }
+    public function overtimes()
+    {
+        return $this->hasMany(Overtime::class, 'branch_id');
+    }
+
+    public function employees()
+    {
+        return $this->hasMany(Employee::class, 'branch_id');
+    }
+
+    public function loans()
+    {
+        return $this->hasMany(Loan::class, 'branch_id');
     }
 
 }

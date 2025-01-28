@@ -80,7 +80,7 @@
                         let deleteUrl = `/branch/payrolls/delete/${payroll.id}/${payroll.date}`;
                         let row = `
                             <tr>
-                                <td>${payroll.employee.name}</td>
+                                <td>${payroll.employee?.name || ''}</td>
                                 <td>${payroll.net_salary}</td>
                                 <td>
                                     <form action="${deleteUrl}" method="POST" style="display:inline;">

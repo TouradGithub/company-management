@@ -106,15 +106,29 @@ class BranchController extends Controller
     public function destroy($id)
     {
         $branch = Branch::findOrFail($id);
-        // $user =  User::where([
-        //     'model_type' =>"BRANCH",
-        //     'model_id' =>$branch->id,
-        //     'is_admin' =>1,
-        // ])->first()->delete();
+
+        if ($branch->leaves()->exists()) {
+            return redirect()->route('branches.index')->with('error', 'لا يمكن حذف الفرع لأنه يحتوي على إجازات مرتبطة.');
+        }
+
+        if ($branch->deducations()->exists()) {
+            return redirect()->route('branches.index')->with('error', 'لا يمكن حذف الفرع لأنه يحتوي على خصومات مرتبطة.');
+        }
+
+        if ($branch->overtimes()->exists()) {
+            return redirect()->route('branches.index')->with('error', 'لا يمكن حذف الفرع لأنه يحتوي على إضافيات مرتبطة.');
+        }
+
+        if ($branch->loans()->exists()) {
+            return redirect()->route('branches.index')->with('error', 'لا يمكن حذف الفرع لأنه يحتوي على سلف مرتبط.');
+        }
+        if ($branch->employees()->exists()) {
+            return redirect()->route('branches.index')->with('error', 'لا يمكن حذف الفرع لأنه يحتوي على موظفين مرتبط.');
+        }
         $branch->delete();
 
 
-        return redirect()->route('branches.index')->with('success', 'Branch deleted successfully!');
+        return redirect()->route('branches.index')->with('success', 'تم حذف الفرع بنجاح');
     }
 }
 
