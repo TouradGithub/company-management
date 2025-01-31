@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use Illuminate\Support\Facades\Auth;
-class VerifyAdmin
+class VerifyCompany
 {
     /**
      * Handle an incoming request.
@@ -16,7 +16,7 @@ class VerifyAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->model_type != 'USERADMIN') {
+        if (Auth::check() && Auth::user()->model_type != 'COMPANY') {
             Auth::logout();
 
             return redirect()->route('login')->with('error', 'ليست لديك الصلاحيه الكافيه!');
