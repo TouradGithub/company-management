@@ -23,6 +23,8 @@ return new class extends Migration
             $table->decimal('days', 5, 2)->nullable();
             $table->decimal('daily_rate', 10, 2)->nullable();
             $table->decimal('total_amount', 10, 2);
+            $table->decimal('paid_overtime', 10, 2)->default(0); // Paid deduction value
+            $table->decimal('remaining_overtime', 10, 2);
             $table->timestamps();
         });
 

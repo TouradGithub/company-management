@@ -2,47 +2,70 @@
 
 @section('content')
 @if(session('success'))
-    <p>{{ session('success') }}</p>
+    <p class="alert alert-success">{{ session('success') }}</p>
 @endif
 
 <section>
+    <style>
+        .selectedPayrolls {
+            background-color: #d3d3d3;
+            color: #000;
+        }
+
+        #payrollTableFetched {
+            display: none;
+        }
+    </style>
+
     <div class="container">
         <h1>سجل كشف الرواتب</h1>
-        <a class="btn btn-primary" href="{{ route('branch.payrolls.create') }}">إضافة كشف راتب</a>
-
-        <!-- Filter Form -->
-        <form id="filterForm">
-            <div class="form-group">
-                <label for="month">الشهر:</label>
-                <input type="month" id="month" name="month" required>
-            </div>
-
-
-
-            <button type="button" id="filterButton" class="btn btn-primary">تصفية</button>
-        </form>
-
+        <a class="btn btn-primary mb-3" href="{{ route('branch.payrolls.create') }}">إضافة كشف راتب</a>
 
         <div>
-            <form style=" display: flex; justify-content: left; align-items: left;"
-                id="exportPdfForm" method="POST" action="{{ route('branch.payrolls.export.pdf') }}" >
+            <form id="exportPdfForm" method="POST" action="{{ route('branch.payrolls.export.pdf') }}">
                 @csrf
                 <input type="hidden" name="month" id="hiddenMonth">
-                <button type="submit" style="text-align: left" id="filterExportPdf" class="btn btn-primary">طباعة</button>
             </form>
-            <div id="entriesContainer">
 
-                <!-- Placeholder for the table -->
-                <table class="records-table" id="payrollTable">
+            <div id="entriesContainer">
+                <table class="records-table table table-bordered" id="payrollTable">
                     <thead>
                         <tr>
-                            <th>اسم الموظف</th>
-                            <th>المجموع</th>
+                            <th>التواريخ المتاحة</th>
+                            <th>عدد الموظفين</th>
+                            <th>إجمالي الرواتب</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($payrollData as $payroll)
+                            <tr onclick="selectRow(this)">
+                                <td>{{ $payroll->date }}</td>
+                                <td>{{ $payroll->employees_count }}</td>
+                                <td>{{ number_format($payroll->total_salary, 2) }} ريال</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="payrollTableTitle" style="display: none;text-align: center;margin-top:30px" >كشوف الرواتب لشهر: <span id="selectedMonth"></span></h3>
+            <button type="submit" id="filterExportPdf" style="display: none" class="btn btn-primary ">طباعة</button>
+
+            <div id="entriesContainer">
+                <table class="records-table table table-bordered mt-3" id="payrollTableFetched">
+                    <thead>
+                        <tr>
+                            <th>الموظف</th>
+                            <th>الراتب الأساسي</th>
+                            <th>الإضافي</th>
+                            <th>الخصومات</th>
+                            <th>السلف</th>
+                            <th>صافي الراتب</th>
                             <th>الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Data will be populated here by JavaScript -->
+                        <!-- البيانات سيتم إضافتها هنا عبر JavaScript -->
                     </tbody>
                 </table>
             </div>
@@ -50,92 +73,86 @@
     </div>
 </section>
 
-<!-- Include jQuery (or use vanilla JavaScript) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-    $(document).ready(function () {
-        // Function to fetch and display payroll data
-        function fetchPayrollData() {
-            // Get the selected month and branches
-            const month = $("#month").val();
+function selectRow(row) {
+    // إزالة التحديد من جميع الصفوف
+    $('#payrollTable tbody tr').css('background-color', '');
 
-            if (!month ) {
+    // إضافة التحديد للصف الحالي
+    $(row).css('background-color', '#d3d3d3');
+
+    // جلب التاريخ
+    var date = $(row).find('td:first').text().trim();
+
+    $("#payrollTableTitle").css("display", "block");
+    $("#filterExportPdf").css("display", "block");
+
+    $("#selectedMonth").text(date);
+    $("#hiddenMonth").val(date);
+
+    // استدعاء دالة لجلب البيانات
+    fetchPayrollData(date);
+}
+
+function fetchPayrollData(month) {
+    if (!month) return;
+
+    $.ajax({
+        url: "{{ route('branch.payrolls.data') }}",
+        method: "GET",
+        data: { month: month },
+        dataType: "json",
+        success: function (response) {
+            let tableBody = $("#payrollTableFetched tbody");
+            tableBody.empty();
+
+            if (response.length === 0) {
+                tableBody.append('<tr><td colspan="4" class="text-center text-muted">لا توجد كشوف في هذا الشهر</td></tr>');
+                $("#payrollTableFetched").show();
                 return;
             }
 
-            $.ajax({
-                url: "{{ route('branch.payrolls.data') }}",
-                method: "GET",
-                data: {
-                    month: month,
-                },
-                dataType: "json",
-                success: function (response) {
-                    // Clear existing rows
-                    $("#payrollTable tbody").empty();
-
-                    // Loop through the data and append rows to the table
-                    response.forEach(function (payroll) {
-                        let deleteUrl = `/branch/payrolls/delete/${payroll.id}/${payroll.date}`;
-                        let row = `
-                            <tr>
-                                <td>${payroll.employee?.name || ''}</td>
-                                <td>${payroll.net_salary}</td>
-                                <td>
-                                    <form action="${deleteUrl}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn-primary btn-delete" type="submit">حذف</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        `;
-                        $("#payrollTable tbody").append(row);
-                    });
-                    if(response.length == 0){
-                        let row = `
-                            <tr>
-                                <td  colspan="3" style="text-align: center; color: gray;">لاتوجد كشوف في هذا الشهر</td>
-
-                            </tr>
-                        `;
-                        $("#payrollTable tbody").append(row);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error fetching payroll data:", error);
-                }
+            response.forEach(payroll => {
+                let deleteUrl = `/branch/payrolls/delete/${payroll.id}/${payroll.date}`;
+                let row = `
+                    <tr>
+                        <td>${payroll.employee?.name || '—'}</td>
+                        <td>${payroll.basic_salary} ريال</td>
+                        <td>${payroll.overtime} ريال</td>
+                        <td>${payroll.deduction} ريال</td>
+                        <td>${payroll.loans} ريال</td>
+                        <td>${payroll.net_salary} ريال</td>
+                        <td>
+                            <form action="${deleteUrl}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn-primary btn-delete" type="submit">حذف</button>
+                            </form>
+                        </td>
+                    </tr>
+                `;
+                tableBody.append(row);
             });
+
+            $("#payrollTableFetched").show();
+        },
+        error: function (xhr, status, error) {
+            console.error("خطأ في جلب البيانات:", error);
         }
+    });
+}
 
-        // Fetch data when the page loads
-        fetchPayrollData();
-
-        // Fetch data when the filter button is clicked
-        $("#filterButton").click(function () {
-            fetchPayrollData();
-        });
-    // Handle print button click
+$(document).ready(function () {
     $("#filterExportPdf").click(function () {
-    // Get the selected month and branches
-        const month = $("#month").val();
-
-        if (!month) {
+        if (!$("#hiddenMonth").val()) {
             alert("قم باختيار الشهر.");
-            return; // Stop execution
+            return;
         }
-
-
-        // Set the values in the hidden form fields
-        $("#hiddenMonth").val(month);
-
-        // Submit the form
         $("#exportPdfForm").submit();
     });
-
-
-
-    });
+});
 </script>
+
 @endsection

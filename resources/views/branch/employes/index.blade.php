@@ -1,5 +1,5 @@
 <style>
-    body {
+    /* body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 20px;
@@ -13,7 +13,7 @@
       margin: 0 auto;
       padding: 20px;
       padding-top: 80px;
-    }
+    } */
 
     h1 {
       color: #2c3e50;
@@ -373,18 +373,22 @@
 
     </head>
     <body>
+        @extends('layouts.branch')
 
+        @section('content')
+        <a  class="btn btn-primary" href="{{ route('branch.employees.create') }}">إضافة موظف</a>
+{{--
     <div class="header">
       <div class="header-content">
         <div class="header-title">&#x628;&#x631;&#x646;&#x627;&#x645;&#x62c; &#x634;&#x624;&#x648;&#x646; &#x627;&#x644;&#x645;&#x648;&#x638;&#x641;&#x64a;&#x646;</div>
-        <div class="header-buttons">
+        <div class="header-buttons"> --}}
           {{-- <button class="header-btn" onclick="navigateToSection(&apos;employee-registration&apos;)">&#x62a;&#x633;&#x62c;&#x64a;&#x644; &#x645;&#x648;&#x638;&#x641; &#x62c;&#x62f;&#x64a;&#x62f;</button>
           <button class="header-btn" onclick="navigateToSection(&apos;overtime-registration&apos;)">&#x62a;&#x633;&#x62c;&#x64a;&#x644; &#x633;&#x627;&#x639;&#x627;&#x62a; &#x625;&#x636;&#x627;&#x641;&#x64a;&#x629;</button> --}}
-          <a class="header-btn" href="{{route('branch.dashboard')}}">الرجوع</a>
+          {{-- <a class="header-btn" href="{{route('branch.dashboard')}}">الرجوع</a>
           <a class="header-btn" href="{{route('branch.employees.create')}}">إضافة موظف</a>
         </div>
       </div>
-    </div>
+    </div> --}}
 
     <div class="container">
 
@@ -427,7 +431,7 @@
           <div class="tab" onclick="switchTab(event, &apos;leaves&apos;)">&#x627;&#x644;&#x627;&#x62c;&#x627;&#x632;&#x627;&#x62a;</div>
           <div class="tab" onclick="switchTab(event, &apos;overtime&apos;)">&#x627;&#x644;&#x633;&#x627;&#x639;&#x627;&#x62a; &#x627;&#x644;&#x625;&#x636;&#x627;&#x641;&#x64a;&#x629;</div>
           <div class="tab" onclick="switchTab(event, &apos;deductions&apos;)">&#x627;&#x644;&#x62e;&#x635;&#x648;&#x645;&#x627;&#x62a;</div>
-          {{-- <div class="tab" onclick="switchTab(event, &apos;loans&apos;)">&#x627;&#x644;&#x642;&#x631;&#x648;&#x636;</div> --}}
+          <div class="tab" onclick="switchTab(event, &apos;loans&apos;)">السلف</div>
           <div class="tab" onclick="switchTab(event, &apos;salary&apos;)">&#x627;&#x644;&#x631;&#x648;&#x627;&#x62a;&#x628;</div>
           <div class="tab" onclick="switchTab(event, &apos;action&apos;)">الاجراءات</div>
         </div>
@@ -476,11 +480,11 @@
 
             <div class="profile-stats">
               <div class="stat">
-                <div class="stat-value">0</div>
+                <div class="stat-value">${employee.deducation_total}</div>
                 <div class="stat-label">الخصومات</div>
               </div>
               <div class="stat">
-                <div class="stat-value">0</div>
+                <div class="stat-value">${employee.loans_total}</div>
                 <div class="stat-label">السلف</div>
               </div>
               <div class="stat">
@@ -596,31 +600,46 @@
             </div>
           `;
           break;
-        case 'overtime':
-          content = `
-            <div class="detail-section">
-              <div class="detail-title">سجل الإضافي</div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>التاريخ</th>
-                    <th> النوع</th>
-                    <th>المبلغ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${employee.overtimes.map(ot => `
-                    <tr>
-                      <td>${ot.date}</td>
-                      <td>${ot.overtime_type ?? ''}</td>
-                      <td>${ot.total_amount} ريال</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-          `;
-          break;
+          case 'overtime':
+            content = `
+                <div class="detail-section">
+                    <div class="detail-title">سجل الإضافي</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>النوع</th>
+                                <th>المبلغ</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${employee.overtimes.map(ot => {
+                                let status = '';
+
+                                if (ot.paid_overtime >= ot.total_amount) {
+                                    status = 'تم الدفع';
+                                } else if (ot.paid_overtime > 0) {
+                                    status = 'دفع جزئي';
+                                } else {
+                                    status = 'لم يتم الدفع بعد';
+                                }
+
+                                return `
+                                    <tr>
+                                        <td>${ot.date}</td>
+                                        <td>${ot.overtime_type ?? ''}</td>
+                                        <td>${ot.total_amount} ريال</td>
+                                        <td>${status}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            break;
+
         case 'deductions':
           content = `
             <div class="detail-section">
@@ -629,62 +648,72 @@
                 <thead>
                   <tr>
                     <th>التاريخ</th>
-                    <th>المبلغ</th>
+                        <th>المبلغ</th>
+                        <th>الحالة</th>
                   </tr>
                 </thead>
                 <tbody>
-                  ${employee.deducations.map(deduction => `
-                    <tr>
-                      <td>${deduction.deduction_date}</td>
-                      <td>${deduction.deduction_value} ريال</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-          `;
-          break;
-        case 'loans':
-          content = `
-            <div class="detail-section">
-              <div class="detail-title">ملخص السلف</div>
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <span>إجمالي السلف:</span>
-                  <span>${employee.loans.total} ريال</span>
-                </div>
-                <div class="detail-item">
-                  <span>السلف المسددة:</span>
-                  <span>${employee.loans.paid} ريال</span>
-                </div>
-                <div class="detail-item">
-                  <span>السلف المتبقية:</span>
-                  <span>${employee.loans.remaining} ريال</span>
-                </div>
-              </div>
+                  ${employee.deducations.map(deduction => {
+                    let status = '';
 
-              <div class="detail-title" style="margin-top: 20px">سجل السلف</div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>التاريخ</th>
-                    <th>المبلغ</th>
-                    <th>الحالة</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${employee.loans.history.map(loan => `
-                    <tr>
-                      <td>${loan.date}</td>
-                      <td>${loan.amount} ريال</td>
-                      <td>${loan.status}</td>
-                    </tr>
-                  `).join('')}
+                    if (deduction.paid_deduction >= deduction.deduction_value) {
+                        status = 'تم السداد';
+                    } else if (deduction.paid_deduction > 0) {
+                        status = 'السداد جزئي';
+                    } else {
+                        status = 'لم يتم السداد بعد';
+                    }
+                      return `
+                            <tr>
+                                <td>${deduction.deduction_date}</td>
+                                <td>${deduction.deduction_value} ريال</td>
+                                 <td>${status}</td>
+                            </tr>
+                        `;
+                    }).join('')}
                 </tbody>
               </table>
             </div>
           `;
           break;
+          case 'loans':
+    content = `
+        <div class="detail-section">
+            <div class="detail-title" style="margin-top: 20px">سجل السلف</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>المبلغ</th>
+                        <th>التاريخ</th>
+                        <th>الحالة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${employee.loans.map(loan => {
+                        let status = '';
+
+                        if (loan.paid_loan >= loan.amount) {
+                            status = 'تم السداد';
+                        } else if (loan.paid_loan > 0) {
+                            status = 'السداد جزئي';
+                        } else {
+                            status = 'لم يتم السداد بعد';
+                        }
+
+                        return `
+                            <tr>
+                                <td>${loan.amount} ريال</td>
+                                <td>${loan.loan_date}</td>
+                                <td>${status}</td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+    break;
+
         case 'salary':
         let total =
         Number(employee.basic_salary) +
@@ -758,4 +787,7 @@
         modal.dataset.employeeData = '';
         closeModal();
       }
-    };</script></body></html>
+    };</script>
+
+
+    @endsection

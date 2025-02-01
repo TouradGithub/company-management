@@ -37,9 +37,10 @@ class DeductionController extends Controller
         if ($validatedData['deduction_type'] === 'fixed_amount' && !isset($validatedData['deduction_value'])) {
             return back()->withErrors(['deduction_value' => 'قيمة المبلغ الثابت مطلوبة عند اختيار مبلغ ثابت.']);
         }
-
-        //return $validatedData;
         $employee = Employee::find($validatedData['employe_id']);
+
+
+
         Deduction::create([
             'employee_id' => $validatedData['employe_id'],
             'branch_id' =>  $employee->branch->id,
@@ -47,8 +48,11 @@ class DeductionController extends Controller
             'deduction_days' => $validatedData['deduction_days'],
             'deduction_type' => $validatedData['deduction_type'],
             'deduction_value' => $validatedData['deduction_value']??null,
+            'remaining_deduction' => $validatedData['deduction_value']??0,
             'reason' => $validatedData['reason']??null
         ]);
+
+        getUnpaidDeductionsTotal(  $validatedData['employe_id']);
 
         return redirect()->route('branch.deductions.index')->with('success', 'تم إضافة الخصم بنجاح');
     }
@@ -78,7 +82,11 @@ class DeductionController extends Controller
 
     public function destroy(Deduction $deduction)
     {
+
+        $IdEmployee =  $deduction->employee_id;
         $deduction->delete();
+        getUnpaidDeductionsTotal( $IdEmployee);
+
         return redirect()->route('branch.deductions.index')->with('success', 'تم حذف الخصم بنجاح');
     }
 }

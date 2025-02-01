@@ -40,6 +40,6 @@ class CompanyAuthController extends Controller
     // Dashboard
     public function dashboard()
     {
-        return view('campany.dashboard');
+        return redirect()->route('company.employees.index');
     }
 }

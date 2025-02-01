@@ -17,6 +17,8 @@ class Deduction extends Model
         'deduction_days',
         'deduction_value',
         'deduction_type',
+        'remaining_deduction',
+        'paid_deduction',
         'reason',
     ];
 

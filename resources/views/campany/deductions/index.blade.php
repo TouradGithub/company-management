@@ -18,7 +18,8 @@
                 <th> نوع الخصم</th>
                 <th>المبلغ </th>
                 <th>السبب </th>
-                <th>Actions</th>
+                <th>الحاله </th>
+                <th>الاجراءات</th>
             </tr>
         </thead>
         <tbody>
@@ -39,6 +40,15 @@
                     </td>
                     <td>{{ $deduction->deduction_value }}</td>
                     <td>{{ $deduction->reason }}</td>
+                    <td>
+                        @if ($deduction->remaining_deduction == 0)
+                            <span class="badge bg-success">تم الخصم بالكامل</span>
+                        @elseif ($deduction->paid_deduction > 0)
+                            <span class="badge bg-warning">تم الخصم جزئياً</span>
+                        @else
+                            <span class="badge bg-danger">لم يتم الخصم بعد</span>
+                        @endif
+                    </td>
                     <td>
                         <a class="btn-primary btn-edit" href="{{ route('deductions.edit', $deduction) }}" class="btn btn-sm btn-warning">تعديل</a>
                         <form action="{{ route('deductions.destroy', $deduction) }}" method="POST" style="display: inline-block;">

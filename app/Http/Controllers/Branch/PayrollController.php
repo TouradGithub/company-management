@@ -16,8 +16,14 @@ class PayrollController extends Controller
 
     public function index()
     {
-        $branches = Branch::where('company_id' , auth()->user()->model_id)->get();
-        return view('branch.payrolls.index', compact('branches'));
+
+        $payrollData = Payroll::where('branch_id' , getBranch()->id)
+        ->select('branch_id', 'date')
+        ->selectRaw('SUM(net_salary) as total_salary')
+        ->selectRaw('COUNT(employee_id) as employees_count')
+        ->groupBy('branch_id', 'date')
+        ->get();
+        return view('branch.payrolls.index', compact('payrollData'));
     }
 
     public function store(request $request)
@@ -53,6 +59,16 @@ class PayrollController extends Controller
                     'net_salary' => $validated['total'][$index]['amount'] ?? 0,
                 ]);
             } else {
+
+                $deductionAmount = $validated['deductions'][$index]['amount'] ?? 0;
+                processDeductionPayment($employeeId, $deductionAmount);
+
+                $loanAmount = $validated['loans'][$index]['amount'] ?? 0;
+                processLoanPayment($employeeId, $loanAmount);
+
+                getUnpaidOvertimeTotal( $employeeId);
+                getUnpaidLoansTotal( $employeeId);
+                getUnpaidDeductionsTotal( $employeeId);
                 Payroll::create([
                     'date' => $validated['date'],
                     'employee_id' => $employeeId,
@@ -92,9 +108,16 @@ class PayrollController extends Controller
 
     public function delete( $id ,$date)
     {
-
-        // return $id;
-            Payroll::find($id)->delete();
+        $payroll= Payroll::find($id);
+        $deductionAmount = $payroll->deduction;
+        $loanAmount = $payroll->loans;
+        $IdEmployee= $payroll->employee_id;
+        reverseDeductionPayment($payroll->employee_id, $deductionAmount);
+        reverseLoanPayment($payroll->employee_id, $loanAmount);
+        $payroll->delete();
+        getUnpaidOvertimeTotal(  $IdEmployee);
+        getUnpaidLoansTotal( $IdEmployee);
+        getUnpaidDeductionsTotal( $IdEmployee);
         return redirect()->back()->with(['succes' => 'تم حذف الكشف بنجاح.']);
     }
 

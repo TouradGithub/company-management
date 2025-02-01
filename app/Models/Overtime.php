@@ -15,6 +15,8 @@ class Overtime extends Model
         'percentage_of_salary',
         'overtime_hours',
         'overtime_value',
+        'remaining_overtime',
+        'paid_overtime',
         'basic_salary',
     ];
 

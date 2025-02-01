@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Branch;
 use App\Models\Payroll;
+use App\Models\Employee;
 class PayrollController extends Controller
 {
     public function create()
@@ -15,38 +16,45 @@ class PayrollController extends Controller
 
     public function index()
     {
-        $branches = Branch::where('company_id' , auth()->user()->model_id)->get(); // Assuming you have an Employee model
-        return view('campany.payrolls.index', compact('branches'));
+        $payrollData = Payroll::with('branch') // لجلب بيانات الفرع
+        ->select('branch_id', 'date')
+        ->selectRaw('SUM(net_salary) as total_salary')
+        ->selectRaw('COUNT(employee_id) as employees_count')
+        ->groupBy('branch_id', 'date') // تجميع حسب الفرع والتاريخ
+        ->get();
+         // Assuming you have an Employee model
+        return view('campany.payrolls.index', compact('payrollData'));
     }
 
     public function store(request $request)
     {
         $validated = $request->validate([
             'date' => 'required|string',
-            'employee' => 'required|array|min:1',  // Ensure employee is an array and not empty
-            'branches' => 'required|array|min:1',  // Ensure employee is an array and not empty
+            'employee' => 'required|array|min:1',   // Ensure employee is an array and not empty
              'branches.*.id' => 'required',
             'employee.*.id' => 'required|integer|exists:employees,id',  // Validate each employee's ID
             'basic_salary' => 'required',  // Ensure basic salary is numeric
             'transportation' => 'nullable',  // Ensure transportation is numeric if present
+            'loans' => 'nullable',  // Ensure food is numeric if present
             'food' => 'nullable',  // Ensure food is numeric if present
             'overtime' => 'nullable',  // Ensure overtime is numeric if present
             'deductions' => 'nullable',  // Ensure deductions are numeric if present
             'total' => 'nullable',
         ]);
-        // return $validated['date'];
+
+
         foreach ($validated['employee'] as  $index => $empData) {
             $employeeId = $empData['id'];
+            $branch = Employee::find($employeeId)->branch->id;
 
             $payroll = Payroll::
                                 where('date', $validated['date'])
                                 ->where('employee_id', $employeeId)
                                 ->first();
-
             if ($payroll) {
                 // If record exists, update it
                 $payroll->update([
-                    'branch_id' => $validated['branches'][$index]['id'],
+                    'branch_id' =>$branch ,
                     'basic_salary' => $validated['basic_salary'][$index]['amount'],
                     'transportation' => $validated['transportation'][$index]['amount'] ?? 0,
                     'food' => $validated['food'][$index]['amount'] ?? 0,
@@ -55,13 +63,26 @@ class PayrollController extends Controller
                     'net_salary' => $validated['total'][$index]['amount'] ?? 0,
                 ]);
             } else {
+                //return $validatedData;
+
+                $deductionAmount = $validated['deductions'][$index]['amount'] ?? 0;
+                processDeductionPayment($employeeId, $deductionAmount);
+
+                $loanAmount = $validated['loans'][$index]['amount'] ?? 0;
+                processLoanPayment($employeeId, $loanAmount);
+
+                getUnpaidOvertimeTotal( $employeeId);
+                getUnpaidLoansTotal( $employeeId);
+                getUnpaidDeductionsTotal( $employeeId);
+
                 Payroll::create([
                     'date' => $validated['date'],
                     'employee_id' => $employeeId,
-                    'branch_id' => $validated['branches'][$index]['id'],
+                    'branch_id' => $branch ,
                     'basic_salary' => $validated['basic_salary'][$index]['amount'],
                     'transportation' => $validated['transportation'][$index]['amount'] ?? 0,
                     'food' => $validated['food'][$index]['amount'] ?? 0,
+                    'loans' => $validated['loans'][$index]['amount'] ?? 0,
                     'overtime' => $validated['overtime'][$index]['amount'] ?? 0,
                     'deduction' => $validated['deductions'][$index]['amount'] ?? 0,
                     'net_salary' => $validated['total'][$index]['amount'] ?? 0,
@@ -97,7 +118,17 @@ class PayrollController extends Controller
     public function delete( $id ,$date)
     {
 
-        Payroll::find($id)->delete();
+        $payroll= Payroll::find($id);
+        $deductionAmount = $payroll->deduction;
+        $loanAmount = $payroll->loans;
+        $IdEmployee= $payroll->employee_id;
+        reverseDeductionPayment($payroll->employee_id, $deductionAmount);
+        reverseLoanPayment($payroll->employee_id, $loanAmount);
+        $payroll->delete();
+        getUnpaidOvertimeTotal(  $IdEmployee);
+        getUnpaidLoansTotal( $IdEmployee);
+        getUnpaidDeductionsTotal( $IdEmployee);
+
         return redirect()->back()->with(['succes' => 'تم حذف الكشف بنجاح']);
     }
 
@@ -105,7 +136,7 @@ class PayrollController extends Controller
 
     public function exportPdf(Request $request)
     {
-        // return "OK";
+
         $validated = $request->validate([
             'month' => 'required', // Validate the month
             'branches' => 'nullable|string', // Branch IDs as a comma-separated string

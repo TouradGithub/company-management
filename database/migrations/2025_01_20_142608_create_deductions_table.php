@@ -19,7 +19,9 @@ return new class extends Migration
             $table->integer('deduction_days'); // Number of days for the deduction
             $table->string('deduction_type'); // Type of deduction
             $table->decimal('deduction_value', 10, 2)->nullable(); // Deduction value (nullable for salary_percentage)
-
+            $table->decimal('paid_deduction', 10, 2)->default(0); // Paid deduction value
+            $table->decimal('remaining_deduction', 10, 2);
+            $table->text('reason')->nullable();
             $table->timestamps();
         });
     }

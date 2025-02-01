@@ -18,6 +18,7 @@ class Payroll extends Model
         'food',
         'overtime',
         'deduction',
+        'loans',
         'net_salary',
         // Add other fields as needed
     ];

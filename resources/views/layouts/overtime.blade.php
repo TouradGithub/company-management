@@ -8,9 +8,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
   <link rel="stylesheet" href="{{asset('overtime.css?v=1.1')}}">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="{{asset('payroll/style.css')}}">
   <style>
+
     .row-employe {
         display: flex;
         gap: 20px;
@@ -180,11 +183,8 @@
   ">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="sidebar-header">
-        <a href="{{route('company.dashboard')}}"> <h2>نظام الشركه</h2></a>
 
-      </div>
-      <ul class="menu-items">
+      <ul class="menu-items ">
         <li class="menu-item {{ Request::routeIs('company.overtimes.create') || Request::routeIs('company.overtimes.index') ? 'active' : '' }}" data-section="overtime-form">
           <span class="menu-icon"><i class="bi bi-file-earmark-plus"></i></span>
           <a href="{{route('company.overtimes.index')}}">الاضافي</a>
@@ -225,6 +225,7 @@
             <a href="{{route('company.employees.index')}}">الموظفين</a>
 
         </li>
+
 
         <li class="menu-item " data-section="records">
             <span class="menu-icon"><i class="bi bi-table"></i></span>
@@ -271,7 +272,25 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+     document.querySelectorAll('.sidebar-menu .has-submenu > a').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const parent = item.parentElement;
 
+      // Close other open submenus
+      document.querySelectorAll('.sidebar-menu .has-submenu').forEach(menu => {
+        if (menu !== parent && menu.classList.contains('active')) {
+          menu.classList.remove('active');
+        }
+      });
+
+      // Toggle current submenu
+      parent.classList.toggle('active');
+    });
+  });
+
+</script>
   <script src="{{asset('overtime.js')}}"></script>
 
   <script>

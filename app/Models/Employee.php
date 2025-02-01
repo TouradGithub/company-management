@@ -19,6 +19,8 @@ class Employee extends Model
         'transportation_allowance',
         'hire_date',
         'iqamaNumber',
+        'deducation_total',
+        'loans_total',
     ];
     public function leaves()
     {

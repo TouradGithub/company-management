@@ -22,6 +22,10 @@
         th {
             background-color: #f2f2f2;
         }
+        .total-row {
+            font-weight: bold;
+            background-color: #d9edf7;
+        }
     </style>
 </head>
 <body>
@@ -38,28 +42,43 @@
                 <th>بدل الاعاشه</th>
                 <th>الاضافي </th>
                 <th>الخصومات </th>
-                <th> الاجمالي</th>
+                <th>الاجمالي</th>
             </tr>
         </thead>
         <tbody>
+            @php
+                $totalNetSalary = 0;
+            @endphp
+
             @forelse ($payrolls as $payroll)
+                @php
+                    $totalNetSalary += $payroll->net_salary;
+                @endphp
                 <tr>
-                    <td>{{ $payroll->employee->name??'' }}</td>
-                    <td>{{ $payroll->branch->name??'' }}</td>
-                    <td>{{ $payroll->basic_salary }}</td>
-                    <td>{{ $payroll->transportation }}</td>
-                    <td>{{ $payroll->food }}</td>
-                    <td>{{ $payroll->overtime }}</td>
-                    <td>{{ $payroll->deduction }}</td>
-                    <td>{{ $payroll->net_salary }}</td>
+                    <td>{{ $payroll->employee->name ?? '' }}</td>
+                    <td>{{ $payroll->branch->name ?? '' }}</td>
+                    <td>{{ number_format($payroll->basic_salary, 2) }}</td>
+                    <td>{{ number_format($payroll->transportation, 2) }}</td>
+                    <td>{{ number_format($payroll->food, 2) }}</td>
+                    <td>{{ number_format($payroll->overtime, 2) }}</td>
+                    <td>{{ number_format($payroll->deduction, 2) }}</td>
+                    <td>{{ number_format($payroll->net_salary, 2) }}</td>
                 </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" style="text-align: center; color: gray;">
-                            لا توجد بيانات لعرضها لهذا الشهر
-                        </td>
-                    </tr>
-                @endforelse
+            @empty
+                <tr>
+                    <td colspan="8" style="text-align: center; color: gray;">
+                        لا توجد بيانات لعرضها لهذا الشهر
+                    </td>
+                </tr>
+            @endforelse
+
+            <!-- صف المجموع النهائي -->
+            @if ($payrolls->isNotEmpty())
+                <tr class="total-row">
+                    <td colspan="7" style="text-align: center;">المجموع الكلي</td>
+                    <td>{{ number_format($totalNetSalary, 2) }}</td>
+                </tr>
+            @endif
         </tbody>
     </table>
 </body>

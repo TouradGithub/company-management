@@ -38,6 +38,12 @@ class OvertimeController extends Controller
 
         $employee = Employee::find( $validated['employe_id']);
 
+        if (!$employee) {
+            return redirect()->back()->withErrors(['employee_id' => 'هذا الموظف غير موجود']);
+        }
+
+
+
 
         $overtime = new Overtime();
         $overtime->date = $validated['date'];
@@ -50,16 +56,15 @@ class OvertimeController extends Controller
         $overtime->days = $validated['days'] ?? null;
         $overtime->daily_rate = $validated['dailyRate'] ?? null;
         $overtime->total_amount = $validated['totalAmount'];
-
-        // Save the Overtime entry to the database
+        $overtime->remaining_overtime = $validated['totalAmount'];
         $overtime->save();
+        getUnpaidOvertimeTotal( $validated['employe_id']);
 
-        // Return a success response
         return redirect()->back()->with([
             'message' => 'Overtime saved successfully',
             'overtime' => $overtime
         ]);
-            }
+    }
     public function edit( $id)
     {
         $employees = Employee::where('branch_id', getBranch()->id)->get();
@@ -103,21 +108,19 @@ class OvertimeController extends Controller
     public function destroy( $id)
     {
         $overtime =  Overtime::find($id);
+        $employeeId = $overtime->employee_id;
         $overtime->delete();
+        getUnpaidOvertimeTotal($employeeId);
+
         return redirect()->route('branch.overtimes.index')->with('success', 'تم حذف الإضافي بنجاح');
     }
 
 
     public function getEmployeesByBranch(Request $request)
     {
-        // return $request;
-        // Get the selected branches from the request
+
         $branches = $request->input('branches', []);
-
-        // Query employees that match the selected branches
         $employees = Employee::whereIn('branch_id', $branches)->get();
-
-        // Return the employees in JSON format
         return response()->json($employees);
     }
 }

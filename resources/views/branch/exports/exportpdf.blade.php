@@ -18,6 +18,7 @@
         th, td {
             border: 1px solid #000;
             padding: 10px;
+            text-align: center;
         }
         th {
             background-color: #f2f2f2;
@@ -34,30 +35,60 @@
                 <th>اسم الموظف</th>
                 <th>الراتب الصافي</th>
                 <th>بدل التنقل</th>
-                <th>بدل الاعاشه</th>
-                <th>الاضافي </th>
-                <th>الخصومات </th>
-                <th> الاجمالي</th>
+                <th>بدل الإعاشة</th>
+                <th>الإضافي</th>
+                <th>الخصومات</th>
+                <th>السلف</th>
+                <th>الإجمالي</th>
             </tr>
         </thead>
         <tbody>
+            @php
+                $total_basic_salary = 0;
+                $total_transportation = 0;
+                $total_food = 0;
+                $total_overtime = 0;
+                $total_deduction = 0;
+                $total_loans = 0;
+                $total_net_salary = 0;
+            @endphp
+
             @forelse ($payrolls as $payroll)
+                @php
+                    $total_basic_salary += $payroll->basic_salary;
+                    $total_transportation += $payroll->transportation;
+                    $total_food += $payroll->food;
+                    $total_overtime += $payroll->overtime;
+                    $total_deduction += $payroll->deduction;
+                    $total_loans += $payroll->loans;
+                    $total_net_salary += $payroll->net_salary;
+                @endphp
                 <tr>
-                    <td>{{ $payroll->employee->name??'' }}</td>
-                    <td>{{ $payroll->basic_salary }}</td>
-                    <td>{{ $payroll->transportation }}</td>
-                    <td>{{ $payroll->food }}</td>
-                    <td>{{ $payroll->overtime }}</td>
-                    <td>{{ $payroll->deduction }}</td>
-                    <td>{{ $payroll->net_salary }}</td>
+                    <td>{{ $payroll->employee->name ?? '' }}</td>
+                    <td>{{ number_format($payroll->basic_salary, 2) }}</td>
+                    <td>{{ number_format($payroll->transportation, 2) }}</td>
+                    <td>{{ number_format($payroll->food, 2) }}</td>
+                    <td>{{ number_format($payroll->overtime, 2) }}</td>
+                    <td>{{ number_format($payroll->deduction, 2) }}</td>
+                    <td>{{ number_format($payroll->loans, 2) }}</td>
+                    <td>{{ number_format($payroll->net_salary, 2) }}</td>
                 </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" style="text-align: center; color: gray;">
-                            لا توجد بيانات لعرضها لهذا الشهر
-                        </td>
-                    </tr>
-                @endforelse
+            @empty
+                <tr>
+                    <td colspan="8" style="text-align: center; color: gray;">
+                        لا توجد بيانات لعرضها لهذا الشهر
+                    </td>
+                </tr>
+            @endforelse
+
+            <!-- صف المجموع -->
+            @if($payrolls->count() > 0)
+                <tr style="font-weight: bold; background-color: #e6e6e6;">
+                    <td colspan="7" style="text-align: center;">الإجمالي</td>
+
+                    <td>{{ number_format($total_net_salary, 2) }}</td>
+                </tr>
+            @endif
         </tbody>
     </table>
 </body>

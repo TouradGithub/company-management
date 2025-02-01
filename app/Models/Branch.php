@@ -31,6 +31,16 @@ class Branch extends Model
         return $this->hasMany(Overtime::class, 'branch_id');
     }
 
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function  payrolls()
+    {
+        return $this->hasMany(Payroll::class, 'branch_id');
+    }
+
     public function employees()
     {
         return $this->hasMany(Employee::class, 'branch_id');

@@ -29,14 +29,17 @@ class LoanController extends Controller
             'amount' => 'required',
             'loan_date' => 'required|date',
         ]);
-        $employee = Employee::find($request->employe_id);
 
+        $employee = Employee::find($request->employe_id);
         $loan = new Loan();
         $loan->employee_id = $request->employe_id;
         $loan->branch_id =  $employee->branch->id;
         $loan->amount = $request->amount;
+        $loan->remaining_loan = $request->amount;
         $loan->loan_date = $request->loan_date ?? null;
         $loan->save();
+
+        getUnpaidLoansTotal( $request->employe_id);
 
         return redirect()->route('loans.index')->with('success', 'تم إضافة السلف بنجاح');
     }
@@ -62,7 +65,11 @@ class LoanController extends Controller
 
     public function destroy(Loan $loan)
     {
+        $IdEmployee =  $loan->employee_id;
         $loan->delete();
+
+        getUnpaidLoansTotal( $loan->employee_id);
+
         return redirect()->route('loans.index')->with('success', 'تم حذف السلف بنجاح');
     }
 

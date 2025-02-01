@@ -22,6 +22,9 @@ return new class extends Migration
             $table->decimal('housing_allowance', 10, 2); // بدل السكن
             $table->decimal('food_allowance', 10, 2); // بدل الإعاشة
             $table->decimal('transportation_allowance', 10, 2); // بدل المواصلات
+            $table->decimal('deducation_total', 10, 2)->default(0); // بدل المواصلات
+            $table->decimal('loans_total', 10, 2)->default(0); // بدل المواصلات
+            $table->decimal('overtime_total', 10, 2)->default(0); // بدل المواصلات
             $table->string('hire_date'); // بدل المواصلات
             $table->timestamps();
         });

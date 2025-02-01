@@ -51,10 +51,13 @@ class OvertimeController extends Controller
         $overtime->days = $validated['days'] ?? null;
         $overtime->daily_rate = $validated['dailyRate'] ?? null;
         $overtime->total_amount = $validated['totalAmount'];
+        $overtime->remaining_overtime = $validated['totalAmount'];
 
         // Save the Overtime entry to the database
         $overtime->save();
 
+
+        getUnpaidOvertimeTotal( $validated['employe_id']);
         // Return a success response
         return redirect()->back()->with([
             'success' => 'تم إضافة الاضافي بنجاح',
@@ -84,7 +87,6 @@ class OvertimeController extends Controller
             'dailyRate' => 'nullable|numeric',
             'totalAmount' => 'required|numeric',
         ]);
-
         $employee = Employee::findOrFail($validated['employe_id']);
 
             $overtime =  Overtime::find($id);
@@ -98,7 +100,9 @@ class OvertimeController extends Controller
             $overtime->days = $validated['days'] ?? null;
             $overtime->daily_rate = $validated['dailyRate'] ?? null;
             $overtime->total_amount = $validated['totalAmount'];
+
             $overtime->save();
+
 
         return redirect()->route('company.overtimes.index')->with('success', 'تم تعديل الإضافي بنجاح');
     }
@@ -106,7 +110,12 @@ class OvertimeController extends Controller
     public function destroy( $id)
     {
         $overtime =  Overtime::find($id);
-        $overtime->delete();
+
+        $employeeId = $overtime->employee_id; // Store employee ID before deletion
+        $overtime->delete(); // Delete the overtime record
+
+        // Recalculate the unpaid overtime total after deletion
+        $totalUnpaid = getUnpaidOvertimeTotal($employeeId);
         return redirect()->route('company.overtimes.index')->with('success', 'تم حذف الإضافي بنجاح');
     }
 

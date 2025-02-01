@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('food', 10, 2)->default(0); // بدل الإعاشة
             $table->decimal('overtime', 10, 2)->default(0); // الإضافي
             $table->decimal('deduction', 10, 2)->default(0); // الخصومات
+            $table->decimal('loans', 10, 2)->default(0); // الخصومات
             $table->decimal('net_salary', 10, 2)->default(0);
             $table->timestamps();
         });
