@@ -59,6 +59,8 @@ class LoanController extends Controller
         ]);
 
         $loan->update($request->all());
+
+        getUnpaidLoansTotal( $request->employee_id);
         return redirect()->route('branch.loans.index')->with('success', 'Loan updated successfully.');
     }
 

@@ -102,6 +102,8 @@ class OvertimeController extends Controller
             $overtime->total_amount = $validated['totalAmount'];
             $overtime->save();
 
+            getUnpaidOvertimeTotal($employee->id);
+
         return redirect()->route('branch.overtimes.index')->with('success', 'تم تعديل الإضافي بنجاح');
     }
 

@@ -77,6 +77,8 @@ class DeductionController extends Controller
 
         $deduction->update($request->all());
 
+        getUnpaidDeductionsTotal( $request->employe_id);
+
         return redirect()->route('branch.deductions.index')->with('success', 'تم تحديث الخصم بنجاح');
     }
 
