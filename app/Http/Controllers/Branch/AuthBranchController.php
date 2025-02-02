@@ -33,6 +33,6 @@ class AuthBranchController extends Controller
     // Dashboard
     public function dashboard()
     {
-        return view('branch.dashboard');
+        return redirect()->route('branch.employees.index');
     }
 }
