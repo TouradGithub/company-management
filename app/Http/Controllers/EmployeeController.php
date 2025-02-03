@@ -12,7 +12,7 @@ class EmployeeController extends Controller
     public function create()
     {
 
-        $categories = Category::all();
+        $categories = Category::where('company_id',auth()->user()->model_id)->get();
         $branches = Branch::where('company_id',auth()->user()->model_id)->get();
         return view('campany.employes.create' , compact('branches' ,'categories' ));
     }

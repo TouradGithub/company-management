@@ -25,6 +25,7 @@
             <form id="exportPdfForm" method="POST" action="{{ route('branch.payrolls.export.pdf') }}">
                 @csrf
                 <input type="hidden" name="month" id="hiddenMonth">
+                <input type="hidden" name="categorie" id="hiddenCategorie">
             </form>
 
             <div id="entriesContainer">
@@ -50,7 +51,16 @@
 
             <h3 id="payrollTableTitle" style="display: none;text-align: center;margin-top:30px" >كشوف الرواتب لشهر: <span id="selectedMonth"></span></h3>
             <button type="submit" id="filterExportPdf" style="display: none" class="btn btn-primary ">طباعة</button>
+            <div style="margin-top: 20px;display: none" id="catego">
+                <label for="categoryFilter">تصفية حسب الفئة:</label>
+                <select id="categoryFilter" class="form-control">
+                    <option value="all">جميع الفئات</option>
+                    @foreach ($categories as $item)
+                    <option value="{{$item->id}}"> {{$item->name}}</option>
+                    @endforeach
 
+                </select>
+            </div>
             <div id="entriesContainer">
                 <table class="records-table table table-bordered mt-3" id="payrollTableFetched">
                     <thead>
@@ -91,6 +101,8 @@ function selectRow(row) {
 
     $("#selectedMonth").text(date);
     $("#hiddenMonth").val(date);
+    $("#catego").css("display", "block");
+    $("#hiddenCategorie").val("all");
 
     // استدعاء دالة لجلب البيانات
     fetchPayrollData(date);
@@ -117,7 +129,7 @@ function fetchPayrollData(month) {
             response.forEach(payroll => {
                 let deleteUrl = `/branch/payrolls/delete/${payroll.id}/${payroll.date}`;
                 let row = `
-                    <tr>
+                    <tr  class="payroll-row" data-category="${payroll.employee?.category_id}">
                         <td>${payroll.employee?.name || '—'}</td>
                         <td>${payroll.basic_salary} ريال</td>
                         <td>${payroll.overtime} ريال</td>
@@ -153,6 +165,21 @@ $(document).ready(function () {
         $("#exportPdfForm").submit();
     });
 });
+
+$("#categoryFilter").change(function() {
+        var selectedCategory = $(this).val();
+
+        $("#hiddenCategorie").val(selectedCategory);
+
+        if (selectedCategory === "all") {
+            $(".payroll-row").show(); // Show all rows
+        } else {
+            $(".payroll-row").hide().filter(`[data-category='${selectedCategory}']`).show(); // Show only matching rows
+        }
+
+    });
+
+
 </script>
 
 @endsection

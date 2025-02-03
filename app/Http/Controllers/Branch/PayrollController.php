@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Branch;
-
+use App\Models\Category;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Branch;
@@ -23,7 +23,9 @@ class PayrollController extends Controller
         ->selectRaw('COUNT(employee_id) as employees_count')
         ->groupBy('branch_id', 'date')
         ->get();
-        return view('branch.payrolls.index', compact('payrollData'));
+
+        $categories = Category::where('company_id' , getBranch()->company->id)->get();
+        return view('branch.payrolls.index', compact('payrollData','categories'));
     }
 
     public function store(request $request)
@@ -128,8 +130,9 @@ class PayrollController extends Controller
         // return "OK";
         $validated = $request->validate([
             'month' => 'required', // Validate the month
+            'categorie' => 'nullable|string',
         ]);
-
+        $categorie = $validated['categorie'];
         $month = $validated['month'];
         $branchIds = explode(',', $validated['branches'] ?? '');
 
@@ -137,6 +140,11 @@ class PayrollController extends Controller
         $payrolls = Payroll::with(['employee'])
             ->where('date', $month)
             ->where('branch_id' , getBranch()->id)
+            ->when($categorie && $categorie !== 'all', function ($query) use ($categorie) {
+                $query->whereHas('employee', function ($employeeQuery) use ($categorie) {
+                    $employeeQuery->where('category_id', $categorie);
+                });
+            })
             ->get();
 
             ob_start();

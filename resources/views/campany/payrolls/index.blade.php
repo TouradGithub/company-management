@@ -25,6 +25,7 @@
                 @csrf
                 <input type="hidden" name="month" id="hiddenMonth">
                 <input type="hidden" name="branches" id="hiddenBranches">
+                <input type="hidden" name="categorie" id="hiddenCategorie">
             </form>
             <div id="entriesContainer">
                 <!-- Placeholder for the table -->
@@ -51,7 +52,16 @@
             </div>
             <h3 id="payrollTableTitle" style="display: none;text-align: center;margin-top:30px;">كشوف الرواتب شهر: <span id="selectedMonth"></span></h3>
             <button type="submit" style="display: none;text-align: left" id="filterExportPdf" class="btn btn-primary">طباعة</button>
+            <div style="margin-top: 20px;display: none" id="catego">
+                <label for="categoryFilter">تصفية حسب الفئة:</label>
+                <select id="categoryFilter" class="form-control">
+                    <option value="all">جميع الفئات</option>
+                    @foreach ($categories as $item)
+                    <option value="{{$item->id}}"> {{$item->name}}</option>
+                    @endforeach
 
+                </select>
+            </div>
             <div id="entriesContainer">
                 <!-- Placeholder for the table -->
                 <table class="records-table" id="payrollTableFetched">
@@ -97,6 +107,9 @@
 
         $("#payrollTableTitle").css("display", "block");
         $("#filterExportPdf").css("display", "block");
+        $("#catego").css("display", "block");
+        $("#hiddenCategorie").val("all");
+
          // إظهار العنوان
         $("#selectedMonth").text('');
         $("#selectedMonth").text(date);
@@ -129,7 +142,7 @@
                 response.forEach(function(payroll) {
                     let deleteUrl = `/company/payrolls/delete/${payroll.id}/${payroll.date}`;
                     let row = `
-                        <tr>
+                        <tr class="payroll-row" data-category="${payroll.employee?.category_id}">
                             <td>${payroll.employee?.name || ''}</td>
                             <td>${payroll.branch?.name || ''}</td>
                             <td>${payroll.basic_salary} ريال</td>
@@ -181,6 +194,19 @@
         // Submit the form
         if(month && branches){
             $("#exportPdfForm").submit();
+        }
+
+    });
+
+    $("#categoryFilter").change(function() {
+        var selectedCategory = $(this).val();
+
+        $("#hiddenCategorie").val(selectedCategory);
+
+        if (selectedCategory === "all") {
+            $(".payroll-row").show(); // Show all rows
+        } else {
+            $(".payroll-row").hide().filter(`[data-category='${selectedCategory}']`).show(); // Show only matching rows
         }
 
     });

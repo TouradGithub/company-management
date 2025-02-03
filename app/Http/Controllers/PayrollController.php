@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Branch;
 use App\Models\Payroll;
+use App\Models\Category;
 use App\Models\Employee;
 class PayrollController extends Controller
 {
@@ -22,8 +23,9 @@ class PayrollController extends Controller
         ->selectRaw('COUNT(employee_id) as employees_count')
         ->groupBy('branch_id', 'date') // تجميع حسب الفرع والتاريخ
         ->get();
+        $categories = Category::where('company_id',auth()->user()->model_id)->get();
          // Assuming you have an Employee model
-        return view('campany.payrolls.index', compact('payrollData'));
+        return view('campany.payrolls.index', compact('payrollData' ,'categories'));
     }
 
     public function store(request $request)
@@ -140,16 +142,21 @@ class PayrollController extends Controller
         $validated = $request->validate([
             'month' => 'required', // Validate the month
             'branches' => 'nullable|string', // Branch IDs as a comma-separated string
+            'categorie' => 'nullable|string', // Branch IDs as a comma-separated string
         ]);
-
+        $categorie = $validated['categorie'];
         $month = $validated['month'];
         $branchIds = explode(',', $validated['branches'] ?? '');
-
-        // Fetch payroll data based on the filters
         $payrolls = Payroll::with(['employee', 'branch'])
             ->where('date', $month)
             ->when(!empty($branchIds), function ($query) use ($branchIds) {
                 $query->whereIn('branch_id', $branchIds);
+            })
+            ->when($categorie && $categorie !== 'all', function ($query) use ($categorie) {
+                // Ensure payrolls belong to employees in the selected category
+                $query->whereHas('employee', function ($employeeQuery) use ($categorie) {
+                    $employeeQuery->where('category_id', $categorie);
+                });
             })
             ->get();
 
