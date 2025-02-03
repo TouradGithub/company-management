@@ -941,9 +941,11 @@
         <!-- Date will be inserted by JavaScript -->
       </div>
 
-      <form id="loginForm" onsubmit="return handleLogin(event)">
+      <form id="loginForm" action="" method="POST"  class="login-form">
+        @csrf
         <div class="input-group">
-          <input type="text" id="username" required>
+            <input type="email" id="username" name="email" required autocomplete="off">
+          {{-- <input type="text" id="username" required> --}}
           <label for="username">اسم المستخدم</label>
           <div class="input-icon">
             <svg width="20" height="20" viewBox="0 0 24 24">
@@ -953,7 +955,7 @@
         </div>
 
         <div class="input-group">
-          <input type="password" id="password" required>
+        <input type="password" id="password" name="password" required>
           <label for="password">كلمة المرور</label>
           <div class="input-icon">
             <svg width="20" height="20" viewBox="0 0 24 24">
@@ -980,8 +982,8 @@
       </form>
 
       <div class="links">
-        <a href="https://example.com/forgot-password">نسيت كلمة المرور؟</a>
-        <a href="https://example.com/register">إنشاء حساب جديد</a>
+        <a href="#">نسيت كلمة المرور؟</a>
+        <a href="#">إنشاء حساب جديد</a>
       </div>
     </div>
   </div>
@@ -991,7 +993,32 @@
       <path fill="currentColor" d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.129.332.202.043.073.043.423-.101.827z"/>
     </svg>
   </a>
+<script>
+        const loginForm = document.getElementById('loginForm');
+    const userType = document.getElementById('userType');
 
+    // Update the form action based on the selected user type
+    userType.addEventListener('change', () => {
+        if (userType.value === 'admin') {
+            loginForm.action = "{{ route('login') }}";
+        } else if (userType.value === 'company') {
+            loginForm.action = "{{ route('company.login') }}";
+        }else if (userType.value === 'branch') {
+            loginForm.action = "{{ route('branch.login') }}";
+        }
+    });
+
+    // Set default action on page load
+    window.addEventListener('load', () => {
+        if (userType.value === 'admin') {
+            loginForm.action = "{{ route('login') }}";
+        } else if (userType.value === 'company') {
+            loginForm.action = "{{ route('company.login') }}";
+        }else if (userType.value === 'branch') {
+            loginForm.action = "{{ route('branch.login') }}";
+        }
+    });
+</script>
   <script src="{{asset('auth/globalAuth/script.js')}}"></script>
 </body>
 </html>
