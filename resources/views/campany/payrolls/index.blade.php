@@ -132,6 +132,7 @@
                         <tr>
                             <td>${payroll.employee?.name || ''}</td>
                             <td>${payroll.branch?.name || ''}</td>
+                            <td>${payroll.basic_salary} ريال</td>
                             <td>${payroll.overtime} ريال</td>
                             <td>${payroll.deduction} ريال</td>
                             <td>${payroll.loans} ريال</td>
