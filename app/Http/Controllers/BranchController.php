@@ -21,7 +21,7 @@ class BranchController extends Controller
             'name' => 'required|string|max:255',
             'name_admin_company' => 'required|string|max:255',
             'email' => 'required|email|unique:companies,email',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:6',
         ]);
         // dd(auth()->user());
 
@@ -75,11 +75,8 @@ class BranchController extends Controller
             'name' => 'required|string|max:255',
             'name_admin_company' => 'required|string|max:255',
             'email' => 'required|email|unique:companies,email,' . $id,
-            'password' => 'nullable|string|min:8',
+            'password' => 'nullable|string|min:6',
         ]);
-        // return $request->password;re
-// return auth()->user()->model_id;
-        // Find the company and update its data
         $branch = Branch::findOrFail($id);
         $branch->name = $validated['name'];
         $branch->company_id =auth()->user()->model_id;
@@ -95,6 +92,19 @@ class BranchController extends Controller
             'model_id' =>$branch->id,
             'is_admin' =>1,
         ])->first();
+
+        if ($user) {
+            $user->name = $validated['name_admin_company'];
+            $user->email = $validated['email'];
+
+            if (!empty($validated['password'])) {
+                $user->password =Hash::make($validated['password']);
+            }
+
+            $user->save();
+        }
+
+
 
 
         return redirect()->route('branches.index')->with('success', 'Branch updated successfully!');
