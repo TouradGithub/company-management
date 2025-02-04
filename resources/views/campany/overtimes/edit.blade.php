@@ -1,12 +1,12 @@
-@extends('layouts.overtime')
+@extends('layouts.mastercomany')
 
 @section('content')
+<div class="section-header">
+    <h2>تعديل سلف </h2>
+</div>
 
-<section id="overtime-form" class="content-section active">
-<div class="container">
-      <!-- Overtime Form Section -->
-          <h1>تعديل الإضافي</h1>
-    <form action="{{route('company.overtimes.update' , $overtime->id)}}" method="POST">
+<div class="add-advance-content">
+    <form action="{{route('company.overtimes.update' , $overtime->id)}}" method="POST" id="add-advance-form" class="standard-form">
 
         @if (session('success'))
         <div style="color: green;text-align: center;">
@@ -17,7 +17,7 @@
 
       <div class="form-group">
         <label for="date">التاريخ:</label>
-        <input type="date" name="date" id="date" value="{{ $overtime->date }}" required>
+        <input  class="form-control"type="date" name="date" id="date" value="{{ $overtime->date }}" required>
       </div>
       <div class="search-bar fade-in">
       <div class="form-group">
@@ -80,12 +80,12 @@
 
         <div id="fixedAmountSection" class="form-group {{ $overtime->overtime_type == 'fixed' ? '' : 'hidden' }}">
           <label for="fixedAmount">المبلغ الثابت:</label>
-          <input type="number" name="fixedAmount" id="fixedAmount" value="{{ $overtime->fixed_amount }}" min="0" step="0.01">
+          <input type="number" class="form-control" name="fixedAmount" id="fixedAmount" value="{{ $overtime->fixed_amount }}" min="0" step="0.01">
         </div>
 
         <div id="hoursSection" class="form-group {{ $overtime->overtime_type == 'hours' ? '' : 'hidden' }}">
           <label for="hours">عدد الساعات:</label>
-          <input type="number" id="hours" name="hours" value="{{ $overtime->hours }}" min="0" step="0.5">
+          <input type="number" id="hours" class="form-control" name="hours" value="{{ $overtime->hours }}" min="0" step="0.5">
           <div class="multiplier-group">
             <label>
               <input type="radio" name="hourMultiplier" value="1" {{ $overtime->hour_multiplier == 1.00 ? 'checked' : '' }}>
@@ -102,22 +102,22 @@
           <div class="days-rate-container">
             <div class="form-group half-width">
               <label for="days">عدد الأيام:</label>
-              <input type="number" name="days" id="days" value="{{ $overtime->days }}" min="0" step="0.5">
+              <input type="number" class="form-control" name="days" id="days" value="{{ $overtime->days }}" min="0" step="0.5">
             </div>
             <div class="form-group half-width">
               <label for="dailyRate">قيمة اليوم:</label>
-              <input type="number" name="dailyRate" id="dailyRate" value="{{ $overtime->daily_rate }}" min="0" step="0.01">
+              <input type="number" class="form-control" name="dailyRate" id="dailyRate" value="{{ $overtime->daily_rate }}" min="0" step="0.01">
             </div>
           </div>
         </div>
 
         <div class="total-section">
           <input type="hidden" name="totalAmount" id="totalAmountHidden" value="{{ $overtime->total_amount }}">
-          <h3>الإجمالي: <span id="totalAmount">{{$overtime->total_amount}}</span> ريال</h3>
+          <h3 class="save-btn" style="text-align: center">الإجمالي: <span  id="totalAmount">{{$overtime->total_amount}}</span> ريال</h3>
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn-primary">تحديث</button>
+          <button type="submit"  style="margin-top: 30px" class="save-btn">تحديث</button>
         </div>
       </div>
     </form>

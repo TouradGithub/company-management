@@ -1,4 +1,4 @@
-@extends('layouts.overtime')
+@extends('layouts.mastercomany')
 
 @section('content')
 <div class="container">
@@ -11,9 +11,12 @@
         </ul>
     </div>
     @endif
-    <div class="container">
-        <h1>تعديل الخصم</h1>
-        <form action="{{ route('deductions.update', $deduction->id) }}" method="POST">
+    <div class="section-header">
+        <h2>تعديل خصم </h2>
+    </div>
+
+    <div class="add-advance-content">
+        <form action="{{ route('deductions.update', $deduction->id) }}" method="POST"  id="add-advance-form" class="standard-form">
             @csrf
             @method('PUT') <!-- إضافة طريقة التحديث -->
 
@@ -68,7 +71,7 @@
                 <textarea name="reason" id="reason" class="form-control" style="width: 100%"  rows="5">{{ $deduction->reason }}</textarea>
             </div>
 
-            <button class="btn btn-primary mb-3">تحديث</button>
+            <button style="margin-top: 30px" class="save-btn">تحديث</button>
         </form>
     </div>
 </div>

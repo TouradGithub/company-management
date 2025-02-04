@@ -1,8 +1,6 @@
-@extends('layouts.overtime')
+@extends('layouts.mastercomany')
 
 @section('content')
-<div style="margin-top: 150px;">
-    <h1> إضافة فئة</h1>
 
     @if(session('success'))
     <div class="alert alert-success">
@@ -20,15 +18,20 @@
     </div>
 @endif
 
-    <form action="{{ route('categories.store') }}" method="POST">
+<div class="section-header">
+    <h2>إضافة فئة جديد</h2>
+</div>
+
+<div class="add-advance-content">
+    <form action="{{ route('categories.store') }}" method="POST" id="add-advance-form" class="standard-form">
         @csrf
         <label>الاسم:</label>
-        <input type="text" name="name" required>
+        <input type="text" name="name"   class="form-control" required>
 
         <label>الكود:</label>
-        <input type="text" name="code" required>
+        <input type="text" name="code"   class="form-control"required>
 
-        <button  class="btn btn-primary mb-3" type="submit">حفظ</button>
+        <button  style="margin-top: 10px" class="save-btn" type="submit">حفظ</button>
     </form>
 </div>
 @endsection

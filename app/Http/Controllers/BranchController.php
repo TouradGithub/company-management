@@ -70,7 +70,6 @@ class BranchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Validate the data
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'name_admin_company' => 'required|string|max:255',
@@ -96,17 +95,11 @@ class BranchController extends Controller
         if ($user) {
             $user->name = $validated['name_admin_company'];
             $user->email = $validated['email'];
-
             if (!empty($validated['password'])) {
                 $user->password =Hash::make($validated['password']);
             }
-
             $user->save();
         }
-
-
-
-
         return redirect()->route('branches.index')->with('success', 'Branch updated successfully!');
     }
 

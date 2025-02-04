@@ -1,7 +1,6 @@
-@extends('layouts.overtime')
+@extends('layouts.mastercomany')
 
 @section('content')
-<div class="form-container active" id="form-container">
     @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -17,31 +16,34 @@
             </ul>
         </div>
     @endif
+    <div class="section-header">
+        <h2>إضافة فرع جديد</h2>
+    </div>
 
-        <h1>إضافه فرع</h1>
-      <form action="{{route('branches.store')}}" method="POST">
+    <div class="add-advance-content">
+      <form action="{{route('branches.store')}}" method="POST"  id="add-advance-form" class="standard-form">
         @csrf
         <div class="form-group">
             <label>الاسم:</label>
-            <input type="text" name="name" required>
+            <input type="text"  class="form-control" name="name" required>
           </div>
 
           <div class="form-group">
             <label>اسم مدير الفرع:</label>
-            <input type="text" name="name_admin_company" required>
+            <input type="text"   class="form-control" name="name_admin_company" required>
           </div>
 
         <div class="form-group">
           <label>الايميل:</label>
-          <input type="email" name="email" required>
+          <input type="email"  class="form-control" name="email" required>
         </div>
 
         <div class="form-group">
           <label>كلمة المرور:</label>
-          <input type="password" name="password" required>
+          <input type="password"  class="form-control" name="password" required>
         </div>
 
-        <button  class="btn btn-primary mb-3" type="submit">حفظ</button>
+        <button   style="margin-top: 30px" class="save-btn" type="submit">حفظ</button>
       </form>
     </div>
 

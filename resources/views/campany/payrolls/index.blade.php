@@ -1,11 +1,10 @@
-@extends('layouts.overtime')
+@extends('layouts.mastercomany')
 
 @section('content')
 @if(session('success'))
     <p>{{ session('success') }}</p>
 @endif
 
-<section>
     <style>
         .selectedPayrolls {
             background-color: #d3d3d3; /* لون خلفية الصف المحدد */
@@ -16,9 +15,16 @@
             display: none;
         }
     </style>
-    <div class="container">
-        <h1>سجل كشف الرواتب</h1>
-        <a class="btn btn-primary" href="{{ route('company.payrolls.create') }}">إضافة كشف راتب</a>
+<div class="section-header">
+    <h2>سجل كشوفات الرواتب</h2>
+    <button class="add-deduction-btn">
+        <a href="{{route('company.payrolls.create')}}">
+      <i class="fas fa-plus"></i>
+      إضافة كشف راتب
+        </a>
+    </button>
+</div>
+  <div class="deductions-table">
 
         <div>
             <form style="display: flex; justify-content: left; align-items: left;" id="exportPdfForm" method="POST" action="{{ route('company.payrolls.export.pdf') }}" target="_blank">
@@ -51,7 +57,14 @@
                 </table>
             </div>
             <h3 id="payrollTableTitle" style="display: none;text-align: center;margin-top:30px;">كشوف الرواتب شهر: <span id="selectedMonth"></span></h3>
-            <button type="submit" style="display: none;text-align: left" id="filterExportPdf" class="btn btn-primary">طباعة</button>
+            <button type="submit"   style="display: none;text-align: left; background: var(--gradient-primary);
+                color: white;
+                border: none;
+                padding: 1rem 2rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 1rem;
+                transition: all 0.3s;" id="filterExportPdf" class="btn btn-primary">طباعة</button>
             <div style="margin-top: 20px;display: none" id="catego">
                 <label for="categoryFilter">تصفية حسب الفئة:</label>
                 <select id="categoryFilter" class="form-control">

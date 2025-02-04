@@ -1,10 +1,8 @@
 
-@extends('layouts.overtime')
+@extends('layouts.mastercomany')
 
 @section('content')
 
-{{-- <div class="content-sections"> --}}
-<div class="form-container active" id="form-container">
         @if(session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -20,13 +18,18 @@
                 </ul>
             </div>
         @endif
-    <form action="{{ route('company.leaves.store') }}" method="POST">
+        <div class="section-header">
+            <h2>إضافة إجازة جديد</h2>
+        </div>
+
+        <div class="add-advance-content">
+    <form action="{{ route('company.leaves.store') }}" method="POST"  id="add-advance-form" class="standard-form">
         @csrf
 
         <div>
             <div class="search-bar fade-in">
             <label for="employee_id">الموظف</label>
-            <select name="branch_id" id="branch_id" required>
+            <select name="branch_id"  class="form-control" id="branch_id" required>
                 <option >Select</option>
                 @foreach($branches as $branch)
                     <option value="{{ $branch->id }}">{{ $branch->name }}</option>
@@ -36,19 +39,19 @@
         </div>
         <div>
             <label for="employee_id">الموظف</label>
-            <select name="employee_id" id="employee_id" required>
+            <select name="employee_id"  class="form-control" id="employee_id" required>
                 <option value="" disabled selected>اختر الموظف</option>
             </select>
         </div>
 
         <div>
             <label for="start_date">تاريخ بدء الإجازة</label>
-            <input type="date" name="start_date" id="start_date" required>
+            <input type="date"  class="form-control" name="start_date" id="start_date" required>
         </div>
 
         <div>
             <label for="end_date">تاريخ انتهاء الإجازة</label>
-            <input type="date" name="end_date" id="end_date" required>
+            <input type="date"  class="form-control" name="end_date" id="end_date" required>
         </div>
 
         <div class="form-group">
@@ -56,7 +59,7 @@
             <textarea name="reason" id="reason" class="form-control" style="width: 100%"  rows="5"></textarea>
         </div>
 
-        <button  class="btn btn-primary mb-3" type="submit">تسجيل الإجازة</button>
+        <button  style="margin-top: 10px" class="save-btn" type="submit">تسجيل الإجازة</button>
     </form>
 
 </div>

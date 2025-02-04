@@ -1,4 +1,4 @@
-@extends('layouts.overtime')
+@extends('layouts.mastercomany')
 
 @section('content')
 <div class="container">
@@ -12,9 +12,12 @@
         </ul>
     </div>
 @endif
-<div class="container">
-    <h1>إضافة خصم</h1>
-    <form action="{{ route('deductions.store') }}" method="POST">
+<div class="section-header">
+    <h2>إضافة خصم جديد</h2>
+</div>
+
+<div class="add-advance-content">
+    <form action="{{ route('deductions.store') }}" method="POST"  id="add-advance-form" class="standard-form">
         @csrf
         <div class="search-bar fade-in">
             <div class="form-group">
@@ -61,7 +64,7 @@
             <textarea name="reason" id="reason" class="form-control" style="width: 100%"  rows="5"></textarea>
         </div>
 
-        <button  class="btn btn-primary mb-3">حفظ</button>
+        <button style="margin-top: 30px" class="save-btn">حفظ</button>
     </form>
 </div>
 @endsection

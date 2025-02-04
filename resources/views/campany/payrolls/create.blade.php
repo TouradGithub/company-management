@@ -1,11 +1,8 @@
 
-@extends('layouts.overtime')
+@extends('layouts.mastercomany')
 
 @section('content')
 
-
-<div class="container">
-    <h1>كشف الرواتب</h1>
     @if($errors->any())
         <div style="color: red;">
             <ul>
@@ -22,76 +19,83 @@
 
         </div>
     @endif
-    <form id="salaryForm">
-      <div class="form-group">
-        <label for="month">الشهر:</label>
-        <input type="month" id="month" required>
-      </div>
+    <div class="section-header">
+        <h2>إضافة كشف جديد</h2>
+    </div>
 
-      <div class="form-group">
-        <label>الفروع:</label>
-        <div class="checkbox-group branches-group">
-            @foreach ($branches as $item)
+    <div class="add-advance-content">
+        <form id="salaryForm" id="add-advance-form" class="standard-form" id="add-advance-form" class="standard-form">
+        <div class="form-group">
+            <label for="month">الشهر:</label>
+            <input type="month"  class="form-control" id="month" required>
+        </div>
+
+        <div class="form-group">
+            <label>الفروع:</label>
+            <div class="checkbox-group branches-group">
+                @foreach ($branches as $item)
+                    <label>
+                        <input type="checkbox" name="branches" value="{{ $item->id}}">
+                        {{ $item->name}}
+                    </label>
+                @endforeach
+
+            </div>
+        </div>
+
+        <div class="form-control">
+            <h3>حدد الحقول المطلوبة في الكشف:</h3>
+            <div class="checkbox-group">
                 <label>
-                    <input type="checkbox" name="branches" value="{{ $item->id}}">
-                     {{ $item->name}}
+                    <input type="checkbox" name="fields" value="basicSalary" checked>
+                    الراتب الأساسي
                 </label>
-            @endforeach
-
+                <label>
+                    <input type="checkbox" name="fields" value="transportation">
+                    بدل التنقل
+                </label>
+                <label>
+                    <input type="checkbox" name="fields" value="food">
+                    بدل الإعاشة
+                </label>
+                <label>
+                    <input type="checkbox" name="fields" value="loans">
+                    السلف
+                </label>
+                <label>
+                    <input type="checkbox" name="fields" value="overtime">
+                    الإضافي
+                </label>
+                <label>
+                    <input type="checkbox" name="fields" value="deductions">
+                    الخصومات
+                </label>
+            </div>
         </div>
-      </div>
 
-      <div class="fields-selection">
-        <h3>حدد الحقول المطلوبة في الكشف:</h3>
-        <div class="checkbox-group">
-          <label>
-            <input type="checkbox" name="fields" value="basicSalary" checked>
-            الراتب الأساسي
-          </label>
-          <label>
-            <input type="checkbox" name="fields" value="transportation">
-            بدل التنقل
-          </label>
-          <label>
-            <input type="checkbox" name="fields" value="food">
-            بدل الإعاشة
-          </label>
 
-          <label>
-            <input type="checkbox" name="fields" value="loans">
-             السلف
-          </label>
-
-          <label>
-            <input type="checkbox" name="fields" value="overtime">
-            الإضافي
-          </label>
-          <label>
-            <input type="checkbox" name="fields" value="deductions">
-            الخصومات
-          </label>
+        <div class="form-actions">
+            <button type="submit"  style="margin-top: 5x" class="save-btn">عرض الكشف</button>
+            <button type="button"   style="margin-top: 5px" class="save-btn  hidden" id="printBtn">طباعة</button>
         </div>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn-primary">عرض الكشف</button>
-        <button type="button" class="btn-secondary hidden" id="printBtn">طباعة</button>
-      </div>
-    </form>
-
+        </form>
+    </div>
+    
     <div id="salaryTable" class="hidden">
       <h2>كشف الرواتب - <span id="reportTitle"></span></h2>
       <form action="{{route('company.payrolls.store')}}" method="POST">@csrf
-        <input type="hidden" id="monthYear" value="" name="date">
-      <table>
-        <thead id="tableHeader">
-          <!-- سيتم إنشاء العناوين ديناميكياً -->
-        </thead>
-        <tbody id="tableBody">
-          <!-- سيتم إنشاء الصفوف ديناميكياً -->
-        </tbody>
-      </table>
-      <button type="submit" class="btn-secondary hidden" id="formvalidat">إضافة</button>
+        <input type="hidden" id="monthYear"  class="form-control" value="" name="date">
+          <div class="deductions-table">
+
+            <table>
+                <thead id="tableHeader">
+                <!-- سيتم إنشاء العناوين ديناميكياً -->
+                </thead>
+                <tbody id="tableBody">
+                <!-- سيتم إنشاء الصفوف ديناميكياً -->
+                </tbody>
+            </table>
+        <button type="submit"  style="margin-top: 5px" class="save-btn hidden" id="formvalidat">إضافة</button>
       </form>
     </div>
 
@@ -208,7 +212,7 @@
 
         if (selectedFields.includes('loans')) {
             let loanAmount = parseFloat(employee.loans_total) || 0;
-            row += `<td><input type="number" class="loan-input" name="loans[][amount]" value="${loanAmount.toFixed(2)}" max="${loanAmount}" data-type="loan" /></td>`;
+            row += `<td><input type="number" class="loan-input form-control" name="loans[][amount]" value="${loanAmount.toFixed(2)}" max="${loanAmount}" data-type="loan" /></td>`;
             total += loanAmount;
         }
 
@@ -216,13 +220,13 @@
             let overtimeAmount = (employee.overtimes && employee.overtimes.length > 0 && employee.overtimes[0].total_amount)
                 ? parseFloat(employee.overtimes[0].total_amount)
                 : 0;
-            row += `<td><input type="number" class="overtime-input" name="overtime[][amount]" value="${overtimeAmount.toFixed(2)}" max="${overtimeAmount}" data-type="overtime" /></td>`;
+            row += `<td><input type="number" class="overtime-input form-control" name="overtime[][amount]" value="${overtimeAmount.toFixed(2)}" max="${overtimeAmount}" data-type="overtime" /></td>`;
             total += overtimeAmount;
         }
 
         if (selectedFields.includes('deductions')) {
             let deductionsAmount = parseFloat(employee.deducation_total) || 0;
-            row += `<td><input type="number" class="deduction-input" name="deductions[][amount]" value="${deductionsAmount.toFixed(2)}" max="${deductionsAmount}" data-type="deduction" /></td>`;
+            row += `<td><input type="number" class="deduction-input form-control" name="deductions[][amount]" value="${deductionsAmount.toFixed(2)}" max="${deductionsAmount}" data-type="deduction" /></td>`;
             total -= deductionsAmount;
         }
 

@@ -1,13 +1,17 @@
-@extends('layouts.overtime')
+@extends('layouts.mastercomany')
 
 @section('content')
-<section id="overtime-form" class="content-section active">
-    <div class="container">
-    <h1>السلف</h1>
-    <a href="{{ route('loans.create') }}" class="btn btn-primary mb-3">إضافة سلف </a>
-    <div id="entriesContainer">
-
-        <table class="records-table">
+    <div class="section-header">
+        <h2>السلف</h2>
+        <button class="add-deduction-btn">
+            <a href="{{route('loans.create')}}">
+          <i class="fas fa-plus"></i>
+          إضافة سلف
+            </a>
+        </button>
+    </div>
+      <div class="deductions-table">
+        <table >
         <thead>
             <tr>
                 <th>الموظف</th>
@@ -35,11 +39,14 @@
                         @endif
                     </td>
                     <td>
-                        <a class="btn-primary btn-edit" href="{{ route('loans.edit', $loan) }}" class="btn btn-sm btn-warning">تحديث</a>
+                        <a  href="{{ route('loans.edit', $loan) }}" class="action-btn edit-btn">
+                            <i class="fas fa-edit"></i
+                                >
+                                تحديث</a>
                         <form action="{{ route('loans.destroy', $loan) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button  class="btn-primary btn-delete">حذف</button>
+                            <button  class="action-btn delete-btn">حذف</button>
                         </form>
                     </td>
                 </tr>

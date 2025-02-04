@@ -6,11 +6,12 @@
         <h2>{{ session('success') }}</h2>
     </div>
 @endif
+<div class="section-header">
+    <h2>إضافة فرع جديد</h2>
+</div>
 
-<h1>تعديل موظف</h1>
-
-<div class="form-container">
-    <form action="{{ route('company.employees.update', $employee->id) }}" method="POST">
+<div class="add-advance-content">
+    <form action="{{ route('company.employees.update', $employee->id) }}" method="POST" id="add-advance-form" class="standard-form">
         @csrf
         @method('POST') {{-- Ensure the update method is handled correctly --}}
 

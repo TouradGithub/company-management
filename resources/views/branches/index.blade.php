@@ -1,15 +1,20 @@
-@extends('layouts.overtime')
+@extends('layouts.mastercomany')
 
 @section('content')
-<section id="overtime-form" class="content-section active">
-<div >
-    <h1>الفروع</h1>
-    <a href="{{ route('branches.create') }}" class="btn btn-primary">إضافة فرع </a>
+
     @if(session('success'))
         <div style="color: green;">{{ session('success') }}</div>
     @endif
-    <div id="entriesContainer">
-
+    <div class="section-header">
+        <h2>الفروع</h2>
+        <button class="add-deduction-btn">
+            <a href="{{route('branches.create')}}">
+          <i class="fas fa-plus"></i>
+          إضافة فرع
+            </a>
+        </button>
+    </div>
+      <div class="deductions-table">
         <table class="records-table">
         <thead>
             <tr>
@@ -26,10 +31,13 @@
                 <td>{{ $company->name_admin_company }}</td>
                 <td>{{ $company->email }}</td>
                 <td>
-                    <a class="btn-primary btn-edit" href="{{ route('branches.edit', $company->id) }}">تحديث</a>
+                    <a  href="{{ route('branches.edit', $company->id) }}"
+                        class="action-btn edit-btn">
+                            <i class="fas fa-edit"></i
+                                >تحديث</a>
                     <form action="{{ route('branches.destroy', $company->id) }}" method="POST" style="display: inline-block;">
                         @csrf
-                        <button class="btn-primary btn-delete" type="submit" onclick="return confirm('Are you sure?')">حذف</button>
+                        <button class="action-btn delete-btn" type="submit" onclick="return confirm('Are you sure?')">حذف</button>
                     </form>
                 </td>
             </tr>

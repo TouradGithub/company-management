@@ -10,18 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const entriesContainer = document.getElementById('entriesContainer');
     const resetBtn = document.getElementById('resetBtn');
 
-    // Initialize Select2 for multiple select
-    $('#branches').select2({
-      placeholder: 'اختر الفروع',
-      dir: 'rtl',
-      language: 'ar'
-    });
 
-    $('#employees').select2({
-      placeholder: 'اختر الموظفين',
-      dir: 'rtl',
-      language: 'ar'
-    });
+    // $('#employees').select2({
+    //   placeholder: 'اختر الموظفين',
+    //   dir: 'rtl',
+    //   language: 'ar'
+    // });
 
 
     // Sample employees data
@@ -38,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
       $.ajax({
           url: '/get-employees-by-branch',
           method: 'GET',
-          data: { branches: selectedBranches },
+          data: { branches: [selectedBranches] },
           success: function(response) {
             const employeesSelect = $('#employees').get(0);
 

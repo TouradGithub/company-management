@@ -1,19 +1,20 @@
-@extends('layouts.overtime')
+@extends('layouts.mastercomany')
 
 @section('content')
 @if(session('success'))
 <div style="color: green;">{{ session('success') }}</div>
 @endif
-<section id="overtime-form" class="content-section active">
-    <h1>الفئات</h1>
+<div class="section-header">
+    <h2>الفئات</h2>
+    <button class="add-deduction-btn">
+        <a href="{{route('categories.create')}}">
+            <i class="fas fa-plus"></i>
 
-
-
-    {{-- <a href="{{ route('categories.create') }}">Add New --}}
-    <a href="{{ route('categories.create') }}" class="btn btn-primary mb-3">إضافة فئة  </a>
-    {{-- Category</a> --}}
-    <div id="entriesContainer">
-
+            إضافة فئة
+        </a>
+    </button>
+</div>
+  <div class="deductions-table">
         <table class="records-table">
         <thead>
             <tr>
@@ -28,11 +29,12 @@
                 <td>{{ $category->name }}</td>
                 <td>{{ $category->code }}</td>
                 <td>
-                    <a class="btn-primary btn-edit" href="{{ route('categories.edit', $category->id) }}">تعديل</a>
+                    <a  href="{{ route('categories.edit', $category->id) }}" class="action-btn edit-btn">
+                        <i class="fas fa-edit"></i>تعديل</a>
                     <form action="{{ route('categories.destroy', $category->id) }}" method="POST" style="display:inline-block;">
                         @csrf
                         @method('DELETE')
-                        <button class="btn-primary btn-delete" type="submit" onclick="return confirm('Are you sure?')">حذف</button>
+                        <button class="action-btn delete-btn" type="submit" onclick="return confirm('Are you sure?')">حذف</button>
                     </form>
                 </td>
             </tr>

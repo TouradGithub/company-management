@@ -189,7 +189,7 @@
           <span class="menu-icon"><i class="bi bi-file-earmark-plus"></i></span>
           <a href="{{route('company.overtimes.index')}}">الاضافي</a>
         </li>
-        <li class="menu-item {{ Request::routeIs('company.loans.create') || Request::routeIs('company.loans.index') ? 'active' : '' }}" data-section="records">
+        <li class="menu-item {{ Request::routeIs('loans.create') || Request::routeIs('loans.index') ? 'active' : '' }}" data-section="records">
             <span class="menu-icon"><i class="bi bi-table"></i></span>
             <a href="{{route('loans.index')}}">السلف</a>
 

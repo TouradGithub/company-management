@@ -1,8 +1,7 @@
-@extends('layouts.overtime')
+@extends('layouts.mastercomany')
 
 @section('content')
-<div style="margin-top: 150px;">
-    <h1>تعديل الفئة </h1>
+
 
     @if($errors->any())
         <div style="color: red;">
@@ -13,18 +12,23 @@
             </ul>
         </div>
     @endif
+    <div class="section-header">
+      
+        <h2>تعديل الفئة </h2>
+    </div>
 
-    <form action="{{ route('categories.update', $category->id) }}" method="POST">
+    <div class="add-advance-content">
+    <form action="{{ route('categories.update', $category->id) }}" method="POST" id="add-advance-form" class="standard-form">
         @csrf
         @method('PUT')
 
         <label>الاسم:</label>
-        <input type="text" name="name" value="{{ $category->name }}" required>
+        <input type="text" name="name"  class="form-control" value="{{ $category->name }}" required>
 
         <label>الكود:</label>
-        <input type="text" name="code" value="{{ $category->code }}" required>
+        <input type="text" name="code"  class="form-control" value="{{ $category->code }}" required>
 
-        <button  class="btn btn-primary mb-3" type="submit">تحديث</button>
+        <button  style="margin-top: 10px" class="save-btn" type="submit">تحديث</button>
     </form>
 </div>
 @endsection

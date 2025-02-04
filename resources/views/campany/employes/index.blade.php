@@ -14,14 +14,14 @@
       padding: 20px;
       padding-top: 80px;
     } */
-
+/*
     h1 {
       color: #2c3e50;
       text-align: center;
       margin-bottom: 40px;
       font-size: 2.5em;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    }
+    } */
 
     .profiles-grid {
       display: grid;
@@ -46,11 +46,11 @@
       box-shadow: 0 15px 30px rgba(0,0,0,0.15);
     }
 
-    .profile-header {
+    /* .profile-header {
       display: flex;
       align-items: center;
       margin-bottom: 20px;
-    }
+    } */
 
     .profile-avatar {
       width: 80px;
@@ -284,7 +284,7 @@
       display: none;
     }
 
-    .header {
+    /* .header {
       background: linear-gradient(135deg, #3498db, #2ecc71);
       padding: 20px;
       color: white;
@@ -292,16 +292,16 @@
       position: sticky;
       top: 0;
       z-index: 200;
-    }
-
+    } */
+/*
     .header-content {
       max-width: 1200px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
+    } */
+/*
     .header-title {
       font-size: 1.8em;
       font-weight: bold;
@@ -311,9 +311,9 @@
     .header-buttons {
       display: flex;
       gap: 15px;
-    }
+    } */
 
-    .header-btn {
+    /* .header-btn {
       padding: 10px 20px;
       border: 2px solid white;
       border-radius: 8px;
@@ -322,12 +322,12 @@
       cursor: pointer;
       font-size: 14px;
       transition: all 0.3s ease;
-    }
+    } */
 
-    .header-btn:hover {
+    /* .header-btn:hover {
       background: white;
       color: #3498db;
-    }
+    } */
 </style>
 <style>
     .action-section {
@@ -374,10 +374,18 @@
     {{-- </head>
     <body> --}}
 
-        @extends('layouts.overtime')
+        @extends('layouts.mastercomany')
 
         @section('content')
-        <a  class="btn btn-primary" href="{{ route('company.employees.create') }}">إضافة موظف</a>
+        <div class="section-header">
+            <h2>الموظفين</h2>
+            <button class="add-deduction-btn">
+                <a href="{{route('company.employees.create')}}">
+              <i class="fas fa-plus"></i>
+              إضافة موظف
+                </a>
+            </button>
+        </div>
     {{-- <div class="header">
       <div class="header-content">
         <div class="header-title">&#x628;&#x631;&#x646;&#x627;&#x645;&#x62c; &#x634;&#x624;&#x648;&#x646; &#x627;&#x644;&#x645;&#x648;&#x638;&#x641;&#x64a;&#x646;</div>
