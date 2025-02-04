@@ -17,12 +17,16 @@ class PayrollController extends Controller
 
     public function index()
     {
-        $payrollData = Payroll::with('branch') // لجلب بيانات الفرع
-        ->select('branch_id', 'date')
-        ->selectRaw('SUM(net_salary) as total_salary')
-        ->selectRaw('COUNT(employee_id) as employees_count')
-        ->groupBy('branch_id', 'date') // تجميع حسب الفرع والتاريخ
+        $payrollData = Payroll::with('branch') // لجلب بيانات الفروع
+        ->select('date') // تحديد التاريخ كمجال رئيسي
+        ->selectRaw('GROUP_CONCAT(DISTINCT branches.name ORDER BY branches.name SEPARATOR ", ") as branch_names') // جمع أسماء الفروع في حقل واحد
+        ->selectRaw('COUNT(employee_id) as employees_count') // حساب عدد الموظفين لكل كشف
+        ->selectRaw('SUM(net_salary) as total_salary') // حساب إجمالي الراتب لكل كشف
+        ->join('branches', 'payrolls.branch_id', '=', 'branches.id') // الربط مع جدول الفروع
+        ->groupBy('date') // تجميع حسب التاريخ فقط
+        ->orderBy('date', 'desc') // ترتيب من الأحدث إلى الأقدم
         ->get();
+
         $categories = Category::where('company_id',auth()->user()->model_id)->get();
          // Assuming you have an Employee model
         return view('campany.payrolls.index', compact('payrollData' ,'categories'));
@@ -99,7 +103,7 @@ class PayrollController extends Controller
     public function getPayrollData(Request $request)
     {
         $monthYear = $request->input('month'); // Format: YYYY-MM
-        $branches = $request->input('branches');
+        // $branches = $request->input('branches');
 
 
         $query = Payroll::with(['employee', 'branch']);
@@ -108,9 +112,9 @@ class PayrollController extends Controller
             $query->where('date', $monthYear);
         }
 
-        if ($branches) {
-            $query->whereIn('branch_id', $branches);
-        }
+        // if ($branches) {
+        //     $query->whereIn('branch_id', $branches);
+        // }
 
 
         $payrolls = $query->get();
@@ -149,9 +153,9 @@ class PayrollController extends Controller
         $branchIds = explode(',', $validated['branches'] ?? '');
         $payrolls = Payroll::with(['employee', 'branch'])
             ->where('date', $month)
-            ->when(!empty($branchIds), function ($query) use ($branchIds) {
-                $query->whereIn('branch_id', $branchIds);
-            })
+            // ->when(!empty($branchIds), function ($query) use ($branchIds) {
+            //     $query->whereIn('branch_id', $branchIds);
+            // })
             ->when($categorie && $categorie !== 'all', function ($query) use ($categorie) {
                 // Ensure payrolls belong to employees in the selected category
                 $query->whereHas('employee', function ($employeeQuery) use ($categorie) {

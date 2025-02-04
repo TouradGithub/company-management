@@ -32,18 +32,18 @@
                 <table class="records-table" id="payrollTable">
                     <thead>
                         <tr>
-                            <th>الفرع</th>
-                            <th>عدد الموظفين</th>
-                            <th>التواريخ المتاحة</th>
+                            <th>التاريخ</th>
+                            <th> الفروع</th>
+                            <th> عدد الموظفين</th>
                             <th>إجمالي الرواتب</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($payrollData as $payroll)
                             <tr onclick="selectRow(this)">
-                                <td data-branch="{{ $payroll->branch->id }}">{{ $payroll->branch->name }}</td>
-                                <td>{{ $payroll->employees_count }}</td>
                                 <td>{{ $payroll->date }}</td>
+                                <td>{{ $payroll->branch_names }}</td>
+                                <td>{{ $payroll->employees_count }}</td>
                                 <td>{{ number_format($payroll->total_salary, 2) }} ريال</td>
                             </tr>
                         @endforeach
@@ -101,9 +101,9 @@
         row.style.backgroundColor = '#d3d3d3'; // لون التحديد
 
         // جلب البيانات من الصف الذي تم النقر عليه
-        var branchId = row.querySelector('td[data-branch]').getAttribute('data-branch'); // معرف الفرع
-        var branchName = row.querySelector('td[data-branch]').innerText; // اسم الفرع
-        var date = row.querySelector('td:nth-child(3)').innerText; // التاريخ
+        // var branchId = row.querySelector('td[data-branch]').getAttribute('data-branch'); // معرف الفرع
+        // var branchName = row.querySelector('td[data-branch]').innerText; // اسم الفرع
+        var date = row.querySelector('td:nth-child(1)').innerText; // التاريخ
 
         $("#payrollTableTitle").css("display", "block");
         $("#filterExportPdf").css("display", "block");
@@ -115,23 +115,22 @@
         $("#selectedMonth").text(date);
 
         $("#hiddenMonth").val(date);
-        $("#hiddenBranches").val([branchId]);
+        // $("#hiddenBranches").val([branchId]);
         console.log(date);
-        console.log([branchId]);
+        // console.log([branchId]);
         // استدعاء دالة لجلب البيانات
-        fetchPayrollData(date, [branchId]);
+        fetchPayrollData(date);
 
     }
 
-    function fetchPayrollData(month, branches) {
+    function fetchPayrollData(month) {
         $("#hiddenMonth").val(month);
-        $("#hiddenBranches").val(branches);
+        // $("#hiddenBranches").val(branches);
         $.ajax({
             url: "{{ route('company.payrolls.data') }}",
             method: "GET",
             data: {
                 month: month,
-                branches: branches
             },
             dataType: "json",
             success: function(response) {
@@ -173,26 +172,26 @@
     $("#filterExportPdf").click(function() {
         // Get the selected month and branches
         const month = $("#hiddenMonth").val();
-        const branches = $("#hiddenBranches").val();
+        // const branches = $("#hiddenBranches").val();
         console.log(month);
-        console.log(branches);
+        // console.log(branches);
 
         if (!month) {
             alert("قم باختيار الشهر.");
             return; // Stop execution
         }
 
-        if (!branches) {
-            alert("قم باختيار الفروع.");
-            return; // Stop execution
-        }
+        // if (!branches) {
+        //     alert("قم باختيار الفروع.");
+        //     return; // Stop execution
+        // }
 
         // Set the values in the hidden form fields
         $("#hiddenMonth").val(month);
-        $("#hiddenBranches").val([branches]);
+        // $("#hiddenBranches").val([branches]);
 
         // Submit the form
-        if(month && branches){
+        if(month ){
             $("#exportPdfForm").submit();
         }
 
