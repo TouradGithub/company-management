@@ -166,7 +166,7 @@
                                 <form action="${deleteUrl}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn-primary btn-delete" type="submit">حذف</button>
+                                    <button class="action-btn delete-btn" type="submit">حذف</button>
                                 </form>
                             </td>
                         </tr>
