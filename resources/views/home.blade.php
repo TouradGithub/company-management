@@ -7,7 +7,7 @@
         <h1>إضافة شركه </h1>
       <form action="{{route('company.store')}}" method="POST">
         @csrf
-     
+
         <div class="form-group">
           <label>الاسم:</label>
           <input type="text" name="name" required>
@@ -33,7 +33,7 @@
           <input type="date" name="end_date" required>
         </div>
 
-        <button  class="btn btn-primary mb-3" type="submit">حفظ</button>
+        <button   style="margin-top: 5px" class="save-btn" type="submit">حفظ</button>
       </form>
     </div>
 

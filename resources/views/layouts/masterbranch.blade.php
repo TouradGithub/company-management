@@ -36,67 +36,52 @@
           </div>
         </div>
       </header>
-      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-        @csrf
-    </form>
+
   <nav class="sidebar">
     <ul class="menu-items">
-      <li class="menu-item  {{ Request::routeIs('company.employees.index') || Request::routeIs('company.employees.index') ? 'active' : '' }}">
-        <a href="{{route('company.employees.index')}}">
+      <li class="menu-item  {{ Request::routeIs('branch.employees.index') || Request::routeIs('branch.employees.index') ? 'active' : '' }}">
+        <a href="{{route('branch.employees.index')}}">
           <i class="fas fa-users"></i>
           <span>الموظفين</span>
           <div class="hover-effect"></div>
         </a>
       </li>
       <li class="menu-item {{ Request::routeIs('branch.loans.create') || Request::routeIs('branch.loans.index') ? 'active' : '' }}">
-        <a href="{{route('loans.index')}}">
+        <a href="{{route('branch.loans.index')}}">
           <i class="fas fa-hand-holding-usd"></i>
           <span>السلف</span>
           <div class="hover-effect"></div>
         </a>
       </li>
-      <li class="menu-item {{ Request::routeIs('company.overtimes.create') || Request::routeIs('company.overtimes.index') ? 'active' : '' }}">
-        <a href="{{route('company.overtimes.index')}}">
+      <li class="menu-item {{ Request::routeIs('branch.overtimes.create') || Request::routeIs('branch.overtimes.index') ? 'active' : '' }}">
+        <a href="{{route('branch.overtimes.index')}}">
           <i class="fas fa-coins"></i>
           <span>الاضافي</span>
           <div class="hover-effect"></div>
         </a>
       </li>
-      <li class="menu-item  {{ Request::routeIs('deductions.create') || Request::routeIs('deductions.index') ? 'active' : '' }}"">
-        <a href="{{route('deductions.index')}}">
+      <li class="menu-item  {{ Request::routeIs('branch.deductions.create') || Request::routeIs('branch.deductions.index') ? 'active' : '' }}"">
+        <a href="{{route('branch.deductions.index')}}">
           <i class="fas fa-percentage"></i>
           <span>الخصومات</span>
           <div class="hover-effect"></div>
         </a>
       </li>
-      <li class="menu-item  {{ Request::routeIs('company.leaves.create') || Request::routeIs('company.leaves.index') ? 'active' : '' }}">
-        <a href="{{route('company.leaves.index')}}">
+      <li class="menu-item  {{ Request::routeIs('branch.leaves.create') || Request::routeIs('branch.leaves.index') ? 'active' : '' }}">
+        <a href="{{route('branch.leaves.index')}}">
           <i class="fas fa-calendar-alt"></i>
           <span>الاجازات</span>
           <div class="hover-effect"></div>
         </a>
       </li>
-      <li class="menu-item  {{ Request::routeIs('company.payrolls.create') ||Request::routeIs('company.payrolls.index')  ? 'active' : '' }}">
-        <a href="{{route('company.payrolls.index')}}">
+      <li class="menu-item  {{ Request::routeIs('branch.payrolls.create') ||Request::routeIs('branch.payrolls.index')  ? 'active' : '' }}">
+        <a href="{{route('branch.payrolls.index')}}">
           <i class="fas fa-file-invoice-dollar"></i>
           <span>كشوفات الرواتب</span>
           <div class="hover-effect"></div>
         </a>
       </li>
-      <li class="menu-item {{ Request::routeIs('categories.create') ||Request::routeIs('categories.index')  ? 'active' : '' }}">
-        <a href="{{route('categories.index')}}">
-          <i class="fas fa-tags"></i>
-          <span>الفئات</span>
-          <div class="hover-effect"></div>
-        </a>
-      </li>
-      <li class="menu-item {{ Request::routeIs('branches.create') || Request::routeIs('branches.index') ? 'active' : '' }}">
-        <a href="{{route('branches.index')}}">
-          <i class="fas fa-code-branch"></i>
-          <span>الفروع</span>
-          <div class="hover-effect"></div>
-        </a>
-      </li>
+
       <li class="menu-item has-submenu">
         <a href="#">
           <i class="fas fa-calculator"></i>
@@ -155,7 +140,9 @@
       <div class="decorative-line"></div>
     </div>
   </nav>
-
+  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>
   <main class="main-content">
 
 

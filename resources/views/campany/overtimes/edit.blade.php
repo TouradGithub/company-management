@@ -45,8 +45,8 @@
       </div>
 
       <div class="employee-details {{ $overtime->overtime_type ? '' : 'hidden' }}">
-        <div class="info-card">
-          <div class="info-row">
+        <div class="info-card checkbox-group " style="margin-bottom: 10px">
+          <div class="info-row ">
             <span class="info-label">رقم الإقامة:</span>
             <span id="iqamaNumber" class="info-value">{{$overtime->employee->iqamaNumber}}</span>
           </div>
@@ -62,7 +62,7 @@
 
         <div class="overtime-type">
           <h3>نوع تسجيل الإضافي</h3>
-          <div class="radio-group">
+          <div class="checkbox-group">
             <label>
               <input type="radio" name="overtimeType" value="fixed" {{ $overtime->overtime_type == 'fixed' ? 'checked' : '' }}>
               مبلغ ثابت

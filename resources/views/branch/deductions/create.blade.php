@@ -1,4 +1,4 @@
-@extends('layouts.branch')
+@extends('layouts.masterbranch')
 
 @section('content')
 <div class="container">
@@ -12,8 +12,11 @@
         </ul>
     </div>
 @endif
-<div class="container">
-    <h1>إضافة خصم</h1>
+<div class="section-header">
+    <h2>إضافة خصم جديد</h2>
+</div>
+
+<div class="add-advance-content">
     <form action="{{ route('branch.deductions.store') }}" method="POST">
         @csrf
 
@@ -54,7 +57,7 @@
             <textarea name="reason" id="reason" class="form-control" style="width: 100%"  rows="5"></textarea>
         </div>
 
-        <button  class="btn btn-primary mb-3">حفظ</button>
+        <button   style="margin-top: 5px" class="save-btn">حفظ</button>
     </form>
 </div>
 @endsection

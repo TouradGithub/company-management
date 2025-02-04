@@ -15,13 +15,13 @@
       padding-top: 80px;
     } */
 
-    h1 {
+    /* h1 {
       color: #2c3e50;
       text-align: center;
       margin-bottom: 40px;
       font-size: 2.5em;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    }
+    } */
 
     .profiles-grid {
       display: grid;
@@ -373,10 +373,18 @@
 
     </head>
     <body>
-        @extends('layouts.branch')
+        @extends('layouts.masterbranch')
 
         @section('content')
-        <a  class="btn btn-primary" href="{{ route('branch.employees.create') }}">إضافة موظف</a>
+        <div class="section-header">
+            <h2>الموظفين</h2>
+            <button class="add-deduction-btn">
+                <a href="{{route('branch.employees.create')}}">
+              <i class="fas fa-plus"></i>
+              إضافة موظف
+                </a>
+            </button>
+        </div>
 {{--
     <div class="header">
       <div class="header-content">

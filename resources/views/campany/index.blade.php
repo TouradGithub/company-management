@@ -1,10 +1,8 @@
 @
-@extends('layouts.admin')
+@extends('layouts.masteradmin')
 
 @section('content')
-<section id="overtime-form" class="content-section active">
-    <div class="container">
-    <h1>الشركات</h1>
+
 
 
     @if(session('success'))
@@ -18,10 +16,17 @@
             {{ session('error') }}
         </div>
     @endif
-    <div id="entriesContainer">
-        <a  class="btn btn-primary" href="{{ route('company.create') }}">إضافة شركة</a>
-
-        <table class="records-table">
+    <div class="section-header">
+        <h2>الاضافي</h2>
+        <button class="add-deduction-btn">
+            <a href="{{route('company.create')}}">
+          <i class="fas fa-plus"></i>
+          إضافة إضافي
+            </a>
+        </button>
+    </div>
+      <div class="deductions-table">
+        <table >
       <thead>
         <tr>
           <th>Name</th>

@@ -1,4 +1,4 @@
-@extends('layouts.branch')
+@extends('layouts.masterbranch')
 
 @section('content')
 <div class="container">
@@ -11,8 +11,11 @@
         </ul>
     </div>
     @endif
-    <div class="container">
-        <h1>تعديل الخصم</h1>
+    <div class="section-header">
+        <h2>تعديل خصم </h2>
+    </div>
+
+    <div class="add-advance-content">
         <form action="{{ route('branch.deductions.update', $deduction->id) }}" method="POST">
             @csrf
             @method('PUT') <!-- إضافة طريقة التحديث -->
@@ -58,7 +61,7 @@
                 <textarea name="reason" id="reason" class="form-control" style="width: 100%"  rows="5">{{ $deduction->reason }}</textarea>
             </div>
 
-            <button class="btn btn-primary mb-3">تحديث</button>
+            <button  style="margin-top: 5px" class="save-btn">تحديث</button>
         </form>
     </div>
 </div>

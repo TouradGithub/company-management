@@ -1,12 +1,17 @@
-@extends('layouts.branch')
+@extends('layouts.masterbranch')
 
 @section('content')
-<section id="overtime-form" class="content-section active">
-    <div class="container">
-    <h1>السلف</h1>
-    <a href="{{ route('branch.loans.create') }}" class="btn btn-primary mb-3">إضافة سلف </a>
-    <div id="entriesContainer">
-
+<div class="section-header">
+    <h2>الموظفين</h2>
+    <button class="add-deduction-btn">
+        <a href="{{route('branch.loans.create')}}">
+      <i class="fas fa-plus"></i>
+      إضافة موظف
+        </a>
+    </button>
+</div>
+</div>
+<div class="deductions-table">
         <table class="records-table">
         <thead>
             <tr>
@@ -23,11 +28,12 @@
                     <td>{{ $loan->amount }}</td>
                     <td>{{ $loan->loan_date }}</td>
                     <td>
-                        <a class="btn-primary btn-edit" href="{{ route('branch.loans.edit', $loan) }}" class="btn btn-sm btn-warning">تحديث</a>
+                        <a  href="{{ route('branch.loans.edit', $loan) }}"  class="action-btn edit-btn">
+                            <i class="fas fa-edit"></i >تحديث</a>
                         <form action="{{ route('branch.loans.destroy', $loan) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button  class="btn-primary btn-delete">حذف</button>
+                            <button   class="action-btn delete-btn">حذف</button>
                         </form>
                     </td>
                 </tr>

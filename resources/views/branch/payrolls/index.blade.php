@@ -1,4 +1,4 @@
-@extends('layouts.branch')
+@extends('layouts.masterbranch')
 
 @section('content')
 @if(session('success'))
@@ -17,11 +17,17 @@
         }
     </style>
 
-    <div class="container">
-        <h1>سجل كشف الرواتب</h1>
-        <a class="btn btn-primary mb-3" href="{{ route('branch.payrolls.create') }}">إضافة كشف راتب</a>
+<div class="section-header">
+    <h2>سجل كشوفات الرواتب</h2>
+    <button class="add-deduction-btn">
+        <a href="{{route('branch.payrolls.create')}}">
+      <i class="fas fa-plus"></i>
+      إضافة كشف راتب
+        </a>
+    </button>
+</div>
+  <div class="deductions-table">
 
-        <div>
             <form id="exportPdfForm" method="POST" action="{{ route('branch.payrolls.export.pdf') }}">
                 @csrf
                 <input type="hidden" name="month" id="hiddenMonth">
@@ -50,7 +56,7 @@
             </div>
 
             <h3 id="payrollTableTitle" style="display: none;text-align: center;margin-top:30px" >كشوف الرواتب لشهر: <span id="selectedMonth"></span></h3>
-            <button type="submit" id="filterExportPdf" style="display: none" class="btn btn-primary ">طباعة</button>
+            <button type="submit" id="filterExportPdf" style="display: none;margin-top: 3px"  class="save-btn">طباعة</button>
             <div style="margin-top: 20px;display: none" id="catego">
                 <label for="categoryFilter">تصفية حسب الفئة:</label>
                 <select id="categoryFilter" class="form-control">
@@ -140,7 +146,7 @@ function fetchPayrollData(month) {
                             <form action="${deleteUrl}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
-                                <button class="btn-primary btn-delete" type="submit">حذف</button>
+                                <button  class="action-btn delete-btn" type="submit">حذف</button>
                             </form>
                         </td>
                     </tr>

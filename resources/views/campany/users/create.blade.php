@@ -29,7 +29,7 @@
             <input type="password" name="password" class="form-control" required>
         </div>
 
-        <button type="submit"  class="btn btn-primary mb-3">حفظ</button>
+        <button type="submit"   style="margin-top: 5px" class="save-btn">حفظ</button>
     </form>
 </div>
 @endsection

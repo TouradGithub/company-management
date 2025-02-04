@@ -1,7 +1,6 @@
-@extends('layouts.branch')
+@extends('layouts.masterbranch')
 
 @section('content')
-<div class="container">
 
     @if($errors->any())
         <div style="color: red;">
@@ -12,8 +11,12 @@
             </ul>
         </div>
     @endif
-    <h1>إضافة سلف </h1>
-    <form action="{{ route('branch.loans.branch.store') }}" method="POST">
+    <div class="section-header">
+        <h2>إضافة موظف جديد</h2>
+    </div>
+
+    <div class="add-advance-content">
+    <form action="{{ route('branch.loans.branch.store') }}" method="POST" id="add-advance-form" class="standard-form">
         @csrf
         <div class="search-bar fade-in">
 
@@ -36,7 +39,7 @@
             <label for="loan_date">التاريخ</label>
             <input type="date" name="loan_date" id="loan_date" class="form-control">
         </div>
-        <button   class="btn btn-primary mb-3">حفظ</button>
+        <button   style="margin-top: 10px" class="save-btn">حفظ</button>
     </form>
 </div>
 @endsection

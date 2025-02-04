@@ -1,4 +1,4 @@
-@extends('layouts.branch')
+@extends('layouts.masterbranch')
 
 @section('content')
 {{-- <div class="container"> --}}
@@ -18,19 +18,20 @@
     </ul>
 </div>
 @endif
-<h1>إضافه موظف</h1>
-{{-- <form action="{{ route('company.employees.store') }}" method="POST">
-    @csrf --}}
+<div class="section-header">
+    <h2>إضافة موظف جديد</h2>
+</div>
 
-    <div class="form-container">
+<div class="add-advance-content">
 
-        <form action="{{ route('branch.employees.store') }}" method="POST">
+
+        <form action="{{ route('branch.employees.store') }}" method="POST"  id="add-advance-form" class="standard-form">
             @csrf
 
             <div class="row-employe">
                 <div class="form-group-employe">
                     <label for="category_id">الفئة</label>
-                    <select name="category_id" id="category_id" required>
+                    <select name="category_id"  class="form-control" id="category_id" required>
                         <option>اختر الفئة</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -43,49 +44,49 @@
             <div class="row-employe">
                 <div class="form-group-employe">
                     <label for="iqamaNumber">رقم البطاقة</label>
-                    <input type="number" name="iqamaNumber" id="iqamaNumber">
+                    <input type="number"  class="form-control" name="iqamaNumber" id="iqamaNumber">
                 </div>
                 <div class="form-group-employe">
                     <label for="name">الاسم</label>
-                    <input type="text" name="name" id="name" required>
+                    <input type="text"  class="form-control" name="name" id="name" required>
                 </div>
             </div>
 
             <div class="row-employe">
                 <div class="form-group-employe">
                     <label for="job">المهنة</label>
-                    <input type="text" name="job" id="job" required>
+                    <input type="text"  class="form-control" name="job" id="job" required>
                 </div>
                 <div class="form-group-employe">
                     <label for="basic_salary">الراتب الأساسي</label>
-                    <input type="number" name="basic_salary" id="basic_salary">
+                    <input type="number"  class="form-control" name="basic_salary" id="basic_salary">
                 </div>
             </div>
 
             <div class="row-employe">
                 <div class="form-group-employe">
                     <label for="housing_allowance">بدل السكن</label>
-                    <input type="number" name="housing_allowance" id="housing_allowance">
+                    <input type="number"  class="form-control" name="housing_allowance" id="housing_allowance">
                 </div>
                 <div class="form-group-employe">
                     <label for="food_allowance">بدل الإعاشة</label>
-                    <input type="number" name="food_allowance" id="food_allowance">
+                    <input type="number"  class="form-control" name="food_allowance" id="food_allowance">
                 </div>
             </div>
 
             <div class="row-employe">
                 <div class="form-group-employe">
                     <label for="transportation_allowance">بدل المواصلات</label>
-                    <input type="number" name="transportation_allowance" id="transportation_allowance">
+                    <input type="number"  class="form-control" name="transportation_allowance" id="transportation_allowance">
                 </div>
                 <div class="form-group-employe">
                     <label for="hire_date">تاريخ التعيين</label>
-                    <input type="date" name="hire_date" id="hire_date">
+                    <input type="date"  class="form-control" name="hire_date" id="hire_date">
                 </div>
             </div>
 
             <div class="form-group-employe">
-                <button class="btn btn-primary" type="submit">إنشاء الموظف</button>
+                <button style="margin-top: 5px" class="save-btn"  type="submit">إنشاء الموظف</button>
             </div>
         </form>
     </div>

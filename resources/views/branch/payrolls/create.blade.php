@@ -1,5 +1,5 @@
 
-@extends('layouts.branch')
+@extends('layouts.masterbranch')
 
 @section('content')
 
@@ -22,10 +22,15 @@
 
         </div>
     @endif
-    <form id="salaryForm">
+    <div class="section-header">
+        <h2>إضافة كشف جديد</h2>
+    </div>
+
+    <div class="add-advance-content">
+    <form id="salaryForm"  id="add-advance-form" class="standard-form">
       <div class="form-group">
         <label for="month">الشهر:</label>
-        <input type="month" id="month" required>
+        <input type="month"  class="form-control"  id="month" required>
       </div>
 
 
@@ -62,15 +67,17 @@
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn-primary">عرض الكشف</button>
-        <button type="button" class="btn-secondary hidden" id="printBtn">طباعة</button>
+        <button type="submit"  style="margin-top: 10px" class="save-btn">عرض الكشف</button>
+        <button type="button" style="margin-top: 3px" class="save-btn hidden" id="printBtn">طباعة</button>
       </div>
     </form>
+    </div>
 
     <div id="salaryTable" class="hidden">
       <h2>كشف الرواتب - <span id="reportTitle"></span></h2>
       <form action="{{route('branch.payrolls.store')}}" method="POST">@csrf
         <input type="hidden" id="monthYear" value="" name="date">
+        <div class="deductions-table">
       <table>
         <thead id="tableHeader">
           <!-- سيتم إنشاء العناوين ديناميكياً -->
@@ -79,11 +86,11 @@
           <!-- سيتم إنشاء الصفوف ديناميكياً -->
         </tbody>
       </table>
-      <button type="submit" class="btn-secondary hidden" id="formvalidat">إضافة</button>
+      <button type="submit" style="margin-top: 10px" class="save-btn hidden" id="formvalidat">إضافة</button>
       </form>
     </div>
 
-   
+
   </div>
 @endsection
 @section('js')
@@ -143,7 +150,7 @@
             function generateEmployeeReport(data, month, selectedFields) {
     reportTitle.textContent = `${month}`;
 
-    let headerRow = '<tr><th>الرقم</th><th>اسم الموظف</th><th>الفرع</th><th>الراتب</th>';
+    let headerRow = '<tr><th>الرقم</th><th>اسم الموظف</th><th>الراتب</th>';
 
     if (selectedFields.includes('transportation')) {
         headerRow += `<th>بدل التنقل</th>`;
@@ -189,7 +196,7 @@
 
         if (selectedFields.includes('loans')) {
             let loanAmount = parseFloat(employee.loans_total) || 0;
-            row += `<td><input type="number" class="loan-input" name="loans[][amount]" value="${loanAmount.toFixed(2)}" max="${loanAmount}" data-type="loan" /></td>`;
+            row += `<td><input type="number" class="loan-input form-control" name="loans[][amount]" value="${loanAmount.toFixed(2)}" max="${loanAmount}" data-type="loan" /></td>`;
             total += loanAmount;
         }
 
@@ -197,13 +204,13 @@
             let overtimeAmount = (employee.overtimes && employee.overtimes.length > 0 && employee.overtimes[0].total_amount)
                 ? parseFloat(employee.overtimes[0].total_amount)
                 : 0;
-            row += `<td><input type="number" class="overtime-input" name="overtime[][amount]" value="${overtimeAmount.toFixed(2)}" max="${overtimeAmount}" data-type="overtime" /></td>`;
+            row += `<td><input type="number" class="overtime-input form-control" name="overtime[][amount]" value="${overtimeAmount.toFixed(2)}" max="${overtimeAmount}" data-type="overtime" /></td>`;
             total += overtimeAmount;
         }
 
         if (selectedFields.includes('deductions')) {
             let deductionsAmount = parseFloat(employee.deducation_total) || 0;
-            row += `<td><input type="number" class="deduction-input" name="deductions[][amount]" value="${deductionsAmount.toFixed(2)}" max="${deductionsAmount}" data-type="deduction" /></td>`;
+            row += `<td><input type="number" class="deduction-input form-control" name="deductions[][amount]" value="${deductionsAmount.toFixed(2)}" max="${deductionsAmount}" data-type="deduction" /></td>`;
             total -= deductionsAmount;
         }
 

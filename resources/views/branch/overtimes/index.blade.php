@@ -1,4 +1,4 @@
-@extends('layouts.branch')
+@extends('layouts.masterbranch')
 
 @section('content')
 
@@ -6,13 +6,17 @@
 @if(session('success'))
     <p>{{ session('success') }}</p>
 @endif
-<section  >
-    <div class="container">
-        <h1>سجل العمل الإضافي</h1>
-        <a  class="btn btn-primary" href="{{ route('branch.overtimes.create') }}">إضافة الإضافي</a>
-
-      <div  >
-        <div id="entriesContainer">
+    <div class="section-header">
+        <h2>الاضافي</h2>
+        <button class="add-deduction-btn">
+            <a href="{{route('branch.overtimes.create')}}">
+        <i class="fas fa-plus"></i>
+        إضافة إضافي
+            </a>
+        </button>
+    </div>
+    </div>
+    <div class="deductions-table">
 
             <table class="records-table">
                 <thead>
@@ -45,11 +49,12 @@
 
                             <td>{{ $overtime->total_amount }}</td>
                             <td>
-                                <a class="btn-primary btn-edit" href="{{ route('branch.overtimes.edit', $overtime->id) }}">تعديل</a>
+                                <a  href="{{ route('branch.overtimes.edit', $overtime->id) }}" class="action-btn edit-btn">
+                                    <i class="fas fa-edit"></i >تعديل</a>
                                 <form action="{{ route('branch.overtimes.destroy', $overtime->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn-primary btn-delete" type="submit">حذف</button>
+                                    <button  class="action-btn delete-btn" type="submit">حذف</button>
                                 </form>
                             </td>
                         </tr>

@@ -1,13 +1,17 @@
-@extends('layouts.branch')
+@extends('layouts.masterbranch')
 
 @section('content')
-<div class="container">
-    <section id="overtime-form" class="content-section active">
-        <div class="container">
-        <h1>الخصومات</h1>
-        <a href="{{ route('branch.deductions.create') }}" class="btn btn-primary mb-3">إضافة خصم </a>
-        <div id="entriesContainer">
-
+<div class="section-header">
+    <h2>الخصومات</h2>
+    <button class="add-deduction-btn">
+        <a href="{{route('branch.deductions.create')}}">
+      <i class="fas fa-plus"></i>
+      إضافة خصم
+        </a>
+    </button>
+</div>
+</div>
+<div class="deductions-table">
             <table class="records-table">
         <thead>
             <tr>
@@ -38,11 +42,12 @@
                     <td>{{ $deduction->deduction_value }}</td>
                     <td>{{ $deduction->reason }}</td>
                     <td>
-                        <a class="btn-primary btn-edit" href="{{ route('branch.deductions.edit', $deduction) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <a  href="{{ route('branch.deductions.edit', $deduction) }}" class="action-btn edit-btn">
+                            <i class="fas fa-edit"></i>تعديل</a>
                         <form action="{{ route('branch.deductions.destroy', $deduction) }}" method="POST" style="display: inline-block;">
                             @csrf
                             @method('DELETE')
-                            <button class="btn-primary btn-delete">Delete</button>
+                            <button  class="action-btn delete-btn">حذف</button>
                         </form>
                     </td>
                 </tr>

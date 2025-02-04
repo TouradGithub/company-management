@@ -38,7 +38,7 @@
         </div>
 
         <div class="employee-details hidden">
-            <div class="info-card">
+            <div class="info-card checkbox-group " style="margin-bottom: 10px">
                 <div class="info-row">
                     <span class="info-label">رقم الإقامة:</span>
                     <span id="iqamaNumber" class="info-value"></span>
@@ -55,7 +55,7 @@
 
             <div class="overtime-type">
                 <h3>نوع تسجيل الإضافي</h3>
-                <div class="radio-group">
+                <div class="checkbox-group">
                     <label>
                         <input type="radio" name="overtimeType" value="fixed" checked>
                         مبلغ ثابت

@@ -1,4 +1,4 @@
-@extends('layouts.branch')
+@extends('layouts.masterbranch')
 
 @section('content')
 <div class="container">
@@ -12,8 +12,11 @@
         </ul>
     </div>
     @endif
+    <div class="section-header">
+        <h2>تعديل موظف </h2>
+    </div>
 
-    <h1>تعديل سلف</h1>
+    <div class="add-advance-content">
     <form action="{{ route('branch.loans.update', $loan->id) }}" method="POST">
         @csrf
         @method('PUT') <!-- Use PUT method for update -->
@@ -33,7 +36,7 @@
 
         <div class="form-group">
             <label for="amount">Amount</label>
-            <input type="text" name="amount" id="amount" value="{{ $loan->amount }}">
+            <input type="text" name="amount" id="amount" class="form-control" value="{{ $loan->amount }}">
         </div>
 
         <div class="form-group">
@@ -41,7 +44,7 @@
             <input type="date" name="loan_date" id="loan_date" class="form-control" value="{{ $loan->loan_date }}">
         </div>
 
-        <button class="btn btn-primary mb-3">تحديث</button>
+        <button  style="margin-top: 10px" class="save-btn">تحديث</button>
     </form>
 </div>
 @endsection

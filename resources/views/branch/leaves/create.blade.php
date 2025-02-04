@@ -1,5 +1,5 @@
 
-@extends('layouts.branch')
+@extends('layouts.masterbranch')
 
 @section('content')
 
@@ -21,13 +21,13 @@
             </div>
         @endif
         <h1>إضافه إجازة</h1>
-    <form action="{{ route('branch.leaves.store') }}" method="POST">
+    <form action="{{ route('branch.leaves.store') }}" method="POST" method="POST" id="add-advance-form" class="standard-form">
         @csrf
 
 
         <div>
             <label for="employee_id">الموظف</label>
-            <select name="employee_id" id="employee_id" required>
+            <select name="employee_id"   class="form-control"  id="employee_id" required>
                 @foreach($employees as $item)
                     <option value="{{ $item->id }}">{{ $item->name }}</option>
                 @endforeach
@@ -37,12 +37,12 @@
 
         <div>
             <label for="start_date">تاريخ بدء الإجازة</label>
-            <input type="date" name="start_date" id="start_date" required>
+            <input type="date"  class="form-control"  name="start_date" id="start_date" required>
         </div>
 
         <div>
             <label for="end_date">تاريخ انتهاء الإجازة</label>
-            <input type="date" name="end_date" id="end_date" required>
+            <input type="date"  class="form-control"  name="end_date" id="end_date" required>
         </div>
 
         <div class="form-group">
@@ -50,7 +50,7 @@
             <textarea name="reason" id="reason" class="form-control" style="width: 100%"  rows="5"></textarea>
         </div>
 
-        <button  class="btn btn-primary mb-3" type="submit">تسجيل الإجازة</button>
+        <button   style="margin-top: 5px" class="save-btn" type="submit">تسجيل الإجازة</button>
     </form>
 
 </div>

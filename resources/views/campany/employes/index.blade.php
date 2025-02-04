@@ -591,7 +591,6 @@
               <table>
                 <thead>
                   <tr>
-                    <th>النوع</th>
                     <th>تاريخ البداية</th>
                     <th>تاريخ النهاية</th>
                     <th>السبب</th>
@@ -600,7 +599,7 @@
                 <tbody>
                   ${employee.leaves.map(leave => `
                     <tr>
-                      <td>${leave.type}</td>
+                      
                       <td>${leave.start_date}</td>
                       <td>${leave.end_date}</td>
                       <td>${leave.reason}</td>
