@@ -42,12 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Add new options for filtered employees
             response.forEach(emp => {
-              const option = document.createElement('option');
-              option.value = emp.id;
-              option.textContent = emp.name;
+                const option = document.createElement('option');
+                option.value = emp.id;
+                option.textContent = emp.name;
+                console.log(emp.basic_salary);
+                option.setAttribute('data-salary', emp.basic_salary);
 
-              employeesSelect.appendChild(option);
-              console.log( emp.name);
+                employeesSelect.appendChild(option);
+                console.log(emp.name, emp.salary);
             });
 
             // Trigger Select2 update to refresh the dropdown
