@@ -17,11 +17,11 @@
         </div>
     @endif
     <div class="section-header">
-        <h2>الاضافي</h2>
+        <h2>الشركات</h2>
         <button class="add-deduction-btn">
             <a href="{{route('company.create')}}">
           <i class="fas fa-plus"></i>
-          إضافة إضافي
+          إضافة شركة جديده
             </a>
         </button>
     </div>
