@@ -165,7 +165,7 @@
             function generateEmployeeReport(data, month, selectedFields) {
     reportTitle.textContent = `${month}`;
 
-    let headerRow = '<tr><th>الرقم</th><th>اسم الموظف</th><th>الفرع</th><th>الراتب</th>';
+    let headerRow = '<tr><th>اسم الموظف</th><th>الفرع</th><th>الراتب</th>';
 
     if (selectedFields.includes('transportation')) {
         headerRow += `<th>بدل التنقل</th>`;
@@ -190,7 +190,7 @@
     data.forEach(employee => {
         let total = 0;
         let row = `<tr data-employee-id="${employee.id}">
-            <td>${employee.id}<input type="hidden" name="employee[][id]" value="${employee.id}" /></td>
+            <input type="hidden" name="employee[][id]" value="${employee.id}" />
             <td>${employee.name}</td>
             <td>${employee.branch.name}</td>
             <td class="salary">${parseFloat(employee.basic_salary).toFixed(2)}</td>
