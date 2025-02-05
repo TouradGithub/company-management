@@ -148,115 +148,124 @@
             }
 
             function generateEmployeeReport(data, month, selectedFields) {
-    reportTitle.textContent = `${month}`;
+            reportTitle.textContent = `${month}`;
 
-    let headerRow = '<tr><th>الرقم</th><th>اسم الموظف</th><th>الراتب</th>';
+            let headerRow = '<tr><th>اسم الموظف</th><th>الراتب</th>';
 
-    if (selectedFields.includes('transportation')) {
-        headerRow += `<th>بدل التنقل</th>`;
-    }
-    if (selectedFields.includes('food')) {
-        headerRow += `<th>بدل الاعاشة</th>`;
-    }
-    if (selectedFields.includes('loans')) {
-        headerRow += `<th>السلف</th>`;
-    }
-    if (selectedFields.includes('overtime')) {
-        headerRow += `<th>الإضافي</th>`;
-    }
-    if (selectedFields.includes('deductions')) {
-        headerRow += `<th>الخصومات</th>`;
-    }
+            if (selectedFields.includes('transportation')) {
+                headerRow += `<th>بدل التنقل</th>`;
+            }
+            if (selectedFields.includes('food')) {
+                headerRow += `<th>بدل الاعاشة</th>`;
+            }
+            if (selectedFields.includes('loans')) {
+                headerRow += `<th>السلف</th>`;
+            }
+            if (selectedFields.includes('overtime')) {
+                headerRow += `<th>الإضافي</th>`;
+            }
+            if (selectedFields.includes('deductions')) {
+                headerRow += `<th>الخصومات</th>`;
+            }
 
-    headerRow += '<th>الإجمالي</th></tr>';
-    tableHeader.innerHTML = headerRow;
+            headerRow += '<th>الإجمالي</th><th>حذف</th></tr>'; // Added delete column
+            tableHeader.innerHTML = headerRow;
 
-    let tbody = '';
-    data.forEach(employee => {
-        let total = 0;
-        let row = `<tr data-employee-id="${employee.id}">
-            <td>${employee.id}<input type="hidden" name="employee[][id]" value="${employee.id}" /></td>
-            <td>${employee.name}</td>
-            <td class="salary">${parseFloat(employee.basic_salary).toFixed(2)}</td>
-            <input type="hidden" name="basic_salary[][amount]" value="${parseFloat(employee.basic_salary).toFixed(2)}" />`;
+            let tbody = '';
+            data.forEach(employee => {
+                let total = 0;
+                let row = `<tr data-employee-id="${employee.id}">
+                    <input type="hidden" name="employee[][id]" value="${employee.id}" />
+                    <td>${employee.name}</td>
+                    <td class="salary">${parseFloat(employee.basic_salary).toFixed(2)}</td>
+                    <input type="hidden" name="basic_salary[][amount]" value="${parseFloat(employee.basic_salary).toFixed(2)}" />`;
 
-        total += parseFloat(employee.basic_salary) || 0;
+                total += parseFloat(employee.basic_salary) || 0;
 
-        if (selectedFields.includes('transportation')) {
-            let transportationAllowance = parseFloat(employee.transportation_allowance) || 0;
-            row += `<td>${transportationAllowance.toFixed(2)}</td>`;
-            total += transportationAllowance;
+                if (selectedFields.includes('transportation')) {
+                    let transportationAllowance = parseFloat(employee.transportation_allowance) || 0;
+                    row += `<td>${transportationAllowance.toFixed(2)}</td>`;
+                    total += transportationAllowance;
+                }
+
+                if (selectedFields.includes('food')) {
+                    let foodAllowance = parseFloat(employee.food_allowance) || 0;
+                    row += `<td>${foodAllowance.toFixed(2)}</td>`;
+                    total += foodAllowance;
+                }
+
+                if (selectedFields.includes('loans')) {
+                    let loanAmount = parseFloat(employee.loans_total) || 0;
+                    row += `<td><input type="number" class="loan-input form-control" name="loans[][amount]" value="${loanAmount.toFixed(2)}" max="${loanAmount}" data-type="loan" /></td>`;
+                    total += loanAmount;
+                }
+
+                if (selectedFields.includes('overtime')) {
+                    let overtimeAmount = (employee.overtimes && employee.overtimes.length > 0 && employee.overtimes[0].total_amount)
+                        ? parseFloat(employee.overtimes[0].total_amount)
+                        : 0;
+                    row += `<td><input type="number" class="overtime-input form-control" name="overtime[][amount]" value="${overtimeAmount.toFixed(2)}" max="${overtimeAmount}" data-type="overtime" /></td>`;
+                    total += overtimeAmount;
+                }
+
+                if (selectedFields.includes('deductions')) {
+                    let deductionsAmount = parseFloat(employee.deducation_total) || 0;
+                    row += `<td><input type="number" class="deduction-input form-control" name="deductions[][amount]" value="${deductionsAmount.toFixed(2)}" max="${deductionsAmount}" data-type="deduction" /></td>`;
+                    total -= deductionsAmount;
+                }
+
+                row += `<td class="total">${total.toFixed(2)}</td>
+                    <input type="hidden" name="total[][amount]" value="${total.toFixed(2)}" />
+                    <td><button type="button" class="action-btn delete-btn">حذف</button></td>
+                </tr>`;
+
+                tbody += row;
+            });
+
+            if (data.length === 0) {
+                tbody = `<tr>
+                    <td colspan="${selectedFields.length + 5}" style="text-align: center; color: gray;">
+                        لا توجد بيانات لعرضها
+                    </td>
+                </tr>`;
+            }
+
+            tableBody.innerHTML = tbody;
+            document.getElementById('monthYear').value = month;
+
+            if (data.length !== 0) {
+                formvalidat.classList.remove('hidden');
+            }
+
+            salaryTable.classList.remove('hidden');
+
+            // Add event listeners to update total dynamically & enforce limits
+            document.querySelectorAll('.loan-input, .overtime-input, .deduction-input').forEach(input => {
+                input.addEventListener('input', function () {
+                    enforceLimit(this); // Ensure value doesn't exceed the default
+                    updateTotal(this);  // Recalculate total
+                });
+            });
+
+            // Add delete event listener
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    this.closest('tr').remove(); // Remove the row from table
+                });
+            });
         }
 
-        if (selectedFields.includes('food')) {
-            let foodAllowance = parseFloat(employee.food_allowance) || 0;
-            row += `<td>${foodAllowance.toFixed(2)}</td>`;
-            total += foodAllowance;
-        }
-
-        if (selectedFields.includes('loans')) {
-            let loanAmount = parseFloat(employee.loans_total) || 0;
-            row += `<td><input type="number" class="loan-input form-control" name="loans[][amount]" value="${loanAmount.toFixed(2)}" max="${loanAmount}" data-type="loan" /></td>`;
-            total += loanAmount;
-        }
-
-        if (selectedFields.includes('overtime')) {
-            let overtimeAmount = (employee.overtimes && employee.overtimes.length > 0 && employee.overtimes[0].total_amount)
-                ? parseFloat(employee.overtimes[0].total_amount)
-                : 0;
-            row += `<td><input type="number" class="overtime-input form-control" name="overtime[][amount]" value="${overtimeAmount.toFixed(2)}" max="${overtimeAmount}" data-type="overtime" /></td>`;
-            total += overtimeAmount;
-        }
-
-        if (selectedFields.includes('deductions')) {
-            let deductionsAmount = parseFloat(employee.deducation_total) || 0;
-            row += `<td><input type="number" class="deduction-input form-control" name="deductions[][amount]" value="${deductionsAmount.toFixed(2)}" max="${deductionsAmount}" data-type="deduction" /></td>`;
-            total -= deductionsAmount;
-        }
-
-        row += `<td class="total">${total.toFixed(2)}</td>
-            <input type="hidden" name="total[][amount]" value="${total.toFixed(2)}" />
-        </tr>`;
-
-        tbody += row;
-    });
-
-    if (data.length === 0) {
-        tbody = `<tr>
-            <td colspan="${selectedFields.length + 4}" style="text-align: center; color: gray;">
-                لا توجد بيانات لعرضها
-            </td>
-        </tr>`;
-    }
-
-    tableBody.innerHTML = tbody;
-    document.getElementById('monthYear').value = month;
-
-    if (data.length !== 0) {
-        formvalidat.classList.remove('hidden');
-    }
-
-    salaryTable.classList.remove('hidden');
-
-    // Add event listeners to update total dynamically & enforce limits
-    document.querySelectorAll('.loan-input, .overtime-input, .deduction-input').forEach(input => {
-        input.addEventListener('input', function () {
-            enforceLimit(this); // Ensure value doesn't exceed the default
-            updateTotal(this);  // Recalculate total
-        });
-    });
-}
 
 // Function to enforce limits
-function enforceLimit(input) {
-    let maxValue = parseFloat(input.getAttribute('max')) || 0;
-    let currentValue = parseFloat(input.value) || 0;
+            function enforceLimit(input) {
+                let maxValue = parseFloat(input.getAttribute('max')) || 0;
+                let currentValue = parseFloat(input.value) || 0;
 
-    if (currentValue > maxValue) {
-        input.value = maxValue.toFixed(2);
-        alert('لا يمكنك إدخال قيمة أكبر من الحد المسموح به!');
-    }
-}
+                if (currentValue > maxValue) {
+                    input.value = maxValue.toFixed(2);
+                    alert('لا يمكنك إدخال قيمة أكبر من الحد المسموح به!');
+                }
+            }
 
 // Function to update total dynamically
 function updateTotal(input) {
