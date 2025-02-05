@@ -80,7 +80,7 @@
         </div>
         </form>
     </div>
-    
+
     <div id="salaryTable" class="hidden">
       <h2>كشف الرواتب - <span id="reportTitle"></span></h2>
       <form action="{{route('company.payrolls.store')}}" method="POST">@csrf
@@ -183,7 +183,7 @@
         headerRow += `<th>الخصومات</th>`;
     }
 
-    headerRow += '<th>الإجمالي</th></tr>';
+    headerRow += '<th>الإجمالي</th><th>حذف</th></tr>'; // Add Delete Column
     tableHeader.innerHTML = headerRow;
 
     let tbody = '';
@@ -232,6 +232,7 @@
 
         row += `<td class="total">${total.toFixed(2)}</td>
             <input type="hidden" name="total[][amount]" value="${total.toFixed(2)}" />
+            <td><button type="button"  class="action-btn delete-btn">حذف</button></td>
         </tr>`;
 
         tbody += row;
@@ -239,7 +240,7 @@
 
     if (data.length === 0) {
         tbody = `<tr>
-            <td colspan="${selectedFields.length + 4}" style="text-align: center; color: gray;">
+            <td colspan="${selectedFields.length + 5}" style="text-align: center; color: gray;">
                 لا توجد بيانات لعرضها
             </td>
         </tr>`;
@@ -261,7 +262,15 @@
             updateTotal(this);  // Recalculate total
         });
     });
+
+    // Add delete event listener
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            this.closest('tr').remove(); // Remove the row from table
+        });
+    });
 }
+
 
 // Function to enforce limits
 function enforceLimit(input) {
