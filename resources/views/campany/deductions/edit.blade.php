@@ -55,7 +55,7 @@
 
             <div class="form-group" id="deduction_days_hidden">
                 <label for="deduction_days">عدد الأيام</label>
-                <input type="number" name="deduction_days" id="deduction_days" class="form-control" value="{{ $deduction->deduction_days }}">
+                <input type="text" name="deduction_days" id="deduction_days" class="form-control" value="{{ $deduction->deduction_days }}">
             </div>
 
             <div class="form-group">
@@ -65,11 +65,16 @@
                     <option value="fixed_amount" {{ $deduction->deduction_type == 'fixed_amount' ? 'selected' : '' }}>مبلغ ثابت</option>
                 </select>
             </div>
+            @if ($deduction->deduction_type == 'fixed_amount')
+                <div class="form-group" id="fixed_amount_field" style="{{ $deduction->deduction_type == 'fixed_amount' ? '' : 'display: none;' }}">
+                    <label for="deduction_value">قيمة المبلغ الثابت</label>
+                    <input type="number" name="deduction_value" id="deduction_value" class="form-control" value="{{ $deduction->deduction_value }}">
+                </div>
+            @endif
 
-            <div class="form-group" id="fixed_amount_field" style="{{ $deduction->deduction_type == 'fixed_amount' ? '' : 'display: none;' }}">
-                <label for="deduction_value">قيمة المبلغ الثابت</label>
-                <input type="number" name="deduction_value" id="deduction_value" class="form-control" value="{{ $deduction->deduction_value }}">
-            </div>
+
+            <input type="hidden" name="deduction_value" id="deduction_value_t_hidden" class="form-control" value="{{ $deduction->deduction_value }}">
+
             <div class="form-group">
                 <label for="reason">سبب </label>
                 <textarea name="reason" id="reason" class="form-control" style="width: 100%"  rows="5">{{ $deduction->reason }}</textarea>
@@ -110,6 +115,7 @@
     const deductionDays = document.getElementById('deduction_days');
     const deductionValueTotal = document.getElementById('deduction_value_total');
 
+    const deductionTHidden = document.getElementById('deduction_value_t_hidden');
 
     $('#branches').on('change', function() {
       const selectedBranches = $(this).val();
@@ -165,7 +171,10 @@
         if (deductionType.value === 'salary_percentage') {
             deductionAmount = (salary / 30) * days; // Assuming deduction is per day
             deductionSalary.value = salary;
-            document.getElementById('deduction_value').value =deductionAmount;
+            deductionTHidden.value =deductionAmount.toFixed(2);
+            if(document.getElementById('deduction_value')){
+                document.getElementById('deduction_value').value =deductionAmount;
+            }
             fixedAmountField.style.display = 'none';
             showSalary.style.display = 'block';
         } else {
@@ -180,7 +189,8 @@
     }
 
     employeesSelect.addEventListener('change', calculateDeduction);
-    deductionDays.addEventListener('input', calculateDeduction);
+    deductionDays.addEventListener('input[type="number"]', calculateDeduction);
+    deductionValueInput.addEventListener('input[type="text"]', calculateDeduction);
     deductionType.addEventListener('change', calculateDeduction);
 });
 

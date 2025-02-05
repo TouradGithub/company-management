@@ -61,7 +61,7 @@
         </div>
         <div class="form-group" id="fixed_amount_field" style="display: none;">
             <label for="deduction_value">قيمة المبلغ الثابت</label>
-            <input type="number" name="deduction_value" id="deduction_value" class="form-control">
+            <input type="text" name="deduction_value" id="deduction_value" class="form-control">
         </div>
         <div class="form-group">
             <label for="reason">سبب </label>
@@ -82,28 +82,15 @@
 
 <script src="{{asset('overtime.js')}}"></script>
 <script>
-    document.getElementById('deduction_type').addEventListener('change', function () {
-        const fixedAmountField = document.getElementById('fixed_amount_field');
-        const deductionDays = document.getElementById('deduction_days_hidden');
-        const showSalary = document.getElementById('showSalary');
-        const deductionSalary = document.getElementById('deduction_salary');
-        if (this.value === 'fixed_amount') {
-            deductionDays.style.display = 'none';
-            fixedAmountField.style.display = 'block';
-            showSalary.style.display = 'none';
-        } else {
-            deductionDays.style.display = 'block';
-            fixedAmountField.style.display = 'none';
-            showSalary.style.display = 'block';
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const employeesSelect = document.getElementById('employees');
     const deductionType = document.getElementById('deduction_type');
     const deductionDays = document.getElementById('deduction_days');
+    const deductionValueInput = document.getElementById('deduction_value');
     const deductionValueTotal = document.getElementById('deduction_value_total');
-
+    const totalAmountHidden = document.getElementById('totalAmountHidden');
+    const fixedAmountField = document.getElementById('fixed_amount_field');
+    const deductionDaysField = document.getElementById('deduction_days_hidden');
 
     $('#branches').on('change', function() {
       const selectedBranches = $(this).val();
@@ -143,11 +130,22 @@
       // Trigger Select2 update
       $('#employees').trigger('change');
     });
-    // Calculate deduction based on salary
+
+    function toggleFields() {
+        if (deductionType.value === 'fixed_amount') {
+            deductionDaysField.style.display = 'none';
+            fixedAmountField.style.display = 'block';
+            deductionValueInput.setAttribute('required', 'required');
+        } else {
+            deductionDaysField.style.display = 'block';
+            fixedAmountField.style.display = 'none';
+            deductionValueInput.removeAttribute('required');
+            deductionValueInput.value = '';
+        }
+        calculateDeduction();
+    }
+
     function calculateDeduction() {
-        const showSalary = document.getElementById('showSalary');
-        const deductionSalary = document.getElementById('deduction_salary');
-    const fixedAmountField = document.getElementById('fixed_amount_field');
         const selectedEmployee = employeesSelect.options[employeesSelect.selectedIndex];
         if (!selectedEmployee) return;
 
@@ -157,26 +155,31 @@
         let deductionAmount = 0;
 
         if (deductionType.value === 'salary_percentage') {
-            deductionAmount = (salary / 30) * days; // Assuming deduction is per day
-            deductionSalary.value = salary;
-            document.getElementById('deduction_value').value =deductionAmount;
-            fixedAmountField.style.display = 'none';
-            showSalary.style.display = 'block';
+            deductionAmount = (salary / 30) * days;
+            if(deductionValueInput){
+                deductionValueInput.value = deductionAmount.toFixed(2);
+            }
         } else {
-            showSalary.style.display = 'none';
-            fixedAmountField.style.display = 'block';
-            deductionAmount = parseFloat(document.getElementById('deduction_value').value) || 0;
+            deductionAmount = parseFloat(deductionValueInput.value) || 0;
         }
 
-
-
-        deductionValueTotal.innerHTML = ` ${deductionAmount.toFixed(2)} `;
+        deductionValueTotal.innerHTML = `${deductionAmount.toFixed(2)} ريال`;
+        totalAmountHidden.value = deductionAmount.toFixed(2);
+        // document.getElementById('deduction_value_total_value').value = deductionAmount.toFixed(2);
     }
 
+    deductionType.addEventListener('change', toggleFields);
     employeesSelect.addEventListener('change', calculateDeduction);
-    deductionDays.addEventListener('input', calculateDeduction);
-    deductionType.addEventListener('change', calculateDeduction);
+    deductionDays.addEventListener('input[type="number"]', calculateDeduction);
+    deductionValueInput.addEventListener('input[type="text"]', calculateDeduction);
+
+    toggleFields();
 });
+
+
+
+    // Calculate deduction based on salary
+
 
 </script>
 

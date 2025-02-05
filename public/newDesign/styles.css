@@ -946,6 +946,15 @@
     background: linear-gradient(135deg, #ffffff, #f8f9fa);
   }
 
+  .form-controldeducation {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  }
+
   .journal-entries {
     margin: 2rem 0;
   }
@@ -1289,6 +1298,8 @@
     background: linear-gradient(135deg, #ffffff, #f8f9fa);
     transition: all 0.3s;
   }
+
+  
 
   .standard-form .form-control:focus {
     border-color: var(--primary-color);
