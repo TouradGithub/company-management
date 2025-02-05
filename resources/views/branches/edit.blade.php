@@ -31,7 +31,7 @@
         <label>الايميل:</label>
         <input type="email" name="email"  class="form-control"value="{{ $company->email }}" required>
 
-        <label>كبمة المرور:</label>
+        <label>كلمة المرور:</label>
         <input type="password" class="form-control" name="password">
 
         <button   style="margin-top: 30px" class="save-btn" type="submit">تحديث</button>
