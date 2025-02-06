@@ -11,11 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetBtn = document.getElementById('resetBtn');
 
 
-    // $('#employees').select2({
-    //   placeholder: 'اختر الموظفين',
-    //   dir: 'rtl',
-    //   language: 'ar'
-    // });
+   
+      $('#employees').select2({
+        placeholder: 'اختر الموظفين',
+        dir: 'rtl',
+        language: 'ar'
+      });
 
 
     // Sample employees data

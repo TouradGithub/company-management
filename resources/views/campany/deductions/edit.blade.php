@@ -35,7 +35,7 @@
 
             <div class="form-group">
                 <label for="employees">الموظفين:</label>
-                <select id="employees" name="employe_id" required>
+                <select id="employees" name="employe_id" class="form-control" required>
                     @foreach ($employees as $employee)
                     <option data-salary="{{ $employee->basic_salary }}" value="{{ $employee->id }}" {{ $employee->id == $deduction->employee_id ? 'selected' : '' }}>
                         {{ $employee->name }}
@@ -65,12 +65,11 @@
                     <option value="fixed_amount" {{ $deduction->deduction_type == 'fixed_amount' ? 'selected' : '' }}>مبلغ ثابت</option>
                 </select>
             </div>
-            @if ($deduction->deduction_type == 'fixed_amount')
                 <div class="form-group" id="fixed_amount_field" style="{{ $deduction->deduction_type == 'fixed_amount' ? '' : 'display: none;' }}">
                     <label for="deduction_value">قيمة المبلغ الثابت</label>
-                    <input type="number" name="deduction_value" id="deduction_value" class="form-control" value="{{ $deduction->deduction_value }}">
+                    <input type="text" name="deduction_value" id="deduction_value" class="form-control" value="{{ $deduction->deduction_value }}">
                 </div>
-            @endif
+
 
 
             <input type="hidden" name="deduction_value" id="deduction_value_t_hidden" class="form-control" value="{{ $deduction->deduction_value }}">
@@ -93,18 +92,32 @@
 @section('js')
 <script src="{{ asset('overtime.js') }}"></script>
 <script>
+      $('#branches').select2({
+        placeholder: 'اختر الموظفين',
+        dir: 'rtl',
+        language: 'ar'
+      });
   document.getElementById('deduction_type').addEventListener('change', function () {
-        const fixedAmountField = document.getElementById('fixed_amount_field');
-        const deductionDays = document.getElementById('deduction_days_hidden');
-        const showSalary = document.getElementById('showSalary');
-        const deductionSalary = document.getElementById('deduction_salary');
+    const employeesSelect = document.getElementById('employees');
+    const deductionType = document.getElementById('deduction_type');
+    const deductionDays = document.getElementById('deduction_days');
+    const deductionValueInput = document.getElementById('deduction_value');
+    const deductionValueTotal = document.getElementById('deduction_value_total');
+    const totalAmountHidden = document.getElementById('totalAmountHidden');
+    const fixedAmountField = document.getElementById('fixed_amount_field');
+    const deductionDaysField = document.getElementById('deduction_days_hidden');
         if (this.value === 'fixed_amount') {
             deductionDays.style.display = 'none';
-            fixedAmountField.style.display = 'block';
+            if(fixedAmountField){
+                fixedAmountField.style.display = 'block';
+            }
             showSalary.style.display = 'none';
         } else {
             deductionDays.style.display = 'block';
-            fixedAmountField.style.display = 'none';
+            if(fixedAmountField){
+                fixedAmountField.style.display = 'none';
+            }
+
             showSalary.style.display = 'block';
         }
     });
@@ -114,7 +127,7 @@
     const deductionType = document.getElementById('deduction_type');
     const deductionDays = document.getElementById('deduction_days');
     const deductionValueTotal = document.getElementById('deduction_value_total');
-
+    const deductionValueInput = document.getElementById('deduction_value');
     const deductionTHidden = document.getElementById('deduction_value_t_hidden');
 
     $('#branches').on('change', function() {
@@ -186,11 +199,13 @@
 
 
         deductionValueTotal.innerHTML = ` ${deductionAmount.toFixed(2)} `;
+
+        document.getElementById('deduction_value_t_hidden').value  =deductionAmount.toFixed(2);
     }
 
     employeesSelect.addEventListener('change', calculateDeduction);
-    deductionDays.addEventListener('input[type="number"]', calculateDeduction);
-    deductionValueInput.addEventListener('input[type="text"]', calculateDeduction);
+    deductionDays.addEventListener('input', calculateDeduction);
+    deductionValueInput.addEventListener('input', calculateDeduction);
     deductionType.addEventListener('change', calculateDeduction);
 });
 

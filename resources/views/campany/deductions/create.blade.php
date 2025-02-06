@@ -23,7 +23,7 @@
             <div class="form-group">
 
               <label for="branches">الفروع:</label>
-              <select id="branches" multiple  required>
+              <select id="branches" class="form-control" multiple  required>
                   @foreach ($branches as $item)
 
                   <option value="{{$item->id}}"> {{$item->name}}</option>
@@ -34,7 +34,7 @@
 
             <div class="form-group">
                 <label for="employees">الموظفين:</label>
-                <select id="employees" name="employe_id" required>
+                <select id="employees" name="employe_id" required class="form-control">
                 </select>
               </div>
 
@@ -80,8 +80,12 @@
 @section('js')
 
 
-<script src="{{asset('overtime.js')}}"></script>
 <script>
+     $('#branches').select2({
+        placeholder: 'اختر الموظفين',
+        dir: 'rtl',
+        language: 'ar'
+      });
 document.addEventListener('DOMContentLoaded', function () {
     const employeesSelect = document.getElementById('employees');
     const deductionType = document.getElementById('deduction_type');
@@ -170,8 +174,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     deductionType.addEventListener('change', toggleFields);
     employeesSelect.addEventListener('change', calculateDeduction);
-    deductionDays.addEventListener('input[type="number"]', calculateDeduction);
-    deductionValueInput.addEventListener('input[type="text"]', calculateDeduction);
+    deductionDays.addEventListener('input', calculateDeduction);
+    deductionValueInput.addEventListener('input', calculateDeduction);
 
     toggleFields();
 });
@@ -183,4 +187,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
 </script>
 
+<script src="{{asset('overtime.js')}}"></script>
 @endsection
