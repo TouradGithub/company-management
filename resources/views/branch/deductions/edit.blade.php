@@ -24,7 +24,7 @@
 
             <div class="form-group">
                 <label for="employees">الموظفين:</label>
-                <select id="employees" name="employe_id" required>
+                <select id="employees" name="employe_id"  class="form-control" required>
                     @foreach ($employees as $employee)
                     <option data-salary="{{ $employee->basic_salary }}" value="{{ $employee->id }}" {{ $employee->id == $deduction->employee_id ? 'selected' : '' }}>
                         {{ $employee->name }}
@@ -38,7 +38,7 @@
                 <input type="date" name="deduction_date" id="deduction_date" class="form-control" value="{{ $deduction->deduction_date }}">
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="deduction_days_hidden">
                 <label for="deduction_days">عدد الأيام</label>
                 <input type="number" name="deduction_days" id="deduction_days" class="form-control" value="{{ $deduction->deduction_days }}">
             </div>
@@ -50,12 +50,12 @@
                     <option value="fixed_amount" {{ $deduction->deduction_type == 'fixed_amount' ? 'selected' : '' }}>مبلغ ثابت</option>
                 </select>
             </div>
-            @if ($deduction->deduction_type == 'fixed_amount')
             <div class="form-group" id="fixed_amount_field" style="{{ $deduction->deduction_type == 'fixed_amount' ? '' : 'display: none;' }}">
                 <label for="deduction_value">قيمة المبلغ الثابت</label>
-                <input type="number" name="deduction_value" id="deduction_value" class="form-control" value="{{ $deduction->deduction_value }}">
+                <input type="text"  id="deduction_value" class="form-control" value="{{ $deduction->deduction_value }}">
+
             </div>
-            @endif
+
 
             <input type="hidden" name="deduction_value" id="deduction_value_t_hidden" class="form-control" value="{{ $deduction->deduction_value }}">
 
@@ -103,7 +103,6 @@
         } else {
             deductionDaysField.style.display = 'block';
             fixedAmountField.style.display = 'none';
-            deductionValueInput.removeAttribute('required');
             if(deductionValueInput){
                 deductionValueInput.value = '';
             }
@@ -134,17 +133,16 @@
         }
 
         deductionValueTotal.innerHTML = `${deductionAmount.toFixed(2)} ريال`;
-        totalAmountHidden.value = deductionAmount.toFixed(2);
-        document.getElementById('deduction_value_total_value').value = deductionAmount.toFixed(2);
+        deductionTHidden.value = deductionAmount.toFixed(2);
     }
 
     deductionType.addEventListener('change', toggleFields);
     employeesSelect.addEventListener('change', calculateDeduction);
-    deductionDays.addEventListener('input[type="number"]', calculateDeduction);
-    deductionValueInput.addEventListener('input[type="text"]', calculateDeduction);
+    deductionDays.addEventListener('input', calculateDeduction);
+    deductionValueInput.addEventListener('input', calculateDeduction);
 
     toggleFields();
 });
 </script>
-<script src="{{asset('overtime.js')}}"></script></script>
+{{-- <script src="{{asset('overtime.js')}}"></script></script> --}}
 @endsection

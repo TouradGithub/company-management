@@ -22,7 +22,7 @@
 
             <div class="form-group">
                 <label for="employees">الموظفين:</label>
-                <select id="employees" name="employe_id" required>
+                <select id="employees"  class="form-control" name="employe_id" required>
                     @foreach ($employees as $item)
                         <option data-salary="{{ $item->basic_salary }}" value="{{$item->id}}">{{$item->name}}</option>
                     @endforeach
@@ -119,11 +119,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     deductionType.addEventListener('change', toggleFields);
     employeesSelect.addEventListener('change', calculateDeduction);
-    deductionDays.addEventListener('input[type="number"]', calculateDeduction);
-    deductionValueInput.addEventListener('input[type="text"]', calculateDeduction);
+    deductionDays.addEventListener('input', calculateDeduction);
+    deductionValueInput.addEventListener('input', calculateDeduction);
 
     toggleFields();
 });
 </script>
-<script src="{{asset('overtime.js')}}"></script>
+{{-- <script src="{{asset('overtime.js')}}"></script> --}}
 @endsection
