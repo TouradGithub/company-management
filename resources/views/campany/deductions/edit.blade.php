@@ -44,9 +44,18 @@
                 </select>
             </div>
 
-            <div class="form-group "  id="showSalary" style="display: none">
-                <label > :الراتب</label><span id="deduction_salary" ></span>
-            </div>
+            <div class="employee-details ">
+                <div class="info-card checkbox-group " style="margin-bottom: 10px">
+
+                    <div class="info-row">
+                        <span class="info-label">الراتب الأساسي:</span>
+                        <span   id="basicSalary" class=" info-value" > {{ $deduction->employee->basic_salary }} ريال</span>
+                    </div>
+
+                </div>
+              </div>
+
+
 
             <div class="form-group">
                 <label for="deduction_date">التاريخ</label>
@@ -92,6 +101,7 @@
 @section('js')
 <script src="{{ asset('overtime.js') }}"></script>
 <script>
+        const employeeDetails = document.querySelector('.employee-details');
       $('#branches').select2({
         placeholder: 'اختر الموظفين',
         dir: 'rtl',
@@ -159,6 +169,7 @@
 
             // Trigger Select2 update to refresh the dropdown
             $('#employees').trigger('change');
+            getSalary();
           },
           error: function(xhr, status, error) {
             console.error("There was an error fetching the employees: ", error);
@@ -170,8 +181,6 @@
     });
     // Calculate deduction based on salary
     function calculateDeduction() {
-        const showSalary = document.getElementById('showSalary');
-        const deductionSalary = document.getElementById('deduction_salary');
     const fixedAmountField = document.getElementById('fixed_amount_field');
         const selectedEmployee = employeesSelect.options[employeesSelect.selectedIndex];
         if (!selectedEmployee) return;
@@ -183,15 +192,12 @@
 
         if (deductionType.value === 'salary_percentage') {
             deductionAmount = (salary / 30) * days; // Assuming deduction is per day
-            deductionSalary.value = salary;
             deductionTHidden.value =deductionAmount.toFixed(2);
             if(document.getElementById('deduction_value')){
                 document.getElementById('deduction_value').value =deductionAmount;
             }
             fixedAmountField.style.display = 'none';
-            showSalary.style.display = 'block';
         } else {
-            showSalary.style.display = 'none';
             fixedAmountField.style.display = 'block';
             deductionAmount = parseFloat(document.getElementById('deduction_value').value) || 0;
         }
@@ -202,12 +208,26 @@
 
         document.getElementById('deduction_value_t_hidden').value  =deductionAmount.toFixed(2);
     }
-
-    employeesSelect.addEventListener('change', calculateDeduction);
+    employeesSelect.addEventListener('change', function() {
+        getSalary();  // Updates the details (iqama number, salary)
+        calculateDeduction();  // Calculates the deduction based on salary
+    });
     deductionDays.addEventListener('input', calculateDeduction);
     deductionValueInput.addEventListener('input', calculateDeduction);
     deductionType.addEventListener('change', calculateDeduction);
 });
+
+
+function getSalary() {
+        const employeesSelect = document.getElementById('employees');
+        const selectedEmploy = employeesSelect.options[employeesSelect.selectedIndex];
+        const salary = parseFloat(selectedEmploy.getAttribute('data-salary'));
+
+        document.getElementById('basicSalary').textContent = salary + ' ريال';
+
+        employeeDetails.classList.remove('hidden');
+
+    }
 
 </script>
 @endsection

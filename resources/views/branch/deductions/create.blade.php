@@ -28,6 +28,16 @@
                     @endforeach
                 </select>
             </div>
+            <div class="employee-details hidden">
+                <div class="info-card checkbox-group " style="margin-bottom: 10px">
+
+                    <div class="info-row">
+                        <span class="info-label">الراتب الأساسي:</span>
+                        <span   id="basicSalary" class=" info-value" ></span>
+                    </div>
+
+                </div>
+              </div>
 
             <div class="form-group">
                 <label for="deduction_date">التاريخ</label>
@@ -82,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const totalAmountHidden = document.getElementById('totalAmountHidden');
     const fixedAmountField = document.getElementById('fixed_amount_field');
     const deductionDaysField = document.getElementById('deduction_days_hidden');
+    const employeeDetails = document.querySelector('.employee-details');
 
     function toggleFields() {
         if (deductionType.value === 'fixed_amount') {
@@ -95,6 +106,16 @@ document.addEventListener('DOMContentLoaded', function () {
             deductionValueInput.value = '';
         }
         calculateDeduction();
+    }
+    function getSalary() {
+        const employeesSelect = document.getElementById('employees');
+        const selectedEmploy = employeesSelect.options[employeesSelect.selectedIndex];
+        const salary = parseFloat(selectedEmploy.getAttribute('data-salary'));
+
+        document.getElementById('basicSalary').textContent = salary + ' ريال';
+
+        employeeDetails.classList.remove('hidden');
+
     }
 
     function calculateDeduction() {
@@ -118,11 +139,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     deductionType.addEventListener('change', toggleFields);
-    employeesSelect.addEventListener('change', calculateDeduction);
+    employeesSelect.addEventListener('change', function() {
+        getSalary();
+        calculateDeduction();
+    });
     deductionDays.addEventListener('input', calculateDeduction);
     deductionValueInput.addEventListener('input', calculateDeduction);
 
     toggleFields();
+    getSalary();
 });
 </script>
 {{-- <script src="{{asset('overtime.js')}}"></script> --}}

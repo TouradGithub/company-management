@@ -38,8 +38,15 @@
                 </select>
               </div>
 
-              <div class="form-group "  id="showSalary" style="display: none">
-                <label > :الراتب</label><span id="deduction_salary" ></span>
+              <div class="employee-details hidden">
+                <div class="info-card checkbox-group " style="margin-bottom: 10px">
+
+                    <div class="info-row">
+                        <span class="info-label">الراتب الأساسي:</span>
+                        <span   id="basicSalary" class=" info-value" ></span>
+                    </div>
+
+                </div>
               </div>
 
         <div class="form-group">
@@ -95,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const totalAmountHidden = document.getElementById('totalAmountHidden');
     const fixedAmountField = document.getElementById('fixed_amount_field');
     const deductionDaysField = document.getElementById('deduction_days_hidden');
+    const employeeDetails = document.querySelector('.employee-details');
 
     $('#branches').on('change', function() {
       const selectedBranches = $(this).val();
@@ -125,6 +133,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Trigger Select2 update to refresh the dropdown
             $('#employees').trigger('change');
+            getSalary();
           },
           error: function(xhr, status, error) {
             console.error("There was an error fetching the employees: ", error);
@@ -133,7 +142,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Trigger Select2 update
       $('#employees').trigger('change');
+
     });
+
+    function getSalary() {
+        const employeesSelect = document.getElementById('employees');
+        const selectedEmploy = employeesSelect.options[employeesSelect.selectedIndex];
+        const salary = parseFloat(selectedEmploy.getAttribute('data-salary'));
+
+        document.getElementById('basicSalary').textContent = salary + ' ريال';
+
+        employeeDetails.classList.remove('hidden');
+
+    }
 
     function toggleFields() {
         if (deductionType.value === 'fixed_amount') {
@@ -151,6 +172,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function calculateDeduction() {
         const selectedEmployee = employeesSelect.options[employeesSelect.selectedIndex];
+
+
         if (!selectedEmployee) return;
 
         const salary = parseFloat(selectedEmployee.getAttribute('data-salary')) || 0;
@@ -173,7 +196,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     deductionType.addEventListener('change', toggleFields);
-    employeesSelect.addEventListener('change', calculateDeduction);
+    employeesSelect.addEventListener('change', function() {
+        getSalary();  // Updates the details (iqama number, salary)
+        calculateDeduction();  // Calculates the deduction based on salary
+    });
     deductionDays.addEventListener('input', calculateDeduction);
     deductionValueInput.addEventListener('input', calculateDeduction);
 
