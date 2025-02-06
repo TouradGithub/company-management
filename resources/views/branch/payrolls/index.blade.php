@@ -41,6 +41,7 @@
                             <th>التواريخ المتاحة</th>
                             <th>عدد الموظفين</th>
                             <th>إجمالي الرواتب</th>
+                            <th>الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,6 +50,13 @@
                                 <td>{{ $payroll->date }}</td>
                                 <td>{{ $payroll->employees_count }}</td>
                                 <td>{{ number_format($payroll->total_salary, 2) }} ريال</td>
+                                <td>
+                                    <a href="{{ route('branch.payrolls.deleteByDate', ['date' => $payroll->date]) }}"
+                                       onclick="event.stopPropagation();return confirm('هل أنت متأكد أنك تريد حذف كشف الرواتب لهذا التاريخ؟');"
+                                       class="action-btn delete-btn" >
+                                        حذف
+                                    </a>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

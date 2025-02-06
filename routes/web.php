@@ -59,6 +59,7 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::get('/company/payrolls/create', [PayrollController::class, 'create'])->name('company.payrolls.create');
     Route::get('/company/payrolls/index', [PayrollController::class, 'index'])->name('company.payrolls.index');
     Route::post('/company/payrolls/store', [PayrollController::class, 'store'])->name('company.payrolls.store');
+    Route::get('/payrolls/delete/{date}', [PayrollController::class, 'deleteByDate'])->name('payrolls.deleteByDate');
     Route::delete('/company/payrolls/delete/{id}/{date}', [PayrollController::class, 'delete'])->name('company.payrolls.stodeletere');
     Route::resource('loans', App\Http\Controllers\LoanController::class);
     Route::resource('deductions',App\Http\Controllers\DeductionController::class);
@@ -142,6 +143,7 @@ Route::prefix('branch')->middleware(['auth', 'verify.branch'])->group(function (
     Route::get('payrolls/index', [App\Http\Controllers\Branch\PayrollController::class, 'index'])->name('branch.payrolls.index');
     Route::post('payrolls/store', [App\Http\Controllers\Branch\PayrollController::class, 'store'])->name('branch.payrolls.store');
     Route::delete('payrolls/delete/{id}/{date}', [App\Http\Controllers\Branch\PayrollController::class, 'delete'])->name('branch.payrolls.stodeletere');
+    Route::get('/payrolls/delete/{date}', [App\Http\Controllers\Branch\PayrollController::class, 'deleteByDate'])->name('branch.payrolls.deleteByDate');
     Route::get('payrolls/data', [App\Http\Controllers\Branch\PayrollController::class, 'getPayrollData'])->name('branch.payrolls.data');
     Route::post('payrolls/export/pdf', [App\Http\Controllers\Branch\PayrollController::class, 'exportPdf'])->name('branch.payrolls.export.pdf');
 

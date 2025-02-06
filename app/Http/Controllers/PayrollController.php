@@ -77,6 +77,9 @@ class PayrollController extends Controller
                 $loanAmount = $validated['loans'][$index]['amount'] ?? 0;
                 processLoanPayment($employeeId, $loanAmount);
 
+                $overtime = $validated['overtime'][$index]['amount'] ?? 0;
+                processOvertimePayment($employeeId, $overtime);
+
                 getUnpaidOvertimeTotal( $employeeId);
                 getUnpaidLoansTotal( $employeeId);
                 getUnpaidDeductionsTotal( $employeeId);
@@ -127,15 +130,17 @@ class PayrollController extends Controller
         $payroll= Payroll::find($id);
         $deductionAmount = $payroll->deduction;
         $loanAmount = $payroll->loans;
+        $overtime = $payroll->overtime;
         $IdEmployee= $payroll->employee_id;
         reverseDeductionPayment($payroll->employee_id, $deductionAmount);
         reverseLoanPayment($payroll->employee_id, $loanAmount);
+        reverseOvertimePayment($payroll->employee_id, $overtime);
         $payroll->delete();
         getUnpaidOvertimeTotal(  $IdEmployee);
         getUnpaidLoansTotal( $IdEmployee);
         getUnpaidDeductionsTotal( $IdEmployee);
 
-        return redirect()->back()->with(['succes' => 'تم حذف الكشف بنجاح']);
+        return redirect()->back()->with(['success' => 'تم حذف الكشف بنجاح']);
     }
 
     // use Mpdf\Mpdf;
@@ -181,6 +186,36 @@ class PayrollController extends Controller
             $mpdf->Output();
             ob_end_flush();
     }
+    public function deleteByDate($date)
+    {
+        $branches = Branch::where('company_id', auth()->user()->model_id)->pluck('id');
+
+        if ($branches->isEmpty()) {
+            return redirect()->back()->with('error', 'لا توجد فروع تابعة لهذه الشركة.');
+        }
+
+        $payrolls  = Payroll::where('date', $date)
+                          ->whereIn('branch_id', $branches)
+                          ->get();
+
+        foreach($payrolls as $payroll){
+            $deductionAmount = $payroll->deduction;
+            $loanAmount = $payroll->loans;
+            $IdEmployee= $payroll->employee_id;
+            $overtime = $payroll->overtime;
+            reverseDeductionPayment($payroll->employee_id, $deductionAmount);
+            reverseLoanPayment($payroll->employee_id, $loanAmount);
+            reverseOvertimePayment($payroll->employee_id, $overtime);
+            $payroll->delete();
+            getUnpaidOvertimeTotal(  $IdEmployee);
+            getUnpaidLoansTotal( $IdEmployee);
+            getUnpaidDeductionsTotal( $IdEmployee);
+        }
+
+        return redirect()->back()->with('success', 'تم حذف كشف الرواتب بنجاح!');
+
+    }
+
 
 
 
