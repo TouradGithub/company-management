@@ -185,7 +185,7 @@
 
     toggleFields();
     getSalary();
+
 });
 </script>
-{{-- <script src="{{asset('overtime.js')}}"></script></script> --}}
 @endsection
