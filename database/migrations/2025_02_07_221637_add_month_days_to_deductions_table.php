@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('deductions', function (Blueprint $table) {
-            $table->string('reason')->nullable();
+            $table->integer('month_days')->default(30)->after('deduction_days');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('deductions', function (Blueprint $table) {
-            //
+            $table->dropColumn('month_days');
         });
     }
 };

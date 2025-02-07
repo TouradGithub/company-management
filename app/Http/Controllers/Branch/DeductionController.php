@@ -30,6 +30,7 @@ class DeductionController extends Controller
             'deduction_date' => 'required|date',
             'deduction_days' => 'required|numeric|min:1',
             'deduction_type' => 'required',
+            'month_days'=> 'nullable|numeric',
             'deduction_value' => 'nullable|numeric|min:0', // Only required for fixed_amount
             'reason' => 'nullable|string', // Only required for fixed_amount
         ]);
@@ -40,7 +41,6 @@ class DeductionController extends Controller
         $employee = Employee::find($validatedData['employe_id']);
 
 
-
         Deduction::create([
             'employee_id' => $validatedData['employe_id'],
             'branch_id' =>  $employee->branch->id,
@@ -48,6 +48,7 @@ class DeductionController extends Controller
             'deduction_days' => $validatedData['deduction_days'],
             'deduction_type' => $validatedData['deduction_type'],
             'deduction_value' => $validatedData['deduction_value']??null,
+            'month_days' => $validatedData['month_days'] ?? 30,
             'remaining_deduction' => $validatedData['deduction_value']??0,
             'reason' => $validatedData['reason']??null
         ]);

@@ -56,6 +56,10 @@
                     <option value="fixed_amount">مبلغ ثابت</option>
                 </select>
             </div>
+            <div class="form-group" id="month_days_field">
+                <label for="month_days">عدد أيام الشهر</label>
+                <input type="number" name="month_days" id="month_days" class="form-control" >
+            </div>
 
             <div class="form-group" id="fixed_amount_field">
                 <label for="deduction_value">قيمة المبلغ الثابت</label>
@@ -94,12 +98,23 @@ document.addEventListener('DOMContentLoaded', function () {
     const deductionDaysField = document.getElementById('deduction_days_hidden');
     const employeeDetails = document.querySelector('.employee-details');
 
+    const monthDaysField = document.getElementById('month_days_field');
+    const monthDaysInput = document.getElementById('month_days');
+    monthDaysInput.value = getDaysInCurrentMonth();
+
+    function getDaysInCurrentMonth() {
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    }
+
     function toggleFields() {
         if (deductionType.value === 'fixed_amount') {
             deductionDaysField.style.display = 'none';
+            monthDaysField.style.display = 'none';
             fixedAmountField.style.display = 'block';
             deductionValueInput.setAttribute('required', 'required');
         } else {
+            monthDaysField.style.display = 'block';
             deductionDaysField.style.display = 'block';
             fixedAmountField.style.display = 'none';
             deductionValueInput.removeAttribute('required');
@@ -124,10 +139,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const salary = parseFloat(selectedEmployee.getAttribute('data-salary')) || 0;
         const days = parseInt(deductionDays.value) || 0;
+        const totalMonthDays = parseInt(monthDaysInput.value) || getDaysInCurrentMonth();
         let deductionAmount = 0;
 
         if (deductionType.value === 'salary_percentage') {
-            deductionAmount = (salary / 30) * days;
+            deductionAmount =  (salary / totalMonthDays) * days;
             deductionValueInput.value = deductionAmount.toFixed(2);
         } else {
             deductionAmount = parseFloat(deductionValueInput.value) || 0;
@@ -145,6 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     deductionDays.addEventListener('input', calculateDeduction);
     deductionValueInput.addEventListener('input', calculateDeduction);
+    monthDaysInput.addEventListener('input', calculateDeduction);
 
     toggleFields();
     getSalary();

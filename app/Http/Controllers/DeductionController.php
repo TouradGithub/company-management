@@ -31,6 +31,7 @@ class DeductionController extends Controller
             'deduction_type' => 'required',
             'deduction_value' => 'nullable|numeric|min:0', // Only required for fixed_amount
             'reason' => 'nullable', // Only required for fixed_amount
+            'month_days' => 'nullable|numeric', // Only required for fixed_amount
         ]);
 
         if ($validatedData['deduction_type'] === 'fixed_amount' && !isset($validatedData['deduction_value'])) {
@@ -43,14 +44,13 @@ class DeductionController extends Controller
             return redirect()->back()->withErrors(['employee_id' => 'هذا الموظف غير موجود']);
         }
 
-       
-
         Deduction::create([
             'employee_id' => $validatedData['employe_id'],
             'branch_id' =>  $employee->branch->id,
             'deduction_date' => $validatedData['deduction_date'],
             'deduction_days' => $validatedData['deduction_days'],
             'deduction_type' => $validatedData['deduction_type'],
+            'month_days' => $validatedData['month_days'] ?? 30,
             'deduction_value' => $validatedData['deduction_value']??null,
             'remaining_deduction' => $validatedData['deduction_value']??0,
             'reason' => $validatedData['reason']??null

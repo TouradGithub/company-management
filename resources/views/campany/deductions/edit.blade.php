@@ -74,12 +74,16 @@
                     <option value="fixed_amount" {{ $deduction->deduction_type == 'fixed_amount' ? 'selected' : '' }}>مبلغ ثابت</option>
                 </select>
             </div>
+
                 <div class="form-group" id="fixed_amount_field" style="{{ $deduction->deduction_type == 'fixed_amount' ? '' : 'display: none;' }}">
                     <label for="deduction_value">قيمة المبلغ الثابت</label>
                     <input type="text" name="deduction_value" id="deduction_value" class="form-control" value="{{ $deduction->deduction_value }}">
                 </div>
 
-
+                <div class="form-group" id="month_days_field" style="{{ $deduction->deduction_type == 'fixed_amount' ? 'display: none;' : '' }}">
+                    <label for="month_days">عدد أيام الشهر</label>
+                    <input type="number" name="month_days" id="month_days" value="{{$deduction->month_days}}" class="form-control" >
+                </div>
 
             <input type="hidden" name="deduction_value" id="deduction_value_t_hidden" class="form-control" value="{{ $deduction->deduction_value }}">
 
@@ -116,14 +120,22 @@
     const totalAmountHidden = document.getElementById('totalAmountHidden');
     const fixedAmountField = document.getElementById('fixed_amount_field');
     const deductionDaysField = document.getElementById('deduction_days_hidden');
+
+    const monthDaysField = document.getElementById('month_days_field');
+    const monthDaysInput = document.getElementById('month_days');
+
         if (this.value === 'fixed_amount') {
             deductionDays.style.display = 'none';
             if(fixedAmountField){
                 fixedAmountField.style.display = 'block';
             }
+
+            monthDaysField.style.display = 'none';
             showSalary.style.display = 'none';
         } else {
             deductionDays.style.display = 'block';
+
+            monthDaysField.style.display = 'block';
             if(fixedAmountField){
                 fixedAmountField.style.display = 'none';
             }
@@ -132,6 +144,7 @@
         }
     });
 
+
     document.addEventListener('DOMContentLoaded', function () {
     const employeesSelect = document.getElementById('employees');
     const deductionType = document.getElementById('deduction_type');
@@ -139,6 +152,10 @@
     const deductionValueTotal = document.getElementById('deduction_value_total');
     const deductionValueInput = document.getElementById('deduction_value');
     const deductionTHidden = document.getElementById('deduction_value_t_hidden');
+
+
+    const monthDaysField = document.getElementById('month_days_field');
+    const monthDaysInput = document.getElementById('month_days');
 
     $('#branches').on('change', function() {
       const selectedBranches = $(this).val();
@@ -179,6 +196,10 @@
       // Trigger Select2 update
       $('#employees').trigger('change');
     });
+    function getDaysInCurrentMonth() {
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    }
     // Calculate deduction based on salary
     function calculateDeduction() {
     const fixedAmountField = document.getElementById('fixed_amount_field');
@@ -187,11 +208,12 @@
 
         const salary = parseFloat(selectedEmployee.getAttribute('data-salary')) || 0;
         const days = parseInt(deductionDays.value) || 0;
+        const totalMonthDays = parseInt(monthDaysInput.value) || getDaysInCurrentMonth();
         console.log(salary);
         let deductionAmount = 0;
 
         if (deductionType.value === 'salary_percentage') {
-            deductionAmount = (salary / 30) * days; // Assuming deduction is per day
+            deductionAmount = (salary / totalMonthDays) * days; // Assuming deduction is per day
             deductionTHidden.value =deductionAmount.toFixed(2);
             if(document.getElementById('deduction_value')){
                 document.getElementById('deduction_value').value =deductionAmount;
@@ -212,6 +234,7 @@
         getSalary();  // Updates the details (iqama number, salary)
         calculateDeduction();  // Calculates the deduction based on salary
     });
+    monthDaysInput.addEventListener('input', calculateDeduction);
     deductionDays.addEventListener('input', calculateDeduction);
     deductionValueInput.addEventListener('input', calculateDeduction);
     deductionType.addEventListener('change', calculateDeduction);

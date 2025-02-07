@@ -61,6 +61,11 @@
                     <option value="fixed_amount" {{ $deduction->deduction_type == 'fixed_amount' ? 'selected' : '' }}>مبلغ ثابت</option>
                 </select>
             </div>
+
+            <div class="form-group" id="month_days_field" style="{{ $deduction->deduction_type == 'fixed_amount' ? 'display: none;' : '' }}">
+                <label for="month_days">عدد أيام الشهر</label>
+                <input type="number" name="month_days" id="month_days" value="{{$deduction->month_days}}" class="form-control" >
+            </div>
             <div class="form-group" id="fixed_amount_field" style="{{ $deduction->deduction_type == 'fixed_amount' ? '' : 'display: none;' }}">
                 <label for="deduction_value">قيمة المبلغ الثابت</label>
                 <input type="text"  id="deduction_value" class="form-control" value="{{ $deduction->deduction_value }}">
@@ -103,6 +108,15 @@
     const deductionDaysField = document.getElementById('deduction_days_hidden');
     const deductionTHidden = document.getElementById('deduction_value_t_hidden');
     const employeeDetails = document.querySelector('.employee-details');
+
+    const monthDaysField = document.getElementById('month_days_field');
+    const monthDaysInput = document.getElementById('month_days');
+
+    function getDaysInCurrentMonth() {
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    }
+
     function getSalary() {
         const employeesSelect = document.getElementById('employees');
         const selectedEmploy = employeesSelect.options[employeesSelect.selectedIndex];
@@ -117,6 +131,7 @@
         if (deductionType.value === 'fixed_amount') {
             deductionDaysField.style.display = 'none';
             fixedAmountField.style.display = 'block';
+            monthDaysField.style.display = 'none';
             if(deductionValueInput){
                 deductionValueInput.setAttribute('required', 'required');
             }
@@ -124,6 +139,7 @@
         } else {
             deductionDaysField.style.display = 'block';
             fixedAmountField.style.display = 'none';
+            monthDaysField.style.display = 'block';
             if(deductionValueInput){
                 deductionValueInput.value = '';
             }
@@ -138,10 +154,11 @@
 
         const salary = parseFloat(selectedEmployee.getAttribute('data-salary')) || 0;
         const days = parseInt(deductionDays.value) || 0;
+        const totalMonthDays = parseInt(monthDaysInput.value) || getDaysInCurrentMonth();
         let deductionAmount = 0;
 
         if (deductionType.value === 'salary_percentage') {
-            deductionAmount = (salary / 30) * days;
+            deductionAmount =  (salary / totalMonthDays) * days;
 
             deductionTHidden.value =deductionAmount.toFixed(2);
 
@@ -164,6 +181,7 @@
     });
     deductionDays.addEventListener('input', calculateDeduction);
     deductionValueInput.addEventListener('input', calculateDeduction);
+    monthDaysInput.addEventListener('input', calculateDeduction);
 
     toggleFields();
     getSalary();
