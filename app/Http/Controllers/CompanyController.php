@@ -84,4 +84,14 @@ class CompanyController extends Controller
         return redirect()->back()->with('error', 'Invalid status.');
     }
 
+    public function destroy(Company $company)
+    {
+        if ($company->branches()->exists()) {
+            return redirect()->back()->with('error', 'لا يمكن حذف الشركة لأنها تحتوي على فروع!');
+        }
+        $company->delete();
+
+        return redirect()->back()->with('success', 'تم حذف الشركة بنجاح!');
+    }
+
 }

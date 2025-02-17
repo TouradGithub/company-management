@@ -16,4 +16,8 @@ class Company extends Authenticatable
         'end_date',
         'status',
     ];
+    public function branches()
+    {
+        return $this->hasMany(Branch::class, 'company_id');
+    }
 }

@@ -40,11 +40,12 @@ Auth::routes();
 use App\Http\Controllers\CompanyController;
 Route::middleware(['auth', 'verify.admin'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::delete('/companies/{company}', [CompanyController::class, 'destroy'])->name('companies.destroy');
 
-Route::get('/company/create', [CompanyController::class, 'create'])->name('company.create');
-Route::get('/company/index', [CompanyController::class, 'index'])->name('company.index');
-Route::post('/company/store', [CompanyController::class, 'store'])->name('company.store');
-Route::patch('/companies/{id}/update-status', [CompanyController::class, 'updateStatus'])->name('companies.updateStatus');
+    Route::get('/company/create', [CompanyController::class, 'create'])->name('company.create');
+    Route::get('/company/index', [CompanyController::class, 'index'])->name('company.index');
+    Route::post('/company/store', [CompanyController::class, 'store'])->name('company.store');
+    Route::patch('/companies/{id}/update-status', [CompanyController::class, 'updateStatus'])->name('companies.updateStatus');
 });
 
 // Route::get('/company/login', [CompanyAuthController::class, 'showLoginForm'])->name('company.login');

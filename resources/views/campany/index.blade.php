@@ -86,6 +86,13 @@
                     </button>
                 </form>
                 @endif
+                    <form action="{{ route('companies.destroy', $company->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('هل أنت متأكد من أنك تريد حذف هذه الشركة؟');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" style="background: black; color: white; border: none; padding: 5px; cursor: pointer;">
+                            حذف
+                        </button>
+                    </form>
             </td>
 
         </tr>
