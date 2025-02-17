@@ -38,7 +38,11 @@
         </tr>
       </thead>
       <tbody>
-
+      @if ($companies->isEmpty())
+          <tr>
+              <td colspan="6" style="text-align: center; font-weight: bold;">لاتوجد بيانات</td>
+          </tr>
+      @else
         @foreach($companies as $company)
         <tr>
             <td>{{ $company->name }}</td>
@@ -87,6 +91,7 @@
         </tr>
 
         @endforeach
+      @endif
       </tbody>
     </table>
     </div>

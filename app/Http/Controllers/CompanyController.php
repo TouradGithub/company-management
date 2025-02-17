@@ -32,7 +32,24 @@ class CompanyController extends Controller
             'password' => 'required|string|max:500',
             'start_date' => 'required|string|max:500',
             'end_date' => 'required|string|max:500',
-            // 'status' => 'required|string|max:500',
+        ], [
+            'name.required' => 'اسم الشركة مطلوب.',
+            'name.string' => 'يجب أن يكون اسم الشركة نصًا.',
+            'name.max' => 'يجب ألا يزيد اسم الشركة عن 255 حرفًا.',
+
+            'email.required' => 'البريد الإلكتروني مطلوب.',
+            'email.email' => 'يرجى إدخال عنوان بريد إلكتروني صالح.',
+            'email.unique' => 'عنوان البريد الإلكتروني هذا مستخدم بالفعل.',
+
+            'password.required' => 'كلمة المرور مطلوبة.',
+            'password.string' => 'يجب أن تكون كلمة المرور نصًا.',
+            'password.max' => 'يجب ألا تتجاوز كلمة المرور 500 حرف.',
+
+            'start_date.required' => 'تاريخ البدء مطلوب.',
+            'start_date.string' => 'يجب أن يكون تاريخ البدء نصًا صالحًا.',
+
+            'end_date.required' => 'تاريخ الانتهاء مطلوب.',
+            'end_date.string' => 'يجب أن يكون تاريخ الانتهاء نصًا صالحًا.',
         ]);
         $validated['password'] = Hash::make($request->password);
 
@@ -47,7 +64,7 @@ class CompanyController extends Controller
             'model_id' =>$company->id,
             'is_admin' =>1,
         ]);
-        
+
         // Redirect with a success message
         return redirect()->route('company.create')->with('success', 'Company created successfully!');
     }

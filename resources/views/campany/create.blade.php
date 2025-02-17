@@ -5,6 +5,15 @@
     <h2>إضافة شركة جديد</h2>
 </div>
 
+@if($errors->any())
+    <div style="color: red">
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <div class="add-advance-content">
       <form action="{{route('company.store')}}" method="POST"  id="add-advance-form" class="standard-form">
         @csrf
