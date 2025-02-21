@@ -57,7 +57,9 @@ class OvertimeController extends Controller
         $overtime->save();
 
 
+
         getUnpaidOvertimeTotal( $validated['employe_id']);
+
         // Return a success response
         return redirect()->back()->with([
             'success' => 'تم إضافة الاضافي بنجاح',

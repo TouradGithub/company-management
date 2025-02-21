@@ -71,18 +71,7 @@ class PayrollController extends Controller
             } else {
                 //return $validatedData;
 
-                $deductionAmount = $validated['deductions'][$index]['amount'] ?? 0;
-                processDeductionPayment($employeeId, $deductionAmount);
 
-                $loanAmount = $validated['loans'][$index]['amount'] ?? 0;
-                processLoanPayment($employeeId, $loanAmount);
-
-                $overtime = $validated['overtime'][$index]['amount'] ?? 0;
-                processOvertimePayment($employeeId, $overtime);
-
-                getUnpaidOvertimeTotal( $employeeId);
-                getUnpaidLoansTotal( $employeeId);
-                getUnpaidDeductionsTotal( $employeeId);
 
                 Payroll::create([
                     'date' => $validated['date'],
@@ -96,6 +85,19 @@ class PayrollController extends Controller
                     'deduction' => $validated['deductions'][$index]['amount'] ?? 0,
                     'net_salary' => $validated['total'][$index]['amount'] ?? 0,
                 ]);
+
+                $deductionAmount = $validated['deductions'][$index]['amount'] ?? 0;
+                processDeductionPayment($employeeId, $deductionAmount);
+
+                $loanAmount = $validated['loans'][$index]['amount'] ?? 0;
+                processLoanPayment($employeeId, $loanAmount);
+
+                $overtime = $validated['overtime'][$index]['amount'] ?? 0;
+                processOvertimePayment($employeeId, $overtime);
+
+                getUnpaidOvertimeTotal( $employeeId);
+                getUnpaidLoansTotal( $employeeId);
+                getUnpaidDeductionsTotal( $employeeId);
             }
 
 

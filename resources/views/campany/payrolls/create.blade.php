@@ -217,9 +217,8 @@
         }
 
         if (selectedFields.includes('overtime')) {
-            let overtimeAmount = (employee.overtimes && employee.overtimes.length > 0 && employee.overtimes[0].total_amount)
-                ? parseFloat(employee.overtimes[0].total_amount)
-                : 0;
+            let overtimeAmount =parseFloat(employee.overtime_total) || 0;
+
             row += `<td><input type="number" class="overtime-input form-control" name="overtime[][amount]" value="${overtimeAmount.toFixed(2)}" max="${overtimeAmount}" data-type="overtime" /></td>`;
             total += overtimeAmount;
         }
