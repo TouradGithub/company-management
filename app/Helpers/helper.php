@@ -1,13 +1,20 @@
 <?php
+
+use App\Models\Account;
 use App\Models\Branch;
 use App\Models\Loan;
 use App\Models\Deduction;
 use App\Models\Overtime;
 use App\Models\Employee;
+use App\Models\Company;
     function branchId()
     {
         $branches = Branch::where('company_id', auth()->user()->model_id)->get();
         return $branches->pluck('id');
+    }
+    function getCompany()
+    {
+        return  Company::find(auth()->user()->model_id);
     }
 
     function getBranch()
@@ -15,6 +22,22 @@ use App\Models\Employee;
         $branch = Branch::find( auth()->user()->model_id);
         return $branch;
     }
+
+     function getAccountTreeIds($accounts, &$accountIds = [])
+    {
+        foreach ($accounts as $account) {
+            $accountIds[] = $account->id;
+
+            // Get child accounts recursively
+            $childAccounts = Account::where('parent_id', $account->id)->get();
+            if ($childAccounts->isNotEmpty()) {
+                getAccountTreeIds($childAccounts, $accountIds);
+            }
+        }
+
+        return $accountIds;
+    }
+
 
 
     function processOvertimePayment(int $employeeId, float $OvertimeAmount)
@@ -98,8 +121,8 @@ use App\Models\Employee;
     }
 
     function reverseLoanPayment(int $employeeId, float $loanAmount)
-{
-    if ($loanAmount > 0) {
+    {
+        if ($loanAmount > 0) {
         $loans = Loan::where('employee_id', $employeeId)
                     ->where('paid_loan', '>', 0)
                     ->orderBy('created_at', 'desc') // التراجع عن أحدث المدفوعات أولاً
@@ -128,10 +151,10 @@ use App\Models\Employee;
 }
 
 
-function reverseDeductionPayment(int $employeeId, float $deductionAmount)
-{
-    if ($deductionAmount > 0) {
-        $deductions = Deduction::where('employee_id', $employeeId)
+    function reverseDeductionPayment(int $employeeId, float $deductionAmount)
+    {
+        if ($deductionAmount > 0) {
+            $deductions = Deduction::where('employee_id', $employeeId)
                               ->where('paid_deduction', '>', 0)
                               ->orderBy('created_at', 'desc') // التراجع عن أحدث المدفوعات أولاً
                               ->get();
@@ -159,10 +182,10 @@ function reverseDeductionPayment(int $employeeId, float $deductionAmount)
 }
 
 
-function reverseOvertimePayment(int $employeeId, float $overtimeAmount)
-{
-    if ($overtimeAmount > 0) {
-        $overtimes = Overtime::where('employee_id', $employeeId)
+    function reverseOvertimePayment(int $employeeId, float $overtimeAmount)
+    {
+        if ($overtimeAmount > 0) {
+            $overtimes = Overtime::where('employee_id', $employeeId)
                               ->where('paid_overtime', '>', 0)
                               ->orderBy('created_at', 'desc') // التراجع عن أحدث المدفوعات أولاً
                               ->get();

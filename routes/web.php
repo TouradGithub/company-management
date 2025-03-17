@@ -102,8 +102,78 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::resource('categories', CategoryController::class);
     Route::resource('users', UserController::class);
 
-});
 
+    Route::get('journal-entry/index' , [App\Http\Controllers\Accounting\JournalEntryController::class , 'index'])->name('journal-entry.index');
+    Route::get('journal-entry/create' , [App\Http\Controllers\Accounting\JournalEntryController::class , 'create'])->name('journal-entry.create');
+    Route::post('journal-entry/store' , [App\Http\Controllers\Accounting\JournalEntryController::class , 'store'])->name('journal-entry.store');
+    Route::post('journal-entry/update' , [App\Http\Controllers\Accounting\JournalEntryController::class , 'update'])->name('journal-entry.update');
+    Route::get('/journal-entries/ajax', [App\Http\Controllers\Accounting\JournalEntryController::class, 'fetchEntries'])->name('journal-entry.fetchEntries');
+    Route::delete('/journal-entry/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'destroy'])->name('journal-entry.destroy');
+    Route::delete('/journal-entry-details/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'destroyEntryDetails'])->name('journal-entry.destroy-entry-details');
+    Route::get('/journal-entry/edit/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'edit'])->name('journal-entry.edit');
+
+    Route::get('CostCenter/index' , [App\Http\Controllers\Accounting\CostCenterController::class , 'index'])->name('cost-center.index');
+    Route::post('CostCenter/store' , [App\Http\Controllers\Accounting\CostCenterController::class , 'store'])->name('cost-center.store');
+
+
+
+    Route::get('/account-statement/index', [App\Http\Controllers\Accounting\AccountStatementController::class, 'index'])->name('account.statement.index');
+    Route::get('/account-statement', [App\Http\Controllers\Accounting\AccountStatementController::class, 'getStatement'])->name('account.statement.getStatement-by-ajax');
+
+    Route::get('Acounting/index' , [App\Http\Controllers\Accounting\HomeController::class , 'index'])->name('accounting.index');
+    Route::get('Acounting/delete/{id}' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'delete'])->name('accounting.delete');
+    Route::get('Acounting/accountsTree' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'index'])->name('accounting.accountsTree.index');
+    Route::post('Acounting/accountsTree' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'store'])->name('accounting.accountsTree.store');
+
+
+    Route::get('/trial-balance', [App\Http\Controllers\Accounting\TrialBalanceController::class, 'index'])->name('trial.balance');
+    Route::get('/trial-balance/data', [App\Http\Controllers\Accounting\TrialBalanceController::class, 'getTrialBalance'])->name('trial.balance.data');
+
+    Route::get('/products/index', [App\Http\Controllers\Accounting\ProductController::class, 'index'])->name('products.index');
+    Route::post('/products/store', [App\Http\Controllers\Accounting\ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/fetch', [App\Http\Controllers\Accounting\ProductController::class, 'getProducts'])->name('products.fetch');
+    Route::get('/products/edit/{id}', [App\Http\Controllers\Accounting\ProductController::class, 'edit']);
+    Route::post('/products/update/{id}', [App\Http\Controllers\Accounting\ProductController::class, 'update']); // Use POST with _method=PUT
+    Route::delete('/products/delete/{id}', [App\Http\Controllers\Accounting\ProductController::class, 'destroy']);
+
+    Route::get('/customers/index', [App\Http\Controllers\Accounting\CustomerController::class, 'index'])->name('customers.index');
+    Route::post('/customers/store', [App\Http\Controllers\Accounting\CustomerController::class, 'store'])->name('customers.store');
+    Route::post('/customers/storeCustomer', [App\Http\Controllers\Accounting\CustomerController::class, 'storeCustomer'])->name('customers.storeCustomer');
+    Route::get('/customers/get', [App\Http\Controllers\Accounting\CustomerController::class, 'getCustomers']);
+    Route::delete('/customers/delete/{id}', [App\Http\Controllers\Accounting\CustomerController::class, 'delete'])->name('customers.delete');
+    Route::get('/customers/edit/{id}', [App\Http\Controllers\Accounting\CustomerController::class, 'edit']);
+    Route::put('/customers/update/{id}', [App\Http\Controllers\Accounting\CustomerController::class, 'update']);
+
+    Route::get('/invoices/index', [App\Http\Controllers\Accounting\InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('/invoices/create', [App\Http\Controllers\Accounting\InvoiceController::class, 'create'])->name('invoices.create');
+    Route::post('/invoices/store', [App\Http\Controllers\Accounting\InvoiceController::class, 'store'])->name('invoices.store');
+    Route::post('/invoices/purchases/store', [App\Http\Controllers\Accounting\InvoiceController::class, 'purchases'])->name('invoices.purchases.store');
+    Route::post('/invoices/sales-returns/store', [App\Http\Controllers\Accounting\InvoiceController::class, 'salesReturn'])->name('invoices.salesreturns.store');
+    Route::post('/invoices/purchase-returns/store', [App\Http\Controllers\Accounting\InvoiceController::class, 'purchaseReturn'])->name('invoices.purchasereturns.store');
+    Route::get('/sales-invoices', [App\Http\Controllers\Accounting\InvoiceController::class, 'getInvoices']);
+    Route::get('/invoices/{invoiceNumber}', [App\Http\Controllers\Accounting\InvoiceController::class, 'getInvoiceByNumber']);
+    Route::get('/invoices/purchases/{invoiceNumber}', [App\Http\Controllers\Accounting\InvoiceController::class, 'getPurchaseByNumber']);
+    Route::delete('/sales-invoices/{id}', [App\Http\Controllers\Accounting\InvoiceController::class, 'destroy'])->name('invoices.destroy');
+    Route::patch('/sales-invoices/{id}/status', [App\Http\Controllers\Accounting\InvoiceController::class, 'updateStatus'])->name('invoices.updateStatus');
+
+    Route::get('/additions', [App\Http\Controllers\Accounting\SupplierController::class, 'index'])->name('additions.index');
+    Route::post('/link-account-to-customers', [App\Http\Controllers\Accounting\SupplierController::class, 'linkAccountToCustomers']);
+    Route::post('/link-cash-register', [App\Http\Controllers\Accounting\SupplierController::class, 'linkCashRegister']);
+
+    Route::get('/suppliers/index', [App\Http\Controllers\Accounting\SupplierController::class, 'index'])->name('suppliers.index');
+    Route::get('/suppliers/customers', [App\Http\Controllers\Accounting\SupplierController::class, 'customers'])->name('suppliers.customers');
+
+    Route::get('/categorie-invoices/index', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'index'])->name('categorie-invoices.index');
+    Route::post('/categorie-invoices/store', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'store'])->name('categorie-invoices.store');
+
+    Route::get('/categorie-invoices/getCategories', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'getCategories'])->name('categorie-invoices.getCategories');
+// routes/web.php
+    Route::get('/categorie-invoices/categories/{id}', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'delete']);
+    Route::get('/categorie-invoices/categories/{id}/edit', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'edit']);
+    Route::put('/categorie-invoices/categories/{id}', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'update']);
+
+
+});
 
 
 
@@ -158,3 +228,5 @@ Route::prefix('branch')->middleware(['auth', 'verify.branch'])->group(function (
     });
 
 });
+
+
