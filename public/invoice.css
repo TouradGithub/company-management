@@ -1,0 +1,257 @@
+
+/*:root {*/
+/*    --primary: #2c3e50;*/
+/*    --secondary: #3498db;*/
+/*    --accent: #e74c3c;*/
+/*}*/
+
+/*!*body {*!*/
+/*!*    font-family: 'Arial', sans-serif;*!*/
+/*!*    padding: 2rem;*!*/
+/*!*    background: #ecf0f1;*!*/
+/*!*}*!*/
+
+/*.invoice-container {*/
+/*    max-width: 90%;*/
+/*    margin: 0 auto;*/
+/*    background: white;*/
+/*    padding: 2rem;*/
+/*    box-shadow: 0 0 20px rgba(0,0,0,0.1);*/
+/*    border-radius: 10px;*/
+/*}*/
+
+/*.header {*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*    border-bottom: 2px solid var(--primary);*/
+/*    padding-bottom: 1.5rem;*/
+/*    margin-bottom: 1rem;*/
+/*    flex-direction: row-reverse;*/
+/*}*/
+
+/*.header > div:first-child {*/
+/*    flex: 1;*/
+/*    text-align: center;*/
+/*    margin-left: 2rem;*/
+/*}*/
+
+/*h1 {*/
+/*    margin: 0 0 1rem 0;*/
+/*    white-space: nowrap;*/
+/*}*/
+
+/*.header svg {*/
+/*    width: 40px;*/
+/*    height: 40px;*/
+/*}*/
+
+/*.info-section {*/
+/*    display: grid;*/
+/*    grid-template-columns: 1fr 1fr;*/
+/*    gap: 3rem;*/
+/*    margin-bottom: 2rem;*/
+/*}*/
+
+/*table {*/
+/*    width: 100%;*/
+/*    border-collapse: collapse;*/
+/*    margin: 1rem 0;*/
+/*}*/
+
+/*th, td {*/
+/*    padding: 3px;*/
+/*    text-align: right;*/
+/*    border-bottom: 1px solid #eee;*/
+/*}*/
+
+/*th {*/
+/*    background: var(--primary);*/
+/*    color: white;*/
+/*}*/
+
+/*.total-row {*/
+/*    font-weight: bold;*/
+/*    background: #f8f9fa;*/
+/*}*/
+
+/*.actions {*/
+/*    margin-top: 2rem;*/
+/*    text-align: center;*/
+/*}*/
+
+/*button {*/
+/*    padding: 12px 24px;*/
+/*    margin: 0 10px;*/
+/*    border: none;*/
+/*    border-radius: 5px;*/
+/*    cursor: pointer;*/
+/*    transition: 0.3s;*/
+/*}*/
+
+/*.print-btn {*/
+/*    background: var(--secondary);*/
+/*    color: white;*/
+/*}*/
+
+/*.save-btn {*/
+/*    background: var(--accent);*/
+/*    color: white;*/
+/*}*/
+
+/*.delete-btn {*/
+/*    background: #e74c3c;*/
+/*    color: white;*/
+/*    border: none;*/
+/*    border-radius: 50%;*/
+/*    width: 28px;*/
+/*    height: 28px;*/
+/*    cursor: pointer;*/
+/*    transition: 0.3s;*/
+/*    font-size: 18px;*/
+/*    line-height: 1;*/
+/*}*/
+
+/*.delete-btn:hover {*/
+/*    background: #c0392b;*/
+/*    transform: scale(1.1);*/
+/*}*/
+
+/*.add-client-btn {*/
+/*    background: #27ae60;*/
+/*    color: white;*/
+/*    display: inline-flex;*/
+/*    align-items: center;*/
+/*    direction: ltr;*/
+/*}*/
+
+/*@media print {*/
+/*    button {*/
+/*        display: none;*/
+/*    }*/
+/*}*/
+
+/*.invoice-info {*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    gap: 1rem;*/
+/*    margin: 1.5rem 0;*/
+/*    flex-wrap: wrap;*/
+/*    align-items: center;*/
+/*    border-top: 2px solid var(--primary);*/
+/*    padding-top: 1rem;*/
+/*}*/
+
+/*.invoice-info p {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    gap: 0.5rem;*/
+/*    margin: 0;*/
+/*    white-space: nowrap;*/
+/*}*/
+
+/*.invoice-info input,*/
+/*.invoice-info select {*/
+/*    padding: 6px 12px;*/
+/*    border: 1px solid #ddd;*/
+/*    border-radius: 4px;*/
+/*    font-size: 14px;*/
+/*}*/
+
+/*#invoiceDate {*/
+/*    width: 160px;*/
+/*}*/
+
+/*th:nth-child(1),*/
+/*td:nth-child(1) {*/
+/*    width: 50px;*/
+/*}*/
+
+/*!*th:nth-child(3),*!*/
+/*!*td:nth-child(3) {*!*/
+/*!*    width: 80px;*!*/
+/*!*}*!*/
+
+/*!*th:nth-child(7),*!*/
+/*!*td:nth-child(7) {*!*/
+/*!*    width: 50px;*!*/
+/*!*}*!*/
+
+/*table input[type="text"],*/
+/*table input[type="number"] {*/
+/*    !*max-width: 100%;*!*/
+/*    width: 100%;*/
+/*    padding: 1px 1px;*/
+/*    font-size: 14px;*/
+/*    box-sizing: border-box;*/
+/*}*/
+
+/*table input[type="number"] {*/
+/*    width: 100%;*/
+/*}*/
+
+/*td:nth-child(2) input {*/
+/*    max-width: 150px;*/
+/*}*/
+
+/*tfoot input[type="number"] {*/
+/*    width: 150px;*/
+/*    padding: 4px;*/
+/*    margin-right: 5px;*/
+/*    display: inline-block;*/
+/*}*/
+
+/*.calculation-row td {*/
+/*    background: #f8f9fa;*/
+/*}*/
+/* Update existing form styling */
+form {
+    padding: 10%;
+    box-sizing: border-box;
+}
+
+.invoice-container {
+    max-width: 90%;
+    margin: 0 auto;
+    background: white;
+    padding: 2rem;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+.invoice-container form {
+    padding: 10%;
+    background: white;
+    border-radius: 8px;
+}
+
+/* Ensure proper spacing for nested elements */
+.invoice-container form .header,
+.invoice-container form .invoice-info,
+.invoice-container form .info-section,
+.invoice-container form table {
+    margin-left: -10%;
+    margin-right: -10%;
+    width: 120%;
+}
+
+/* Adjust table container to account for padding */
+.invoice-container form table {
+    box-sizing: border-box;
+}
+
+/* Maintain proper alignment for print and PDF saving */
+@media print {
+    .invoice-container form {
+        padding: 0;
+    }
+
+    .invoice-container form .header,
+    .invoice-container form .invoice-info,
+    .invoice-container form .info-section,
+    .invoice-container form table {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+    }
+}
