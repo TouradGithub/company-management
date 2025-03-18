@@ -14,7 +14,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\PayrollController;
 
-
+use App\Http\Controllers\Accounting\InvoiceController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\DeductionController;
 
@@ -144,6 +144,11 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::get('/customers/edit/{id}', [App\Http\Controllers\Accounting\CustomerController::class, 'edit']);
     Route::put('/customers/update/{id}', [App\Http\Controllers\Accounting\CustomerController::class, 'update']);
 
+    Route::get('/invoices/sales', [InvoiceController::class, 'sales'])->name('invoices.sales');
+    Route::get('/invoices/purchases', [InvoiceController::class, 'purchasePage'])->name('invoices.purchases');
+    Route::get('/invoices/sales-returns', [InvoiceController::class, 'salesReturns'])->name('invoices.sales-returns');
+    Route::get('/invoices/purchase-returns', [InvoiceController::class, 'purchaseReturns'])->name('invoices.purchase-returns');
+
     Route::get('/invoices/index', [App\Http\Controllers\Accounting\InvoiceController::class, 'index'])->name('invoices.index');
     Route::get('/invoices/create', [App\Http\Controllers\Accounting\InvoiceController::class, 'create'])->name('invoices.create');
     Route::post('/invoices/store', [App\Http\Controllers\Accounting\InvoiceController::class, 'store'])->name('invoices.store');
@@ -159,9 +164,11 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::get('/additions', [App\Http\Controllers\Accounting\SupplierController::class, 'index'])->name('additions.index');
     Route::post('/link-account-to-customers', [App\Http\Controllers\Accounting\SupplierController::class, 'linkAccountToCustomers']);
     Route::post('/link-cash-register', [App\Http\Controllers\Accounting\SupplierController::class, 'linkCashRegister']);
+    Route::post('/link-to-supplier', [App\Http\Controllers\Accounting\SupplierController::class, 'linkToSupplier']);
 
     Route::get('/suppliers/index', [App\Http\Controllers\Accounting\SupplierController::class, 'index'])->name('suppliers.index');
     Route::get('/suppliers/customers', [App\Http\Controllers\Accounting\SupplierController::class, 'customers'])->name('suppliers.customers');
+    Route::post('/suppliers/storeSupplier', [App\Http\Controllers\Accounting\SupplierController::class, 'store'])->name('suppliers.storeSupplier');
 
     Route::get('/categorie-invoices/index', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'index'])->name('categorie-invoices.index');
     Route::post('/categorie-invoices/store', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'store'])->name('categorie-invoices.store');

@@ -2,7 +2,8 @@
     const { jsPDF } = window.jspdf;
     const products = @json($products);
     const customers = @json($customers);
-    const suppliers = @json($suppliers ?? $customers);
+
+    const suppliers = @json($suppliers??[]);
 
     $(document).ready(function() {
         $('.customers, .suppliers').select2();
@@ -24,9 +25,11 @@
 
         $('#originalSalesInvoiceNumber').on('change', function() {
             fetchInvoiceData('sales-return', $(this).val());
+            console.log("OK SEL");
         });
         $('#originalPurchaseInvoiceNumber').on('change', function() {
             fetchInvoiceData('purchase-return', $(this).val());
+            console.log("OK PAR");
         });
     });
 
@@ -45,6 +48,7 @@
         let defaultOption = `<option value="">اختر مورد</option>`;
         $('.purchase-supplier-id, .purchase-return-supplier-id').append(defaultOption);
         $.each(suppliers, function(index, supplier) {
+            console.log(supplier);
             let option = `<option value="${supplier.id}">${supplier.name} - ${supplier.contact_info}</option>`;
             $('.purchase-supplier-id, .purchase-return-supplier-id').append(option);
         });
@@ -240,6 +244,7 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
+                console.log(response);
                 Swal.fire({
                     icon: 'success',
                     title: 'تم الحفظ',
@@ -342,7 +347,8 @@
 
     function fetchInvoiceData(section, invoiceNumber) {
         const url = section === 'sales-return' ? `/invoices/${invoiceNumber}` : `/invoices/purchases/${invoiceNumber}`;
-        const tableId = 'sales-return' ?  `#salesReturnItemsTable` : `#purchaseReturnItemsTable`;
+        const tableId = section === 'sales-return' ?  `#salesReturnItemsTable` : `#purchaseReturnItemsTable`;
+        console.log(tableId);
 
         $.ajax({
             url: url,
@@ -351,12 +357,12 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
+                console.log(response);
                 if (response && response.items) {
                     // مسح الجدول الحالي
                     $(`${tableId} tbody`).empty();
                     let forSection = '';
 
-                    // ملء بيانات العميل أو المورد
                     if (section === 'sales-return' && response.customer_id) {
                         forSection = 'purchaseReturn';
                         $(`#salesReturnCustomerSelect`).val(response.customer_id).trigger('change');
@@ -364,15 +370,10 @@
                     } else if (section === 'purchase-return' && response.supplier_id) {
                         forSection = 'salesReturn';
                         $(`#purchaseReturnSupplierSelect`).val(response.supplier_id).trigger('change');
-
                     }
 
-                    // ملء التاريخ والفرع
                     $(`#${forSection}InvoiceDate`).val(response.invoice_date);
                     $(`#${forSection}BranchSelect`).val(response.branch_id);
-                    console.log(response);
-
-
                     response.items.forEach((item, index) => {
                         const $newRow = $(`
                             <tr>
@@ -396,7 +397,6 @@
                                 <td><button type="button" class="delete-btn">×</button></td>
                             </tr>
                         `);
-                        console.log($newRow);
                         $(`${tableId} tbody`).append($newRow);
 
                         const $select = $newRow.find('.item-select');

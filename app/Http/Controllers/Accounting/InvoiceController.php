@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Product;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -181,7 +182,7 @@ class InvoiceController extends Controller
 
         $validated = $request->validate([
             'invoice_date' => 'required|date',
-            'customer_id' => 'required',
+            'supplier_id' => 'required',
             'branch_id' => 'required',
             'items' => 'required|array',
             'items.*.productId' => 'required',
@@ -230,7 +231,7 @@ class InvoiceController extends Controller
         $invoice = Invoice::create([
             'invoice_number' => Invoice::generateEntryNumber(Auth::user()->model_id),
             'invoice_date' => $validated['invoice_date'],
-            'customer_id' => $validated['customer_id'],
+            'supplier_id' => $validated['supplier_id'],
             'branch_id' =>$validated['branch_id'],
             'company_id' => Auth::user()->model_id,
             'employee_id' => Auth::user()->name,
@@ -361,7 +362,7 @@ class InvoiceController extends Controller
 
         $validated = $request->validate([
             'invoice_date' => 'required|date',
-            'customer_id' => 'required',
+            'supplier_id' => 'required',
             'original_invoice_number'=>'required',
             'branch_id' => 'required',
             'items' => 'required|array',
@@ -377,7 +378,7 @@ class InvoiceController extends Controller
             'invoice_date.required' => 'تاريخ الفاتورة مطلوب.',
             'original_invoice_number.required' => 'قم الفاتورة المرتجعه مطلوب.',
             'invoice_date.date' => 'تاريخ الفاتورة يجب أن يكون تاريخًا صالحًا.',
-            'customer_id.required' => 'العميل مطلوب.',
+            'supplier_id.required' => 'المورد مطلوب.',
             'branch_id.required' => 'الفرع مطلوب.',
             'items.required' => 'الأصناف مطلوبة.',
             'items.array' => 'الأصناف يجب أن تكون مصفوفة.',
@@ -422,7 +423,7 @@ class InvoiceController extends Controller
             'invoice_number' => Invoice::generateEntryNumber(Auth::user()->model_id),
             'parent_invoice_id' => $parentInvoice->id,
             'invoice_date' => $validated['invoice_date'],
-            'customer_id' => $validated['customer_id'],
+            'supplier_id' => $validated['supplier_id'],
             'branch_id' =>$validated['branch_id'],
             'company_id' => Auth::user()->model_id,
             'employee_id' => Auth::user()->name,
@@ -485,8 +486,7 @@ class InvoiceController extends Controller
             return response()->json(['message' => ' الفاتورة غير موجودة'], 404);
         }
         return response()->json([
-            'customer_id' => $purchase->customer_id,
-            'supplier_id' => $purchase->customer_id,
+            'supplier_id' => $purchase->supplier_id,
             'invoice_date' => $purchase->invoice_date,
             'branch_id' => $purchase->branch_id,
             'items' => $purchase->items->map(function ($item) {
@@ -499,5 +499,48 @@ class InvoiceController extends Controller
                 ];
             }),
         ]);
+    }
+
+    public function sales()
+    {
+        $branches = Branch::where('company_id' , Auth::user()->model_id)->get();
+        $accounts = Account::where('company_id' , Auth::user()->model_id)->get();
+        $products = Product::where('company_id' , Auth::user()->model_id)->get();
+        $customers = Customer::where('company_id' , Auth::user()->model_id)->get();
+
+        return view('financialaccounting.invoices.sales', compact('branches', 'accounts', 'products', 'customers'));
+    }
+
+    public function purchasePage()
+    {
+        $branches = Branch::where('company_id' , Auth::user()->model_id)->get();
+        $accounts = Account::where('company_id' , Auth::user()->model_id)->get();
+        $products = Product::where('company_id' , Auth::user()->model_id)->get();
+        $customers = Customer::where('company_id' , Auth::user()->model_id)->get();
+        $suppliers = Supplier::where('company_id' , Auth::user()->model_id)->get();
+
+        return view('financialaccounting.invoices.purchase', compact('branches', 'accounts', 'products', 'customers', 'suppliers'));
+    }
+
+    public function salesReturns()
+    {
+        $branches = Branch::where('company_id' , Auth::user()->model_id)->get();
+        $accounts = Account::where('company_id' , Auth::user()->model_id)->get();
+        $products = Product::where('company_id' , Auth::user()->model_id)->get();
+        $customers = Customer::where('company_id' , Auth::user()->model_id)->get();
+        $suppliers = Supplier::where('company_id' , Auth::user()->model_id)->get();
+
+        return view('financialaccounting.invoices.sales-return', compact('branches', 'accounts', 'products', 'customers', 'suppliers'));
+    }
+
+    public function purchaseReturns()
+    {
+        $branches = Branch::where('company_id' , Auth::user()->model_id)->get();
+        $accounts = Account::where('company_id' , Auth::user()->model_id)->get();
+        $products = Product::where('company_id' , Auth::user()->model_id)->get();
+        $customers = Customer::where('company_id' , Auth::user()->model_id)->get();
+        $suppliers = Supplier::where('company_id' , Auth::user()->model_id)->get();
+
+        return view('financialaccounting.invoices.purchase-return', compact('branches', 'accounts', 'products', 'customers', 'suppliers'));
     }
 }

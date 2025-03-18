@@ -53,25 +53,25 @@
                 </a>
                 <ul class="submenu">
                     <li>
-                        <a href="{{route('invoices.index')}}">
+                        <a href="{{route('invoices.sales')}}">
                             <i class="fas fa-file-alt"></i>
                             <span>فاتورة المبيعات</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#sales-return">
+                        <a href="{{ route('invoices.sales-returns') }}">
                             <i class="fas fa-undo"></i>
                             <span>مرتجع فاتورة مبيعات</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#purchase-invoice">
+                        <a href="{{route('invoices.purchases')}}">
                             <i class="fas fa-shopping-cart"></i>
                             <span>فاتورة المشتريات</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#purchase-return">
+                        <a href="{{ route('invoices.purchase-returns') }}">
                             <i class="fas fa-reply"></i>
                             <span>مرتجع فاتورة المشتريات</span>
                         </a>
