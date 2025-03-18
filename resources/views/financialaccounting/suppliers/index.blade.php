@@ -18,8 +18,9 @@
                     <i class="fas fa-users"></i>
                     <h3>العملاء</h3>
                     <p class="balance">485,750 ريال</p>
-
+                    @if($account)
                     <p class="balance">{{$account->name}} - {{$account->account_number}} </p>
+                    @endif
                 </a>
                 <div class="card-actions">
                     <button class="action-btn add" title="إضافة"><i class="fas fa-plus-circle"></i></button>
