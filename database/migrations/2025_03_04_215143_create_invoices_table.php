@@ -17,7 +17,8 @@ return new class extends Migration
             $table->enum('invoice_type', ['Sales', 'SalesReturn', 'Purchases', 'PurchasesReturn']);
             $table->integer('parent_invoice_id')->nullable();
             $table->date('invoice_date');
-            $table->integer('customer_id');
+            $table->integer('customer_id')->nullable()->index(); // اختياري لفواتير المبيعات ومرتجع المبيعات
+            $table->integer('supplier_id')->nullable()->index();
             $table->integer('branch_id');
             $table->integer('company_id');
             $table->string('employee_id');

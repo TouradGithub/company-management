@@ -35,9 +35,15 @@
                 <i class="fas fa-truck"></i>
                 <h3>الموردين</h3>
                 <p class="balance">326,900 ريال</p>
+                @if($supplier)
+                    <p class="balance">{{$supplier->name . ' - ' . $supplier->account_number}}</p>
+                @endif
                 <div class="card-actions">
                     <button class="action-btn add" title="إضافة"><i class="fas fa-plus-circle"></i></button>
                     <button class="action-btn view" title="عرض"><i class="fas fa-eye"></i></button>
+                    @if(!$supplier)
+                        <button class="action-btn link-account" id="link-to-supplier" title="ربط حساب"><i class="fas fa-link"></i></button>
+                    @endif
                 </div>
             </div>
             <div class="addition-card">
@@ -223,6 +229,57 @@
 
                         try {
                             const response = await fetch('/link-cash-register', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Laravel CSRF token
+                                },
+                                body: JSON.stringify({ account_id: value })
+                            });
+
+                            const data = await response.json();
+
+                            if (!data.success) {
+                                return data.message || 'فشل في ربط الحساب!';
+                            }
+
+                            Swal.fire({
+                                title: 'تم الربط',
+                                text: data.message,
+                                icon: 'success',
+                            });
+                            location.reload();
+
+                        } catch (error) {
+                            Swal.fire({
+                                title: 'خطأ',
+                                text: 'حدث خطأ أثناء ربط الحساب',
+                                icon: 'error',
+                            });
+                        }
+                    }
+                });
+            });
+
+            $('#link-to-supplier').on('click', async function () {
+                const { value: accountId } = await Swal.fire({
+                    title: 'اختيار حساب لربط الصناديق',
+                    input: 'select',
+                    inputOptions: accounts.reduce((options, account) => {
+                        options[account.id] = `${account.name} (${account.account_number})`;
+                        return options;
+                    }, { '': 'اختر حسابًا' }),
+                    inputPlaceholder: 'اختر حسابًا',
+                    showCancelButton: true,
+                    confirmButtonText: 'تأكيد',
+                    cancelButtonText: 'إلغاء',
+                    inputValidator: async (value) => {
+                        if (!value) {
+                            return 'يرجى اختيار حساب!';
+                        }
+
+                        try {
+                            const response = await fetch('/link-to-supplier', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
