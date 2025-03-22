@@ -55,9 +55,9 @@ class InvoiceController extends Controller
     public function getInvoices(Request $request) {
         $query = Invoice::query();
         if ($request->has('status') && $request->status != 'all') {
-            $query->where('status', $request->status);
+            $query->where('invoice_type', $request->status);
         }
-        $invoices = $query->with(['branch','customer'])->get();
+        $invoices = $query->with(['branch','customer' , 'Supplier'])->get();
         return response()->json($invoices);
     }
     public function destroy($id)
