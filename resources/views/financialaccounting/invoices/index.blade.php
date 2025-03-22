@@ -4,25 +4,26 @@
 
 <div id="salesInvoiceSection" >
     <div class="invoices-container">
-        <div class="invoices-header">
-            <h1>فواتير المبيعات</h1>
-            <a href="{{route('invoices.create')}}" style="text-decoration: none">
+{{--        <div class="invoices-header">--}}
+{{--            <h1>فواتير المبيعات</h1>--}}
+{{--            <a href="{{route('invoices.create')}}" style="text-decoration: none">--}}
 
 
-            <button >
-                <i class="fas fa-plus"></i>
-                فاتورة جديدة
-            </button>
-            </a>
-        </div>
+{{--            <button >--}}
+{{--                <i class="fas fa-plus"></i>--}}
+{{--                فاتورة جديدة--}}
+{{--            </button>--}}
+{{--            </a>--}}
+{{--        </div>--}}
 
         <div class="invoice-search">
             <input type="search" placeholder="بحث في الفواتير...">
-            <select>
-                <option value="all">جميع الحالات</option>
-                <option value="مدفوعة">مدفوعة</option>
-                <option value="معلقة">معلقة</option>
-                <option value="ملغاة">ملغاة</option>
+            <select >
+                <option value="all">جميع الأنواع</option>
+                <option value="Purchases">مشتريات</option>
+                <option value="PurchasesReturn">مرتجع مشتريات</option>
+                <option value="Sales">مبيعات</option>
+                <option value="SalesReturn">مرتجع مبيعات</option>
             </select>
         </div>
 
@@ -153,7 +154,7 @@
             }
             function getSelInvoices(status = '') {
                 $.ajax({
-                    url: '/sales-invoices',
+                    url: '/getInvoices',
                     type: 'GET',
                     data: { status: status }, // إرسال الحالة المحددة كمعامل
                     dataType: 'json',
@@ -162,30 +163,41 @@
                         body.empty();
                         data.forEach(function (invoice) {
                             let classStatus = '';
-                            if (invoice.status == 'ملغاة') {
+                            let invoiceType = '';
+                            if (invoice.invoice_type == 'Purchases') {
                                 classStatus = 'cancelled';
-                            } else if (invoice.status == 'معلقة') {
+                                invoiceType = 'مشتريات';
+                            } else if (invoice.invoice_type == 'PurchasesReturn') {
                                 classStatus = 'pending';
-                            } else if (invoice.status == 'مدفوعة') {
+                                invoiceType = 'مرتجع مشتريات';
+                            } else if (invoice.invoice_type == 'SalesReturn') {
                                 classStatus = 'paid';
+                                invoiceType = 'مرتجع مبيعات';
+                            } else if (invoice.invoice_type == 'Sales') {
+                                classStatus = 'paid';
+                                invoiceType = 'مبيعات';
                             }
+                            // تحديد ما إذا كان العميل أو المورد
+                            let entityType = invoice.customer ? 'العميل' : 'المورد';
+                            let entityName = invoice.customer
+                                ? (invoice.customer.name || 'غير محدد')
+                                : (invoice.supplier ? invoice.supplier.name : 'غير محدد');
+
                             var row = `
                                 <div class="invoice-card">
-                            <span class="invoice-status ${classStatus}">${invoice.status}</span>
+                            <span class="invoice-status ${classStatus}">${invoiceType}</span>
                             <div class="invoice-number">فاتورة رقم: ${invoice.invoice_number}</div>
                             <div class="invoice-date">
                                 <i class="far fa-calendar-alt"></i> ${invoice.invoice_date}
                             </div>
                             <div class="invoice-details">
-                               <p><span><i class="fas fa-user"></i> العميل</span><strong>${invoice.customer ? invoice.customer.name : 'غير محدد'}</strong></p>
-                                <p><span><i class="fas fa-code-branch"></i> الفرع</span><strong>${invoice.branch ? invoice.branch.name : 'غير محدد'}</strong></p>
+                                <p><span><i class="fas fa-user"></i> ${entityType}</span><strong>${entityName}</strong></p>                                <p><span><i class="fas fa-code-branch"></i> الفرع</span><strong>${invoice.branch ? invoice.branch.name : 'غير محدد'}</strong></p>
                                 <p><span><i class="fas fa-user-tie"></i> الموظف</span><strong>${invoice.employee_id}</strong></p>
                             </div>
                             <div class="invoice-total">${invoice.total} ريال</div>
                             <div class="card-actions">
                                 <button class="action-btn view" title="عرض"><i class="fas fa-eye"></i></button>
                                 <button class="action-btn edit" title="تعديل"><i class="fas fa-edit"></i></button>
-                                <button class="action-btn status" title="تغيير الحالة"><i class="fas fa-sync-alt"></i></button>
                                 <button class="action-btn delete" title="حذف"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>`;
@@ -521,52 +533,6 @@
                             },
                             error: function() {
                                 Swal.fire('خطأ!', 'حدث خطأ أثناء تنفيذ العملية.', 'error');
-                            }
-                        });
-                    }
-                });
-            });
-            $(document).on('click', '.status', function() {
-                let invoiceCard = $(this).closest('.invoice-card');
-                let invoiceNumber = invoiceCard.find('.invoice-number').text().replace('فاتورة رقم: ', '');
-
-                Swal.fire({
-                    title: 'تغيير حالة الفاتورة',
-                    input: 'select',
-                    inputOptions: {
-                        'مدفوعة': 'مدفوعة',
-                        'معلقة': ' معلقة',
-                        'ملغاة': 'ملغاة'
-                    },
-                    showCancelButton: true,
-                    confirmButtonText: 'تحديث',
-                    cancelButtonText: 'إلغاء',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return 'يجب اختيار حالة!';
-                        }
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        let newStatus = result.value;
-
-                        $.ajax({
-                            url: `/sales-invoices/${invoiceNumber}/status`,
-                            type: 'PATCH',
-                            data: {
-                                _token: '{{ csrf_token() }}',
-                                status: newStatus
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                    invoiceCard.find('.invoice-status').text(response.new_status);
-                                    Swal.fire('تم التحديث!', 'تم تغيير حالة الفاتورة بنجاح.', 'success');
-                                } else {
-                                    Swal.fire('خطأ!', 'حدث خطأ أثناء تحديث الحالة.', 'error');
-                                }
-                            },
-                            error: function() {
-                                Swal.fire('خطأ!', 'تعذر الاتصال بالسيرفر.', 'error');
                             }
                         });
                     }

@@ -173,7 +173,7 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::post('/invoices/purchases/store', [App\Http\Controllers\Accounting\InvoiceController::class, 'purchases'])->name('invoices.purchases.store');
     Route::post('/invoices/sales-returns/store', [App\Http\Controllers\Accounting\InvoiceController::class, 'salesReturn'])->name('invoices.salesreturns.store');
     Route::post('/invoices/purchase-returns/store', [App\Http\Controllers\Accounting\InvoiceController::class, 'purchaseReturn'])->name('invoices.purchasereturns.store');
-    Route::get('/sales-invoices', [App\Http\Controllers\Accounting\InvoiceController::class, 'getInvoices']);
+    Route::get('/getInvoices', [App\Http\Controllers\Accounting\InvoiceController::class, 'getInvoices']);
     Route::get('/invoices/{invoiceNumber}', [App\Http\Controllers\Accounting\InvoiceController::class, 'getInvoiceByNumber']);
     Route::get('/invoices/purchases/{invoiceNumber}', [App\Http\Controllers\Accounting\InvoiceController::class, 'getPurchaseByNumber']);
     Route::delete('/sales-invoices/{id}', [App\Http\Controllers\Accounting\InvoiceController::class, 'destroy'])->name('invoices.destroy');

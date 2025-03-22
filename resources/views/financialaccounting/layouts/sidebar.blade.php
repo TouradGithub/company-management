@@ -28,9 +28,15 @@
                 </a>
                 <ul class="submenu">
                     <li>
-                        <a href="{{route('journal-entry.index')}}">
+                        <a href="{{route('journal-entry.create')}}">
                             <i class="fas fa-plus-circle"></i>
                             <span>إنشاء قيد يومية</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{route('journal-entry.index')}}">
+                            <i class="fas fa-journal-whills"></i>
+                            <span>قيود اليومية</span>
                         </a>
                     </li>
 
@@ -48,12 +54,7 @@
                             <span>   الدفاتر  المحاسبيه</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="#journal-entries">
-                            <i class="fas fa-journal-whills"></i>
-                            <span>قيود اليومية</span>
-                        </a>
-                    </li>
+
                     <li>
                         <a href="{{route('account.statement.index')}}">
                             <i class="fas fa-file-invoice-dollar"></i>
@@ -68,6 +69,13 @@
                     <span>الفواتير والمنتجات</span>
                 </a>
                 <ul class="submenu">
+                    <li>
+                        <a href="{{route('invoices.index')}}">
+                            <i class="fas fa-file-alt"></i>
+                            <span> الفواتير</span>
+                        </a>
+                    </li>
+
                     <li>
                         <a href="{{route('invoices.sales')}}">
                             <i class="fas fa-file-alt"></i>
