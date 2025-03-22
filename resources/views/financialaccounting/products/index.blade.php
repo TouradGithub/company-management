@@ -121,6 +121,8 @@
 
                         if (response.length === 0) {
                             $('.products-grid').html('<p class="no-products">لا يوجد منتجات حاليا</p>');
+                            hideLoadingOverlay();
+
                         }
 
                         response.forEach(product => {
