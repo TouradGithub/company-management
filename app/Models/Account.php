@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Account extends Model
 {
     use HasFactory;
-    protected $fillable = ['account_number', 'name', 'account_type_id', 'parent_id', 'company_id','opening_balance'];
+    protected $fillable = ['account_number', 'name', 'account_type_id', 'parent_id', 'company_id','opening_balance', 'closing_list_type',];
 
     // العلاقة مع نوع الحساب
     public function accountType()
@@ -21,6 +21,11 @@ class Account extends Model
     {
         return $this->belongsTo(Account::class, 'parent_id');
     }
+
+    public function children()
+    {
+        return $this->hasMany(Account::class, 'parent_id');
+    }
     public function journalEntriesDetails()
     {
         return $this->belongsTo(JournalEntryDetail::class, 'account_id');
@@ -31,4 +36,6 @@ class Account extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+
 }

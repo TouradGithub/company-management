@@ -2,13 +2,14 @@
 @extends('financialaccounting.layouts.master')
 
 @section('content')
-    <div class="invoices-header">
-        <h1>إضافة فاتورة مبيعات</h1>
-    </div>
+
+
 
     <div class="invoice-container active" style="width: 100%"  id="sales-invoice">
         <form id="salesInvoiceForm">
-
+            <div>
+                <h1 style="text-align: center">إضافة فاتورة مبيعات</h1>
+            </div>
 
             <div class="invoice-info">
                 <div style="display: flex; gap: 2rem; align-items: center; width: 100%;">

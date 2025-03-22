@@ -1,35 +1,98 @@
 @extends('financialaccounting.layouts.master')
 @section('content')
-    <div id="accountsTreeSection" >
-        <div class="accounts-tree-container">
-            @if($errors->any())
-                <div style="color: red;">
-                    <ul>
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-            <div class="accounts-header">
-                <h1>شجرة الحسابات</h1>
-                <button class="add-account-btn">
-                    <i class="fas fa-plus"></i>
-                    إضافة حساب جديد
+{{--    <div id="accountsTreeSection" >--}}
+
+
+
+
+
+{{--        <div class="accounts-summary">--}}
+            <h2>جدول الحسابات</h2>
+
+            <div class="table-actions">
+
+
+                <button class="export-excel-btn">
+                    <i class="fas fa-file-excel"></i>
+                    تصدير Excel
+                </button>
+                <button class="export-pdf-btn">
+                    <i class="fas fa-file-pdf"></i>
+                    تصدير PDF
                 </button>
             </div>
-                <div class="accounts-tree">
-                    @foreach ($accountsTree as $account)
-                        @include('financialaccounting.accountsTree.accountsTree', ['account' => $account])
+
+            <div class="accounts-table-container">
+                <table class="accounts-table" id="accountsTable">
+                    <thead>
+                    <tr>
+                        <th>رقم الحساب</th>
+                        <th>اسم الحساب</th>
+                        <th>نوع الحساب</th>
+                        <th>رصيد مدين</th>
+                        <th>رصيد دائن</th>
+                        <th>الرصيد</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($accounts as $item)
+                        <tr>
+                            <td>{{ $item->account_number }}
+                                @foreach($item->children as $child)
+                                    <div style="margin-right: 20px;">{{ $child->account_number }} </div>
+                                    @if($child->children)
+                                        @foreach($child->children as $grandchild)
+                                            <div style="margin-right: 40px;">{{ $grandchild->account_number }} </div>
+                                            <!-- يمكنك إضافة مستويات أعمق إذا لزم الأمر -->
+                                        @endforeach
+                                    @endif
+                                @endforeach
+                            </td>
+                            <td>
+                                <!-- عرض رقم واسم الحساب الرئيسي -->
+                                <div> {{ $item->name }}</div>
+
+                                <!-- عرض الحسابات الفرعية بشكل متكرر باستخدام foreach -->
+                                @foreach($item->children as $child)
+                                    <div style="margin-right: 20px;">{{ $child->name }}</div>
+                                    @if($child->children)
+                                        @foreach($child->children as $grandchild)
+                                            <div style="margin-right: 40px;">{{ $grandchild->name }}</div>
+                                            <!-- يمكنك إضافة مستويات أعمق إذا لزم الأمر -->
+                                        @endforeach
+                                    @endif
+                                @endforeach
+                            </td>
+                            <td>{{ $item->accountType->name }}</td>
+                            <td class="total-debit">0</td>
+                            <td class="total-credit">0</td>
+                            <td class="total-balance">0</td>
+                            <td>
+                                <a href="#" style="margin: 10px; font-size: 20px;">
+                                    <i class="fas fa-edit" style="color: green;"></i>
+                                </a>
+                                <a href="{{ route('accounting.delete', $item->id) }}"
+                                   style="margin: 10px; font-size: 20px;"
+                                   onclick="return confirm('هل أنت متأكد أنك تريد حذف هذا الحساب؟');">
+                                    <i class="fas fa-trash" style="color: red;"></i>
+                                </a>
+                            </td>
+                        </tr>
                     @endforeach
-                </div>
-
-
-
-{{--            </div>--}}
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="4">الإجمالي</td>
+                        <td class="total-debit">0</td>
+                        <td class="total-credit">0</td>
+                        <td class="total-balance">0</td>
+                        <td></td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
         </div>
-
-
         <div class="account-form-modal">
             <div class="modal-content">
                 <h2>إضافة حساب جديد</h2>
@@ -86,7 +149,7 @@
                 </form>
             </div>
         </div>
-    </div>
+
 
 
     </div>

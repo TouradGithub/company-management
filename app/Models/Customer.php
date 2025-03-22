@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'contact_info', 'branch_id', 'company_id'];
+    protected $fillable = ['name', 'contact_info', 'branch_id', 'company_id' , 'credit_limit'];
     public function branch()
     {
         return $this->belongsTo(Branch::class, 'branch_id');

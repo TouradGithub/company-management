@@ -17,6 +17,18 @@
             <h2>قيد يوميه</h2>
 
             <div class="table-actions">
+
+                <div class="form-group">
+                    <label>الدفتر:</label>
+                    <select id="journal_id" >
+                        <option value="">اختر الدفتر</option>
+                        @foreach($journals as $item)
+                            <option value="{{$item->id}}"> {{$item->name}}</option>
+                        @endforeach
+
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label>الفرع:</label>
                     <select id="branchSelect" >
@@ -32,6 +44,14 @@
                     <label>التاريخ:</label>
                     <input type="date" id="entryDate">
                 </div>
+
+
+                <div class="form-group">
+                    <label>رقم القيد:</label>
+                    <input type="number" id="entryDate" value="{{$entry_number}}">
+                </div>
+
+
 
             </div>
 
@@ -297,6 +317,7 @@
 
                 let data = {
                     branch: $('#branchSelect').val(),
+                    journal_id: $('#journal_id').val(),
                     date: $('#entryDate').val(),
                     entries: entries,
                     _token: $('meta[name="csrf-token"]').attr('content')

@@ -1,11 +1,14 @@
 @extends('financialaccounting.layouts.master')
 
 @section('content')
-    <div class="invoices-header">
-        <h1>إضافة فاتورة مرتجع مبيعات</h1>
-    </div>
+
+
     <div class="invoice-container active invoice-container-style" id="sales-return-invoice">
         <form id="salesReturnInvoiceForm">
+{{--            <div>--}}
+
+{{--                <h1 style="text-align: center"> <h1>إضافة فاتورة مرتجع مبيعات</h1>--}}
+{{--            </div>--}}
             <div class="header">
                 <div>
                     <h1 style="color: #e67e22;">فاتورة مرتجع مبيعات</h1>
