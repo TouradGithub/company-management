@@ -8,6 +8,7 @@ use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\Journal;
 use App\Models\Product;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -20,6 +21,7 @@ class InvoiceController extends Controller
         $branches = Branch::where('company_id' , Auth::user()->model_id)->get();
 
         $products = Product::where('company_id' , Auth::user()->model_id)->get();
+
         $customers = Customer::where('company_id', Auth::user()->model_id)->get();
         return view('financialaccounting.invoices.index', compact('products','branches' , 'customers'));
     }

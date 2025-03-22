@@ -13,6 +13,14 @@
                     <span>شجرة الحسابات</span>
                 </a>
             </li>
+            <li>
+                <a href="{{route('accounting.index.table')}}">
+                    <i class="fas fa-sitemap"></i>
+                    <span> الحسابات</span>
+                </a>
+            </li>
+
+
             <li class="menu-group">
                 <a href="#financial-accounting">
                     <i class="fas fa-file-invoice-dollar"></i>
@@ -26,10 +34,18 @@
                         </a>
                     </li>
 
+
                     <li>
                         <a href="{{route('cost-center.index')}}">
                             <i class="fas fa-plus-circle"></i>
                             <span>  مراكز التكلفه</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{route('journals.index')}}">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>   الدفاتر  المحاسبيه</span>
                         </a>
                     </li>
                     <li>

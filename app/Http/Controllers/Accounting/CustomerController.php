@@ -87,12 +87,14 @@ class CustomerController extends Controller
             'contact_info' => 'required',
             'branch_id' => 'nullable',
             'account_id' => 'required|numeric',
+            'credit_limit' => 'required|numeric|min:0',
 
         ]);
 
         $customer = new Customer();
         $customer->name = $request->name;
         $customer->contact_info = $request->contact_info;
+        $customer->credit_limit = $request->credit_limit;
         $customer->account_id = $request->account_id;
         $customer->branch_id = $request->branch_id??'all';
         $customer->company_id = Auth::user()->model_id;
@@ -137,6 +139,7 @@ class CustomerController extends Controller
             'name' => 'required|string|max:255',
             'contact_info' => 'required|string|max:20',
             'branch_id' => 'nullable',
+            'credit_limit' => 'required|numeric|min:0',
             'account_id' => 'required',
         ]);
 
@@ -147,6 +150,7 @@ class CustomerController extends Controller
         $customer = Customer::findOrFail($id);
         $customer->update([
             'name'=>$request->name,
+            'credit_limit' => $request->credit_limit,
             'contact_info'=>$request->contact_info,
             'branch_id'=>$request->branch_id??'all',
         ]);

@@ -3,9 +3,9 @@
 @extends('financialaccounting.layouts.master')
 
 @section('content')
-    <div class="invoices-header">
-        <h1>إضافة فاتورة مشتريات</h1>
-    </div>
+{{--    <div class="invoices-header">--}}
+{{--        <h1>إضافة فاتورة مشتريات</h1>--}}
+{{--    </div>--}}
     <div class="invoice-container active invoice-container-style" id="purchase-invoice">
         <form id="purchaseInvoiceForm">
             <div class="header">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Company;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 class CompanyController extends Controller
 {
@@ -53,6 +54,9 @@ class CompanyController extends Controller
         ]);
         $validated['password'] = Hash::make($request->password);
 
+        DB::beginTransaction();
+
+
         // Create a new company record
         $company = Company::create($validated);
 
@@ -64,6 +68,10 @@ class CompanyController extends Controller
             'model_id' =>$company->id,
             'is_admin' =>1,
         ]);
+
+        Company::createDefaultAccounts($company->id);
+
+        DB::commit();
 
         // Redirect with a success message
         return redirect()->route('company.create')->with('success', 'Company created successfully!');

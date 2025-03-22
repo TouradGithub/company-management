@@ -17,6 +17,7 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\Accounting\InvoiceController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\DeductionController;
+use App\Http\Controllers\Accounting\JournalController;
 
 /*
 
@@ -121,9 +122,26 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::get('/account-statement', [App\Http\Controllers\Accounting\AccountStatementController::class, 'getStatement'])->name('account.statement.getStatement-by-ajax');
 
     Route::get('Acounting/index' , [App\Http\Controllers\Accounting\HomeController::class , 'index'])->name('accounting.index');
+    Route::get('Acounting/index-table' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'accountTable'])->name('accounting.index.table');
     Route::get('Acounting/delete/{id}' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'delete'])->name('accounting.delete');
     Route::get('Acounting/accountsTree' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'index'])->name('accounting.accountsTree.index');
     Route::post('Acounting/accountsTree' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'store'])->name('accounting.accountsTree.store');
+
+
+//    Route::resource('journals', \App\Http\Controllers\Accounting\JournalController::class);
+//    Route::get('/journals/get', [\App\Http\Controllers\Accounting\JournalController::class, 'get']);
+
+
+
+
+    Route::get('/journals/get', [JournalController::class, 'get']);
+    Route::post('/journals/store', [JournalController::class, 'store'])->name('journals.store');
+    Route::get('/journals/edit/{id}', [JournalController::class, 'edit']);
+    Route::put('/journals/update/{id}', [JournalController::class, 'update']);
+    Route::delete('/journals/delete/{id}', [JournalController::class, 'delete']);
+
+// إذا كنت تستخدم صفحة العرض العادية (index)
+    Route::get('/journals', [JournalController::class, 'index'])->name('journals.index');
 
 
     Route::get('/trial-balance', [App\Http\Controllers\Accounting\TrialBalanceController::class, 'index'])->name('trial.balance');

@@ -19,6 +19,15 @@ class AccountsTreeController extends Controller
 //        dd($accountsTree);
         return view('financialaccounting.accountsTree.index', compact('accounttypes', 'accountsTree','accounts'));
     }
+    public function accountTable(){
+        $accounttypes =  AccountType::all();
+        $accounts = Account::where('company_id', Auth::user()->model_id)->get();
+
+        // تحويل الحسابات إلى شجرة
+        $accountsTree = $this->buildTree($accounts);
+//        dd($accountsTree);
+        return view('financialaccounting.accountsTree.account-table', compact('accounttypes', 'accountsTree','accounts'));
+    }
 
     public function store(Request $request)
     {
@@ -30,6 +39,8 @@ class AccountsTreeController extends Controller
             'account_type_id' => 'required',
             'parent_id' => 'required',
             'opening_balance' => 'nullable|numeric',
+            'closing_list_type' => 'required|in:1,2',
+
         ], [
             'account_number.required' => 'رقم الحساب مطلوب.',
             'account_number.unique' => 'رقم الحساب مستخدم بالفعل.',
@@ -39,6 +50,9 @@ class AccountsTreeController extends Controller
             'account_type_id.required' => 'نوع الحساب مطلوب.',
             'account_type_id.exists' => 'نوع الحساب غير صحيح.',
             'parent_id.exists' => 'الحساب الرئيسي المحدد غير موجود.',
+            'opening_balance.numeric' => 'الرصيد الافتتاحي يجب أن يكون رقمًا.',
+            'closing_list_type.in' => 'نوع القائمة الختامية يجب أن يكون إما "قائمة الدخل" أو "الميزانيه العموميه".',
+            'closing_list_type.required' => ' القائمة الختامية  مطلوبه".',
         ]);
 
 
@@ -49,6 +63,7 @@ class AccountsTreeController extends Controller
         $account->parent_id = $validated['parent_id'] ?? null;
         $account->company_id = auth()->user()->model_id;
         $account->opening_balance = $validated['opening_balance']  ?? 0;
+        $account->closing_list_type = $validated['closing_list_type'];
         $account->save();
         return redirect()->back()->with('success', 'تم إنشاء الحساب بنجاح!');
 

@@ -8,6 +8,7 @@ use App\Models\AccountType;
 use App\Models\Branch;
 use App\Models\CostCenter;
 
+use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryDetail;
 use Illuminate\Support\Facades\DB;
@@ -25,24 +26,31 @@ class JournalEntryController extends Controller
 
     public function create()
     {
-        $accounts = Account::where('company_id', Auth::user()->model_id)->get();
+        $accounts = Account::where('company_id', Auth::user()->model_id)
+            ->whereDoesntHave('children')
+            ->where('parent_id'  ,'!=' , 0)
+            ->get();
         $costcenters = CostCenter::where('company_id', Auth::user()->model_id)->get();
         $branches = Branch::where('company_id', Auth::user()->model_id)->get();
-        return view('financialaccounting.journalEntries.create'  , compact('accounts' ,'branches', 'costcenters'));
+        $journals = Journal::where('company_id' , Auth::user()->model_id)->get();
+        $entry_number = JournalEntry::generateEntryNumber(Auth::user()->model_id);
+        return view('financialaccounting.journalEntries.create'  , compact('accounts' ,'branches', 'costcenters' , 'journals' , 'entry_number'));
     }
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
             'branch' => 'required',
+            'journal_id' => 'required',
             'date' => 'required|date',
             'entries' => 'required|array|min:1',
             'entries.*.account_id' => 'required',
-            'entries.*.debit' => 'nullable|numeric|required_without:entries.*.credit',
-            'entries.*.credit' => 'nullable|numeric|required_without:entries.*.debit',
+            'entries.*.debit' => 'numeric|required_without:entries.*.credit',
+            'entries.*.credit' => 'numeric|required_without:entries.*.debit',
             'entries.*.cost_center' => 'required',
             'entries.*.notes' => 'nullable|string',
         ], [
             'entries.*.cost_center.required' => 'يجب اختيار مركز التكلفة.',
             'branch.required' => 'يجب اختيار الفرع.',
+            'journal_id.required' => 'يجب اختيار الدفتر.',
             'date.required' => 'يجب تحديد التاريخ.',
             'date.date' => 'يجب إدخال تاريخ صحيح.',
             'entries.required' => 'يجب إدخال تفاصيل القيد.',
@@ -64,9 +72,12 @@ class JournalEntryController extends Controller
         }
         try {
             DB::beginTransaction();
+            $journal = \App\Models\Journal::find($request->journal_id);
+
+            $journalCode = $journal->code; // كود الدفتر (مثل JRN-001)
 
             $journalEntry = JournalEntry::create([
-                'entry_number' => JournalEntry::generateEntryNumber(Auth::user()->model_id),
+                'entry_number' =>$journalCode.'-'.JournalEntry::generateEntryNumber(Auth::user()->model_id),
                 'entry_date' => $request->date,
                 'branch_id' => $request->branch,
                 'company_id' => Auth::user()->model_id,

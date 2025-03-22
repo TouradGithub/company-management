@@ -3,7 +3,7 @@
     <div class="node-content">
         <i class="{{ count($account->children ?? []) > 0 ? 'fas fa-folder' : 'fas fa-file' }}"></i>
         <div class="node-info">
-            <span class="account-name">{{ $account->name }} - {{ $account->account_number }}</span>
+            <span class="account-name">{{ $account->account_number }} - {{ $account->name }}  </span>
             <div class="account-details">
                 <span class="account-balance">{{ number_format($account->balance, 2) }} ريال</span>
                 <span class="account-type" data-type="{{ $account->accountType->name }}">

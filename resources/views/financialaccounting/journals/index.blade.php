@@ -1,29 +1,28 @@
 @extends('financialaccounting.layouts.master')
-@section('content')
 
-    <div id="salesInvoiceSection">
+@section('content')
+    <div id="journalsSection">
         <div class="invoices-container">
             <div class="invoices-header">
-                <h1>العملاء</h1>
+                <h1>الدفاتر المحاسبية</h1>
                 <button class="add-invoice-btn">
                     <i class="fas fa-plus"></i>
-                    إضافة عميل جديد
+                    إضافة دفتر جديد
                 </button>
             </div>
 
             <div class="invoices-grid">
                 <div class="accounts-table-container">
-                    <table class="accounts-table" id="accountsTable">
+                    <table class="accounts-table" id="journalsTable">
                         <thead>
                         <tr>
-                            <th>الإسم</th>
-                            <th>رقم الهاتف</th>
-                            <th>الفرع</th>
-                            <th>الحد الائتماني</th> <!-- إضافة عمود الحد الائتماني -->
+                            <th>الكود</th>
+                            <th>الاسم</th>
                             <th>الإجراءات</th>
                         </tr>
                         </thead>
                         <tbody>
+                        <!-- سيتم ملء الجدول عبر AJAX -->
                         </tbody>
                     </table>
                 </div>
@@ -33,51 +32,19 @@
 
     <div class="invoice-form-modal">
         <div class="modal-content">
-            <h2 id="modal-title">إضافة عميل</h2>
-            <form id="customer-form">
+            <h2 id="modal-title">إضافة دفتر</h2>
+            <form id="journal-form">
                 <div class="invoice-header-section">
                     <div class="form-row">
                         <div class="form-group">
-                            <label>الاسم</label>
+                            <label>كود الدفتر</label>
+                            <input type="text" id="code" name="code" required>
+                            <span id="error-code" class="error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>اسم الدفتر</label>
                             <input type="text" id="name" name="name" required>
                             <span id="error-name" class="error"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>رقم الهاتف</label>
-                            <input type="number" id="contact_info" name="contact_info" required>
-                            <span id="error-contact_info" class="error"></span>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>الفرع</label>
-                            <select id="branch_id" name="branch_id" required>
-                                <option value="all">اختر الفرع...</option>
-                                @foreach($branches as $item)
-                                    <option value="{{$item->id}}">{{$item->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>الحساب</label>
-                            <select id="account_id" name="account_id" required>
-                                <option value="all">اختر الحساب...</option>
-                                @foreach($accounts as $item)
-                                    <option value="{{$item->id}}">{{$item->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>الحد الائتماني</label>
-                            <input type="number" id="credit_limit" name="credit_limit" step="0.01" value="0" required>
-                            <span id="error-credit_limit" class="error"></span>
-                        </div>
-                        <div class="form-group">
-                            <!-- حقل فارغ للحفاظ على التنسيق -->
                         </div>
                     </div>
                 </div>
@@ -85,7 +52,8 @@
                     <button type="button" class="cancel-btn">إلغاء</button>
                     <button type="button" class="save-btn" id="save-btn">حفظ</button>
                 </div>
-                <input type="hidden" id="customer_id" name="customer_id">
+                <input type="hidden" id="journal_id" name="journal_id">
+                <input type="hidden" id="company_id" name="company_id" value="{{ auth()->user()->company_id ?? 1 }}">
             </form>
         </div>
     </div>
@@ -97,13 +65,13 @@
 
     <script>
         $(document).ready(function () {
-            // Load customers on page load
-            loadCustomers();
+            // Load journals on page load
+            loadJournals();
 
-            // Open modal for adding a new customer
+            // Open modal for adding a new journal
             $('.add-invoice-btn').on('click', function() {
                 resetModal();
-                openModal('إضافة عميل', 'حفظ');
+                openModal('إضافة دفتر', 'حفظ');
             });
 
             // Close modal when clicking "Cancel" or overlay
@@ -115,25 +83,22 @@
                 e.preventDefault();
                 clearErrors();
 
-                const customerId = $('#customer_id').val();
-                const url = customerId ? `/customers/update/${customerId}` : '{{ route('customers.store') }}';
-                const method = customerId ? 'PUT' : 'POST';
+                const journalId = $('#journal_id').val();
+                const url = journalId ? `/journals/update/${journalId}` : '/journals/store';
+                const method = journalId ? 'PUT' : 'POST';
 
                 $.ajax({
                     url: url,
                     method: method,
                     data: {
-                        name: $('#name').val(),
-                        contact_info: $('#contact_info').val(),
-                        branch_id: $('#branch_id').val(),
-                        account_id: $('#account_id').val(),
-                        credit_limit: $('#credit_limit').val(), // إضافة الحد الائتماني
+                        code: $('#code').val(),
+                        name: $('#name').val(), // إرسال company_id
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
                         closeModal();
                         Swal.fire(response.status, response.message, response.success ? 'success' : 'error');
-                        loadCustomers();
+                        loadJournals();
                     },
                     error: function(xhr) {
                         if (xhr.status === 422) {
@@ -151,44 +116,41 @@
             });
 
             // Handle edit button click
-            $(document).on('click', '.edit-customer', function(e) {
+            $(document).on('click', '.edit-journal', function(e) {
                 e.preventDefault();
                 showLoadingOverlay();
-                const customerId = $(this).data('id');
+                const journalId = $(this).data('id');
 
                 $.ajax({
-                    url: `/customers/edit/${customerId}`,
+                    url: `/journals/edit/${journalId}`,
                     type: 'GET',
                     success: function(response) {
                         if (response.success) {
-                            $('#modal-title').text('تعديل عميل');
+                            $('#modal-title').text('تعديل دفتر');
                             $('#save-btn').text('تحديث');
-                            $('#name').val(response.customer.name);
-                            $('#contact_info').val(response.customer.contact_info);
-                            $('#branch_id').val(response.customer.branch_id);
-                            $('#account_id').val(response.customer.account_id);
-                            $('#credit_limit').val(response.customer.credit_limit); // إضافة الحد الائتماني
-                            $('#customer_id').val(response.customer.id);
-                            openModal('تعديل عميل', 'تحديث');
+                            $('#code').val(response.journal.code);
+                            $('#name').val(response.journal.name);
+                            $('#journal_id').val(response.journal.id);
+                            openModal('تعديل دفتر', 'تحديث');
                             hideLoadingOverlay();
                         } else {
-                            Swal.fire('خطأ', 'فشل تحميل بيانات العميل.', 'error');
+                            Swal.fire('خطأ', 'فشل تحميل بيانات الدفتر.', 'error');
                         }
                     },
                     error: function() {
-                        Swal.fire('خطأ', 'حدث خطأ أثناء جلب بيانات العميل.', 'error');
+                        Swal.fire('خطأ', 'حدث خطأ أثناء جلب بيانات الدفتر.', 'error');
                     }
                 });
             });
 
             // Handle delete button click
-            $(document).on('click', '.delete-customer', function(e) {
+            $(document).on('click', '.delete-journal', function(e) {
                 e.preventDefault();
-                const customerId = $(this).data('id');
+                const journalId = $(this).data('id');
 
                 Swal.fire({
                     title: 'هل أنت متأكد؟',
-                    text: 'لن تتمكن من استرجاع هذا العميل بعد الحذف!',
+                    text: 'لن تتمكن من استرجاع هذا الدفتر بعد الحذف!',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
@@ -198,12 +160,12 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: `/customers/delete/${customerId}`,
+                            url: `/journals/delete/${journalId}`,
                             type: 'DELETE',
                             data: { _token: '{{ csrf_token() }}' },
                             success: function(response) {
                                 if (response.success) {
-                                    Swal.fire('تم الحذف!', 'تم حذف العميل بنجاح.', 'success').then(() => loadCustomers());
+                                    Swal.fire('تم الحذف!', 'تم حذف الدفتر بنجاح.', 'success').then(() => loadJournals());
                                 } else {
                                     Swal.fire('فشل الحذف', response.message || 'حدث خطأ أثناء الحذف.', 'error');
                                 }
@@ -217,7 +179,7 @@
             });
 
             // Utility Functions
-            function openModal(title = 'إضافة عميل', buttonText = 'حفظ') {
+            function openModal(title = 'إضافة دفتر', buttonText = 'حفظ') {
                 $('body').css({ 'pointer-events': 'none', 'overflow': 'hidden' });
                 $('body').append('<div class="page-overlay"></div>');
                 $('.page-overlay').css({
@@ -242,9 +204,9 @@
             }
 
             function resetModal() {
-                $('#customer-form')[0].reset();
-                $('#customer_id').val('');
-                $('#credit_limit').val('0'); // إعادة تعيين الحد الائتماني إلى 0
+                $('#journal-form')[0].reset();
+                $('#journal_id').val('');
+                $('#company_id').val('{{ auth()->user()->company_id ?? 1 }}'); // إعادة تعيين company_id
                 clearErrors();
             }
 
@@ -253,39 +215,34 @@
                 $('.form-group input, .form-group select').css('border', '');
             }
 
-            function showLoadingOverlay() {
-                // يمكنك إضافة عنصر تحميل هنا إذا أردت
-            }
 
-            function hideLoadingOverlay() {
-                // إخفاء عنصر التحميل إذا كان موجودًا
-            }
 
-            function loadCustomers() {
+
+            function loadJournals() {
                 $.ajax({
-                    url: "/customers/get",
+                    url: "/journals/get",
                     type: "GET",
                     dataType: "json",
+                    data: {
+                        company_id: '{{ auth()->user()->company_id ?? 1 }}' // فلترة حسب الشركة
+                    },
                     success: function(response) {
-                        let tableBody = $("#accountsTable tbody");
+                        let tableBody = $("#journalsTable tbody");
                         tableBody.empty();
 
-                        if (response.customers.length === 0) {
-                            tableBody.append("<tr><td colspan='5' style='text-align: center'>لا يوجد عملاء</td></tr>");
+                        if (response.journals.length === 0) {
+                            tableBody.append("<tr><td colspan='3' style='text-align: center'>لا يوجد دفاتر</td></tr>");
                         } else {
-                            $.each(response.customers, function(index, item) {
-                                let branch = item.branch_id === 'all' ? 'غير محدد' : (item.branch ? item.branch.name : 'غير محدد');
+                            $.each(response.journals, function(index, item) {
                                 let row = `
                                     <tr>
+                                        <td>${item.code}</td>
                                         <td>${item.name}</td>
-                                        <td>${item.contact_info}</td>
-                                        <td>${branch}</td>
-                                        <td>${item.credit_limit}</td> <!-- عرض الحد الائتماني -->
                                         <td>
-                                            <a href="#" class="edit-customer" data-id="${item.id}" style="margin: 10px; font-size: 20px;">
+                                            <a href="#" class="edit-journal" data-id="${item.id}" style="margin: 10px; font-size: 20px;">
                                                 <i class="fas fa-edit" style="color: green;"></i>
                                             </a>
-                                            <a href="#" class="delete-customer" data-id="${item.id}" style="margin: 10px; font-size: 20px;">
+                                            <a href="#" class="delete-journal" data-id="${item.id}" style="margin: 10px; font-size: 20px;">
                                                 <i class="fas fa-trash" style="color: red;"></i>
                                             </a>
                                         </td>
