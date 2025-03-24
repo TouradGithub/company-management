@@ -4,54 +4,49 @@ namespace App\Http\Controllers\Accounting;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
+use App\Models\Branch;
 use App\Models\JournalEntryDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TrialBalanceController extends Controller
 {
     public function index()
     {
-        return view('financialaccounting.trial-balance.trial-balance');
+        $branches = Branch::where('company_id', Auth::user()->model_id)->get();
+        return view('financialaccounting.trial-balance.trial-balance' , compact('branches'));
     }
     public function getTrialBalance(Request $request)
     {
-        // التحقق من إدخال التواريخ
+
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
+        $branchId = $request->input('branch_id');
 
         if (!$fromDate || !$toDate) {
             return response()->json(['error' => 'يجب تحديد تاريخ البداية والنهاية'], 400);
         }
 
-        // جلب الحسابات مع الحركات المالية المرتبطة بها عبر JournalEntry
-        $accounts = Account::where('company_id', auth()->user()->model_id)->get();
+        $accounts = Account::where('company_id', auth()->user()->model_id)
+            ->with(['transactions' => function ($query) use ($fromDate, $toDate , $branchId) {
+                $query->where('branch_id', $branchId)
+                    ->whereBetween('transaction_date', [$fromDate, $toDate]);
+            }])
+            ->get();
 
         $result = $accounts->map(function ($account) use ($fromDate, $toDate) {
-            // الأرصدة الافتتاحية قبل الفترة المحددة
-            $openingDebit = JournalEntryDetail::where('account_id', $account->id)
-                ->whereHas('journalEntry', function ($query) use ($fromDate) {
-                    $query->where('entry_date', '<', $fromDate);
-                })
-                ->sum('debit');
 
-            $openingCredit = JournalEntryDetail::where('account_id', $account->id)
-                ->whereHas('journalEntry', function ($query) use ($fromDate) {
-                    $query->where('entry_date', '<', $fromDate);
-                })
-                ->sum('credit');
+            $openingDebit = $account->opening_balance < 0 ? abs($account->opening_balance) : 0;
+            $openingCredit = $account->opening_balance >= 0 ? $account->opening_balance : 0;
 
-            // الحركات خلال الفترة المحددة
-            $currentDebit = JournalEntryDetail::where('account_id', $account->id)
-                ->whereHas('journalEntry', function ($query) use ($fromDate, $toDate) {
-                    $query->whereBetween('entry_date', [$fromDate, $toDate]);
-                })
-                ->sum('debit');
+            $transactions = $account->transactions;
+            $currentDebit = $transactions->sum('debit');
+            $currentCredit = $transactions->sum('credit');
 
-            $currentCredit = JournalEntryDetail::where('account_id', $account->id)
-                ->whereHas('journalEntry', function ($query) use ($fromDate, $toDate) {
-                    $query->whereBetween('entry_date', [$fromDate, $toDate]);
-                })
-                ->sum('credit');
+            $closingBalance = $account->opening_balance + $currentDebit - $currentCredit;
+            $closingDebit = $closingBalance < 0 ? abs($closingBalance) : 0;
+
+            $closingCredit = $closingBalance >= 0 ? $closingBalance : 0;
 
             return [
                 'account_number' => $account->account_number,
@@ -60,12 +55,12 @@ class TrialBalanceController extends Controller
                 'opening_credit' => $openingCredit,
                 'current_debit' => $currentDebit,
                 'current_credit' => $currentCredit,
-                'closing_debit' => $openingDebit + $currentDebit,
-                'closing_credit' => $openingCredit + $currentCredit,
+                'closing_debit' => $closingDebit,
+                'closing_credit' => $closingCredit,
+                'closing_balance' => $closingBalance,
             ];
         });
 
         return response()->json($result);
     }
-
 }

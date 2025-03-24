@@ -37,5 +37,31 @@ class Account extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function transactions()
+    {
+        return $this->hasMany(AccountTransaction::class, 'account_id');
+    }
+
+    /**
+     * Get the current balance details for the account.
+     *
+     * @return array
+     */
+    public function getBalanceDetails()
+    {
+        // الرصيد الافتتاحي
+        $openingDebit = $this->opening_balance < 0 ? abs($this->opening_balance) : 0;
+        $openingCredit = $this->opening_balance >= 0 ? $this->opening_balance : 0;
+
+        // الحركات الحالية من account_transactions
+        $transactions = $this->transactions;
+        $currentDebit = $transactions->sum('debit');
+        $currentCredit = $transactions->sum('credit');
+
+        // الرصيد الختامي
+        $closingBalance = $this->opening_balance + $currentDebit - $currentCredit;
+
+        return $closingBalance;
+    }
 
 }

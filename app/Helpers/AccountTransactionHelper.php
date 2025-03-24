@@ -13,13 +13,15 @@ class AccountTransactionHelper
 
     public static function updateAccountTransactions($model)
     {
+
         if ($model instanceof JournalEntry) {
             self::handleJournalEntry($model);
         } elseif ($model instanceof Invoice) {
-            self::handleInvoice($model);
+//            self::handleInvoice($model);
         }
 
         self::updateRunningBalance($model->company_id);
+
     }
 
 
@@ -27,10 +29,18 @@ class AccountTransactionHelper
     private static function handleJournalEntry(JournalEntry $journalEntry)
     {
         foreach ($journalEntry->details as $detail) {
+            $baseNumber = $journalEntry->entry_number;
+            $transactionNumber = $baseNumber;
+            $counter = 1;
 
-            AccountTransaction::create([
+
+            while (AccountTransaction::where('transaction_number', $transactionNumber)->exists()) {
+                $transactionNumber = "{$baseNumber}-" . sprintf('%03d', $counter++);
+            }
+
+                AccountTransaction::create([
                 'account_id' => $detail->account_id,
-                'transaction_number' => $journalEntry->entry_number,
+                'transaction_number' => $transactionNumber,
                 'transaction_date' => $journalEntry->entry_date,
                 'debit' => $detail->debit,
                 'credit' => $detail->credit,
@@ -48,7 +58,7 @@ class AccountTransactionHelper
     private static function handleInvoice(Invoice $invoice)
     {
         // افترض أن الفاتورة تؤثر على حساب العميل/المورد وحساب آخر (مثل المبيعات/المشتريات)
-        $accountId = $invoice->customer_id ?? $invoice->supplier_id; // حسب نوع الفاتورة
+        $accountId = $invoice->customer->account->id ?? $invoice->supplier->account->id; // حسب نوع الفاتورة
         $description = "{$invoice->invoice_type} Invoice #{$invoice->invoice_number}";
 
         AccountTransaction::create([

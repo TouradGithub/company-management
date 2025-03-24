@@ -4,11 +4,21 @@
     <div class="trial-balance-container">
         <div class="report-header">
             <div class="branch-info">
-                <h2>الفرع: الفرع الرئيسي</h2>
+
+
             </div>
             <h1>ميزان المراجعة</h1>
             <div class="report-period">
-                <span>عن الفترة من:</span>
+
+                    <span>الفرع:</span>
+                    <select id="branch_id" >
+                        <option value="">اختر الفرع</option>
+                        @foreach($branches as $item)
+                            <option value="{{$item->id}}"> {{$item->name}}</option>
+                        @endforeach
+
+                    </select>
+                <span>  من:</span>
                 <input type="date" id="startDate"  value="{{ now()->format('Y-m-d') }}">
                 <span>إلى:</span>
                 <input type="date" id="endDate"  value="{{ now()->format('Y-m-d') }}">
@@ -67,16 +77,23 @@
             $('.view-report-btn').on('click', function () {
                 let startDate = $('#startDate').val();
                 let endDate = $('#endDate').val();
+                let branch_id = $('#branch_id').val();
 
-                if (!startDate || !endDate) {
+                if (!startDate || !endDate ) {
                     alert("❗ يرجى تحديد فترة البحث.");
                     return;
                 }
+                if (!branch_id || !endDate ) {
+                    alert("❗ يرجى تحديد الفرع .");
+                    return;
+                }
+
+
 
                 $.ajax({
                     url: "{{ route('trial.balance.data') }}",
                     type: "GET",
-                    data: { from_date: startDate, to_date: endDate },
+                    data: { from_date: startDate, to_date: endDate,branch_id: branch_id },
                     success: function (response) {
                         let tableBody = $('.trial-balance-table tbody');
                         tableBody.empty();
@@ -87,8 +104,8 @@
 
                         response.forEach(row => {
                             totalOpeningDebit += parseFloat(row.opening_debit) || 0;
-                            totalOpeningCredit += parseFloat(row.opening_credit) || 0;
-                            totalCurrentDebit += parseFloat(row.current_debit) || 0;
+                            totalOpeningCredit += parseFloat(row.opening_balance) >= 0 ? parseFloat(row.opening_balance) : 0;
+                            totalCurrentDebit += parseFloat(row.opening_balance)<0 ? parseFloat(row.opening_balance) : 0;
                             totalCurrentCredit += parseFloat(row.current_credit) || 0;
                             totalClosingDebit += parseFloat(row.closing_debit) || 0;
                             totalClosingCredit += parseFloat(row.closing_credit) || 0;
@@ -97,17 +114,17 @@
                         <tr>
                             <td>${row.account_number}</td>
                             <td>${row.account_name}</td>
-                            <td>${row.opening_debit}</td>
-                            <td>${row.opening_credit}</td>
-                            <td>${row.current_debit}</td>
-                            <td>${row.current_credit}</td>
+                        <td>${row.opening_debit === 0 ? '-' : row.opening_debit}</td>
+                        <td>${row.opening_credit === 0 ? '-' : row.opening_credit}</td>
+                            <td>${row.current_debit  === 0 ? '-' : row.current_debit}</td>
+                            <td>${row.current_credit  === 0 ? '-' : row.current_credit}</td>
                             <td>${row.closing_debit}</td>
                             <td>${row.closing_credit}</td>
                         </tr>
                     `);
                         });
 
-                        // تحديث الإجماليات
+
                         $('#totalOpeningDebit').text(totalOpeningDebit.toFixed(2));
                         $('#totalOpeningCredit').text(totalOpeningCredit.toFixed(2));
                         $('#totalCurrentDebit').text(totalCurrentDebit.toFixed(2));
@@ -115,7 +132,7 @@
                         $('#totalClosingDebit').text(totalClosingDebit.toFixed(2));
                         $('#totalClosingCredit').text(totalClosingCredit.toFixed(2));
 
-                        // إظهار حقول الإجمالي بعد جلب البيانات
+
                         $('#hidetable').show();
                     },
                     error: function () {

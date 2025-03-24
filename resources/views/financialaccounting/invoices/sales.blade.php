@@ -15,7 +15,7 @@
                 <div style="display: flex; gap: 2rem; align-items: center; width: 100%;">
                     <div class="employee-info-group" style="flex: 1;">
                         <label style="display: block; margin-bottom: 0.5rem; color: black; font-weight: bold;">اسم الموظف:</label>
-                        <input type="text" id="salesEmployeeName" list="employeeList" style="border: 1px solid #e67e22; padding: 8px 12px; border-radius: 6px; width: 100%;">
+                        <input type="text" id="salesEmployeeName" value="{{\Illuminate\Support\Facades\Auth::user()->name}}" list="employeeList" style="border: 1px solid #e67e22; padding: 8px 12px; border-radius: 6px; width: 100%;">
                         <datalist id="employeeList"></datalist>
                     </div>
                     <div class="shift-info-group" style="flex: 1;">

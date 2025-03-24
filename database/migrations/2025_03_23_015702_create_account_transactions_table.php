@@ -21,8 +21,11 @@ return new class extends Migration
             $table->decimal('balance', 15, 2)->default(0);
             $table->integer('company_id')->index();
             $table->integer('branch_id')->nullable()->index();
+            $table->string('description')->nullable();
+            $table->foreignId('journal_entry_id')->nullable()->constrained()->onDelete('set null');
             $table->enum('source_type', ['JournalEntry', 'Invoice'])->default('JournalEntry');
             $table->unsignedBigInteger('source_id')->nullable();
+            $table->timestamps();
         });
     }
 
