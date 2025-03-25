@@ -23,6 +23,8 @@ use App\Models\Company;
         return $branch;
     }
 
+
+
      function getAccountTreeIds($accounts, &$accountIds = [])
     {
         foreach ($accounts as $account) {

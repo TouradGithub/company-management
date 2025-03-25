@@ -13,6 +13,11 @@ class Customer extends Model
     {
         return $this->belongsTo(Branch::class, 'branch_id');
     }
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class, 'account_id');
+    }
     public function invoices()
     {
         return $this->hasMany(Invoice::class, 'customer_id');

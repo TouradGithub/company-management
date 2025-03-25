@@ -42,7 +42,7 @@
 
                 <div class="form-group">
                     <label>التاريخ:</label>
-                    <input type="date" id="entryDate">
+                    <input type="date" id="entryDate" value="{{ now()->format('Y-m-d') }}">
                 </div>
 
 
@@ -100,7 +100,7 @@
 
     <script>
             $(document).ready(function () {
-                // تفعيل Select2 عند تحميل الصفحة
+
                 $('.select2').select2({
                     width: '100%',
                     height:'100%',
@@ -127,6 +127,11 @@
             const costCentersData = @json($costcenters);
 
             function populateSelect(select, data) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = `اختر مركز تكلفه`;
+                select.appendChild(option);
+
                 data.forEach(item => {
                     const option = document.createElement('option');
                     option.value = item.id;
@@ -136,6 +141,10 @@
             }
 
             function populateAccountSelect(select, data) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = `اختر الحساب`;
+                select.appendChild(option);
                 data.forEach(item => {
                     const option = document.createElement('option');
                     option.value = item.id;
@@ -219,22 +228,22 @@
                 let currentIndex = inputs.indexOf(input);
 
                 if (currentIndex < inputs.length - 1) {
-                    // if(!inputs[currentIndex+1].disabled){
-                    //     inputs[currentIndex + 2].focus();
-                    // }
-                    inputs[currentIndex + 1].focus(); // الانتقال للحقل التالي
+                    console.log(currentIndex);
+                    let nextIndex = currentIndex + 1;
+                    console.log(inputs[nextIndex].disabled);
+                    while (inputs[nextIndex].disabled) {
+                        console.log(nextIndex);
+                        nextIndex++;
+                    }
+
+                    // inputs[currentIndex + 1].focus();
+                    if (nextIndex < inputs.length) {
+                        inputs[nextIndex].focus();
+                    }
                 } else {
-                    // إذا كان آخر حقل، أضف صفًا جديدًا وانتقل لأول حقل به
-                    // const newRow = addNewRow();
-                    // newRow.querySelector('input, select').focus();
+
+
                 }
-                // while (currentIndex < inputs.length - 1) {
-                //     currentIndex++;
-                //     if (!inputs[currentIndex].disabled) {
-                //         inputs[currentIndex].focus();
-                //         return;
-                //     }
-                // }
             }
 
             // تعريف دالة حذف الصف

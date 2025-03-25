@@ -4,8 +4,8 @@
 
 <div id="salesInvoiceSection" >
     <div class="invoices-container">
-{{--        <div class="invoices-header">--}}
-{{--            <h1>فواتير المبيعات</h1>--}}
+        <div class="invoices-header">
+            <h1>الفواتير </h1>
 {{--            <a href="{{route('invoices.create')}}" style="text-decoration: none">--}}
 
 
@@ -14,11 +14,11 @@
 {{--                فاتورة جديدة--}}
 {{--            </button>--}}
 {{--            </a>--}}
-{{--        </div>--}}
+        </div>
 
         <div class="invoice-search">
             <input type="search" placeholder="بحث في الفواتير...">
-            <select >
+            <select ">
                 <option value="all">جميع الأنواع</option>
                 <option value="Purchases">مشتريات</option>
                 <option value="PurchasesReturn">مرتجع مشتريات</option>

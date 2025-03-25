@@ -36,17 +36,17 @@
                 <form action="{{ route('accounting.accountsTree.store') }}" method="POST">
                     @csrf
                     <div class="form-row">
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <label>رقم الحساب</label>
                             <input type="text" name="account_number" id="accountNumber" required>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <label>اسم الحساب</label>
                             <input type="text" name="name" id="accountName" required>
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <label>نوع الحساب</label>
                             <select name="account_type_id" id="accountType" required>
                                 @foreach($accounttypes as $item)
@@ -54,7 +54,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <label>الحساب الرئيسي</label>
                             <select name="parent_id" id="parentAccount" required>
                                 <option value="">اختر الحساب الرئيسي...</option>
@@ -66,11 +66,11 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <label>الرصيد الافتتاحي</label>
                             <input type="number" name="opening_balance" id="openingBalance" step="0.01" value="0" required>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <label> القائمة الختامية</label>
                             <select name="closing_list_type" id="closingListType">
                                 <option value="">اختر نوع</option>

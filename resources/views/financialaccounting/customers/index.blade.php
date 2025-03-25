@@ -11,22 +11,18 @@
                 </button>
             </div>
 
+            <div class="invoice-search">
+                <input type="search" id="customer-search" placeholder="بحث في العملاء...">
+                <select id="branch-filter">
+                    <option value="all">جميع الفروع</option>
+                    @foreach($branches as $item)
+                        <option value="{{$item->id}}">{{ $item->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="invoices-grid">
-                <div class="accounts-table-container">
-                    <table class="accounts-table" id="accountsTable">
-                        <thead>
-                        <tr>
-                            <th>الإسم</th>
-                            <th>رقم الهاتف</th>
-                            <th>الفرع</th>
-                            <th>الحد الائتماني</th> <!-- إضافة عمود الحد الائتماني -->
-                            <th>الإجراءات</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
+                <!-- سيتم ملء هذا القسم ديناميكيًا بواسطة JavaScript -->
             </div>
         </div>
     </div>
@@ -37,12 +33,12 @@
             <form id="customer-form">
                 <div class="invoice-header-section">
                     <div class="form-row">
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <label>الاسم</label>
                             <input type="text" id="name" name="name" required>
                             <span id="error-name" class="error"></span>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <label>رقم الهاتف</label>
                             <input type="number" id="contact_info" name="contact_info" required>
                             <span id="error-contact_info" class="error"></span>
@@ -50,33 +46,35 @@
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <label>الفرع</label>
-                            <select id="branch_id" name="branch_id" required>
-                                <option value="all">اختر الفرع...</option>
+                            <select id="branch_id" name="branch_id" class="select2" required>
+                                <option value="">اختر الفرع...</option>
                                 @foreach($branches as $item)
-                                    <option value="{{$item->id}}">{{$item->name}}</option>
+                                    <option value="{{$item->id}}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
+                            <span id="error-branch_id" class="error"></span>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <label>الحساب</label>
-                            <select id="account_id" name="account_id" required>
-                                <option value="all">اختر الحساب...</option>
+                            <select id="account_id" name="account_id" class="select2" required>
+                                <option value="">اختر الحساب...</option>
                                 @foreach($accounts as $item)
-                                    <option value="{{$item->id}}">{{$item->name}}</option>
+                                    <option value="{{$item->id}}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
+                            <span id="error-account_id" class="error"></span>
                         </div>
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <label>الحد الائتماني</label>
                             <input type="number" id="credit_limit" name="credit_limit" step="0.01" value="0" required>
                             <span id="error-credit_limit" class="error"></span>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <!-- حقل فارغ للحفاظ على التنسيق -->
                         </div>
                     </div>
@@ -97,21 +95,86 @@
 
     <script>
         $(document).ready(function () {
-            // Load customers on page load
-            loadCustomers();
+            // تحميل العملاء عند تحميل الصفحة
+            loadCustomers('all');
 
-            // Open modal for adding a new customer
-            $('.add-invoice-btn').on('click', function() {
+            // فتح نافذة إضافة عميل جديد
+            $('.add-invoice-btn').on('click', function () {
                 resetModal();
                 openModal('إضافة عميل', 'حفظ');
             });
 
-            // Close modal when clicking "Cancel" or overlay
+            // إغلاق النافذة
             $('.cancel-btn').on('click', closeModal);
             $('body').on('click', '.page-overlay', closeModal);
 
-            // Handle form submission (Add/Edit)
-            $('#save-btn').on('click', function(e) {
+            // فلترة العملاء بناءً على الفرع
+            $('#branch-filter').on('change', function () {
+                let selectedBranch = $(this).val();
+                let searchTerm = $('#customer-search').val().toLowerCase();
+                loadCustomers(selectedBranch, searchTerm);
+            });
+
+            // البحث في العملاء
+            $('#customer-search').on('input', function () {
+                let searchTerm = $(this).val().toLowerCase();
+                let branchFilter = $('#branch-filter').val();
+                loadCustomers(branchFilter, searchTerm);
+            });
+
+            // دالة لتحميل العملاء باستخدام تصميم البطاقات
+            function loadCustomers(branchId = 'all', searchTerm = '') {
+                $.ajax({
+                    url: "/customers/get",
+                    type: "GET",
+                    data: { branch_id: branchId },
+                    dataType: "json",
+                    success: function (response) {
+                        let grid = $('.invoices-grid');
+                        grid.empty();
+
+                        // فلترة العملاء بناءً على البحث
+                        let filteredCustomers = response.customers.filter(customer =>
+                            customer.name.toLowerCase().includes(searchTerm) ||
+                            customer.contact_info.includes(searchTerm)
+                        );
+
+                        if (filteredCustomers.length === 0) {
+                            grid.append('<p style="text-align: center;">لا يوجد عملاء</p>');
+                        } else {
+                            $.each(filteredCustomers, function (index, item) {
+                                let branch = item.branch_id === 'all' || !item.branch ? 'غير محدد' : item.branch.name;
+                                let account = item.account ? item.account.name : 'غير محدد';
+                                let card = `
+                                    <div class="invoice-card">
+                                        <span class="invoice-status paid">عميل</span>
+                                        <div class="invoice-number">${item.name}</div>
+                                        <div class="invoice-date">
+                                            <i class="fas fa-phone"></i> ${item.contact_info}
+                                        </div>
+                                        <div class="invoice-details">
+                                            <p><span><i class="fas fa-code-branch"></i> الفرع</span><strong>${branch}</strong></p>
+                                            <p><span><i class="fas fa-wallet"></i> الحساب</span><strong>${account}</strong></p>
+                                            <p><span><i class="fas fa-credit-card"></i> الحد الائتماني</span><strong>${item.credit_limit} ريال</strong></p>
+                                            <p><span><i class="fas fa-credit-card"></i>  لرصيد</span><strong>${item.balance} ريال</strong></p>
+                                        </div>
+                                        <div class="card-actions">
+                                            <button class="action-btn edit-customer" title="تعديل" data-id="${item.id}"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete-customer" title="حذف" data-id="${item.id}"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </div>`;
+                                grid.append(card);
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('خطأ', 'فشل تحميل بيانات العملاء.', 'error');
+                    }
+                });
+            }
+
+            // حفظ أو تحديث العميل
+            $('#save-btn').on('click', function (e) {
                 e.preventDefault();
                 clearErrors();
 
@@ -127,15 +190,15 @@
                         contact_info: $('#contact_info').val(),
                         branch_id: $('#branch_id').val(),
                         account_id: $('#account_id').val(),
-                        credit_limit: $('#credit_limit').val(), // إضافة الحد الائتماني
+                        credit_limit: $('#credit_limit').val(),
                         _token: '{{ csrf_token() }}'
                     },
-                    success: function(response) {
+                    success: function (response) {
                         closeModal();
                         Swal.fire(response.status, response.message, response.success ? 'success' : 'error');
-                        loadCustomers();
+                        loadCustomers('all');
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         if (xhr.status === 422) {
                             let errors = xhr.responseJSON.errors;
                             $.each(errors, function (key, messages) {
@@ -150,16 +213,15 @@
                 });
             });
 
-            // Handle edit button click
-            $(document).on('click', '.edit-customer', function(e) {
+            // تعديل عميل
+            $(document).on('click', '.edit-customer', function (e) {
                 e.preventDefault();
-                showLoadingOverlay();
                 const customerId = $(this).data('id');
 
                 $.ajax({
                     url: `/customers/edit/${customerId}`,
                     type: 'GET',
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             $('#modal-title').text('تعديل عميل');
                             $('#save-btn').text('تحديث');
@@ -167,22 +229,21 @@
                             $('#contact_info').val(response.customer.contact_info);
                             $('#branch_id').val(response.customer.branch_id);
                             $('#account_id').val(response.customer.account_id);
-                            $('#credit_limit').val(response.customer.credit_limit); // إضافة الحد الائتماني
+                            $('#credit_limit').val(response.customer.credit_limit);
                             $('#customer_id').val(response.customer.id);
                             openModal('تعديل عميل', 'تحديث');
-                            hideLoadingOverlay();
                         } else {
                             Swal.fire('خطأ', 'فشل تحميل بيانات العميل.', 'error');
                         }
                     },
-                    error: function() {
+                    error: function () {
                         Swal.fire('خطأ', 'حدث خطأ أثناء جلب بيانات العميل.', 'error');
                     }
                 });
             });
 
-            // Handle delete button click
-            $(document).on('click', '.delete-customer', function(e) {
+            // حذف عميل
+            $(document).on('click', '.delete-customer', function (e) {
                 e.preventDefault();
                 const customerId = $(this).data('id');
 
@@ -201,14 +262,14 @@
                             url: `/customers/delete/${customerId}`,
                             type: 'DELETE',
                             data: { _token: '{{ csrf_token() }}' },
-                            success: function(response) {
+                            success: function (response) {
                                 if (response.success) {
-                                    Swal.fire('تم الحذف!', 'تم حذف العميل بنجاح.', 'success').then(() => loadCustomers());
+                                    Swal.fire('تم الحذف!', 'تم حذف العميل بنجاح.', 'success').then(() => loadCustomers('all'));
                                 } else {
                                     Swal.fire('فشل الحذف', response.message || 'حدث خطأ أثناء الحذف.', 'error');
                                 }
                             },
-                            error: function() {
+                            error: function () {
                                 Swal.fire('خطأ', 'حدث خطأ أثناء الحذف.', 'error');
                             }
                         });
@@ -216,7 +277,7 @@
                 });
             });
 
-            // Utility Functions
+            // دوال مساعدة
             function openModal(title = 'إضافة عميل', buttonText = 'حفظ') {
                 $('body').css({ 'pointer-events': 'none', 'overflow': 'hidden' });
                 $('body').append('<div class="page-overlay"></div>');
@@ -238,66 +299,19 @@
             function closeModal() {
                 $('body').css({ 'pointer-events': 'auto', 'overflow': 'auto' });
                 $('.invoice-form-modal').fadeOut();
-                $('.page-overlay').fadeOut(function() { $(this).remove(); });
+                $('.page-overlay').fadeOut(function () { $(this).remove(); });
             }
 
             function resetModal() {
                 $('#customer-form')[0].reset();
                 $('#customer_id').val('');
-                $('#credit_limit').val('0'); // إعادة تعيين الحد الائتماني إلى 0
+                $('#credit_limit').val('0');
                 clearErrors();
             }
 
             function clearErrors() {
                 $('.error').text('').css('color', '');
                 $('.form-group input, .form-group select').css('border', '');
-            }
-
-            function showLoadingOverlay() {
-                // يمكنك إضافة عنصر تحميل هنا إذا أردت
-            }
-
-            function hideLoadingOverlay() {
-                // إخفاء عنصر التحميل إذا كان موجودًا
-            }
-
-            function loadCustomers() {
-                $.ajax({
-                    url: "/customers/get",
-                    type: "GET",
-                    dataType: "json",
-                    success: function(response) {
-                        let tableBody = $("#accountsTable tbody");
-                        tableBody.empty();
-
-                        if (response.customers.length === 0) {
-                            tableBody.append("<tr><td colspan='5' style='text-align: center'>لا يوجد عملاء</td></tr>");
-                        } else {
-                            $.each(response.customers, function(index, item) {
-                                let branch = item.branch_id === 'all' ? 'غير محدد' : (item.branch ? item.branch.name : 'غير محدد');
-                                let row = `
-                                    <tr>
-                                        <td>${item.name}</td>
-                                        <td>${item.contact_info}</td>
-                                        <td>${branch}</td>
-                                        <td>${item.credit_limit}</td> <!-- عرض الحد الائتماني -->
-                                        <td>
-                                            <a href="#" class="edit-customer" data-id="${item.id}" style="margin: 10px; font-size: 20px;">
-                                                <i class="fas fa-edit" style="color: green;"></i>
-                                            </a>
-                                            <a href="#" class="delete-customer" data-id="${item.id}" style="margin: 10px; font-size: 20px;">
-                                                <i class="fas fa-trash" style="color: red;"></i>
-                                            </a>
-                                        </td>
-                                    </tr>`;
-                                tableBody.append(row);
-                            });
-                        }
-                    },
-                    error: function() {
-                        console.error("فشل تحميل البيانات.");
-                    }
-                });
             }
         });
     </script>

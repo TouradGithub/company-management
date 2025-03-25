@@ -39,9 +39,31 @@ class CustomerController extends Controller
 
         return view('financialaccounting.customers.index', compact('accounts', 'branches', 'customers'));
     }
-    public function getCustomers()
+    public function getCustomers(Request $request)
     {
-        $customers = Customer::where('company_id' , Auth::user()->model_id)->with('branch')->get();
+        $customers = Customer::where('company_id', Auth::user()->model_id)
+            ->with(['branch', 'account']);
+
+        if ($request->branch_id && $request->branch_id != "all") {
+            $customers->where('branch_id', $request->branch_id);
+        }
+
+        $customers = $customers->get();
+
+        $customers->each(function ($customer) {
+            $salesTotal = $customer->invoices()
+                ->where('invoice_type', 'Sales')
+                ->sum('total');
+
+
+            $salesReturnTotal = $customer->invoices()
+                ->where('invoice_type', 'SalesReturn')
+                ->sum('total');
+
+
+            $customer->balance = $salesTotal - $salesReturnTotal ;
+        });
+
         return response()->json(['customers' => $customers]);
     }
     private function getAccountTreeIds($accounts, &$accountIds = [])
@@ -116,11 +138,11 @@ class CustomerController extends Controller
         if (!$customer) {
             return response()->json(['success' => false, 'message' => 'العميل غير موجود أو لا يمكنك حذفه'], 404);
         }
-        if ($customer->invoices_count > 0) {
+        if ($customer->invoices()->count() > 0) {
             return response()->json([
                 'success' => false,
                 'message' => 'لا يمكن حذف العميل لأنه مرتبط بفواتير.'
-            ], 403); // 403 Forbidden status
+            ], 404); // 403 Forbidden status
         }
 
         $customer->delete();

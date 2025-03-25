@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Accounting;
 
+use App\Helpers\AccountTransactionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\AccountType;
@@ -47,7 +48,8 @@ class JournalEntryController extends Controller
             'entries.*.credit' => 'numeric|required_without:entries.*.debit',
             'entries.*.cost_center' => 'required',
             'entries.*.notes' => 'nullable|string',
-        ], [
+        ],
+            [
             'entries.*.cost_center.required' => 'يجب اختيار مركز التكلفة.',
             'branch.required' => 'يجب اختيار الفرع.',
             'journal_id.required' => 'يجب اختيار الدفتر.',
@@ -74,10 +76,10 @@ class JournalEntryController extends Controller
             DB::beginTransaction();
             $journal = \App\Models\Journal::find($request->journal_id);
 
-            $journalCode = $journal->code; // كود الدفتر (مثل JRN-001)
+            $journalCode = $journal->code;
 
             $journalEntry = JournalEntry::create([
-                'entry_number' =>$journalCode.'-'.JournalEntry::generateEntryNumber(Auth::user()->model_id),
+                'entry_number' =>JournalEntry::generateEntryNumber( $journalCode,Auth::user()->model_id),
                 'entry_date' => $request->date,
                 'branch_id' => $request->branch,
                 'company_id' => Auth::user()->model_id,
@@ -94,7 +96,7 @@ class JournalEntryController extends Controller
                     'comment' => $entry['notes'] ?? '',
                 ]);
             }
-
+            AccountTransactionHelper::updateAccountTransactions($journalEntry);
             DB::commit();
 
             return response()->json(['message' => 'تم الحفظ بنجاح ✅'], 200);
@@ -235,6 +237,7 @@ class JournalEntryController extends Controller
                     'comment' => $entry['notes'] ?? '',
                 ]);
             }
+            AccountTransactionHelper::updateAccountTransactions($journalEntry);
 
             DB::commit();
 

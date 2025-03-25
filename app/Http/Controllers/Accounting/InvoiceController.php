@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Accounting;
 
+use App\Helpers\AccountTransactionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\Branch;
@@ -111,7 +112,8 @@ class InvoiceController extends Controller
             'discount' => 'required|numeric',
             'tax' => 'required|numeric',
             'total' => 'required|numeric',
-        ], [
+        ],
+            [
             'invoice_date.required' => 'تاريخ الفاتورة مطلوب.',
             'invoice_date.date' => 'تاريخ الفاتورة يجب أن يكون تاريخًا صالحًا.',
             'customer_id.required' => 'العميل مطلوب.',
@@ -173,6 +175,7 @@ class InvoiceController extends Controller
             ]);
             $product->decrement('stock', $item['quantity']);
         }
+
         return response()->json([
             'status' =>true,
             'message' =>"تم إضافة الفاتورة بنجاح"
@@ -257,6 +260,7 @@ class InvoiceController extends Controller
             ]);
             $product->decrement('stock', $item['quantity']);
         }
+
         return response()->json([
             'status' =>true,
             'message' =>"تم إضافة الفاتورة بنجاح"
@@ -354,6 +358,7 @@ class InvoiceController extends Controller
             ]);
             $product->increment('stock', $item['quantity']);
         }
+
         return response()->json([
             'status' =>true,
             'message' =>"تم إضافة الفاتورة بنجاح"
@@ -449,6 +454,7 @@ class InvoiceController extends Controller
             ]);
             $product->increment('stock', $item['quantity']);
         }
+
         return response()->json([
             'status' =>true,
             'message' =>"تم إضافة الفاتورة بنجاح"

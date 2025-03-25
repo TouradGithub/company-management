@@ -16,7 +16,6 @@ return new class extends Migration
             $table->id();
             $table->string('name'); // اسم المنتج
             $table->string('category_id'); // التصنيف
-
             $table->integer('stock'); // الكمية
             $table->text('description')->nullable(); // الوصف
             $table->decimal('price', 10, 2); // سعر البيع

@@ -133,7 +133,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#income-statement">
+                        <a href="{{route('income.statement.index')}}">
                             <i class="fas fa-chart-line"></i>
                             <span>قائمة الدخل</span>
                         </a>
