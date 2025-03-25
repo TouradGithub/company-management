@@ -19,16 +19,40 @@ class JournalEntry extends Model
 
 
 
-    public static function generateEntryNumber($companyId)
+    public static function generateEntryNumber($journalCode, $companyId)
     {
-
+        // Get the last entry for this company
         $lastEntry = self::where('company_id', $companyId)
             ->orderBy('id', 'desc')
             ->first();
-        
-        $nextEntryNumber = $lastEntry ? intval($lastEntry->entry_number) + 1 : 1;
 
-        return str_pad($nextEntryNumber, 7, '0', STR_PAD_LEFT);
+        if ($lastEntry && $lastEntry->entry_number) {
+            // Extract parts from format JRN-002-0000001
+            preg_match('/([A-Z]+)-(\d+)-(\d+)$/', $lastEntry->entry_number, $matches);
+            $baseNumber = isset($matches[2]) ? intval($matches[2]) + 1 : 2; // Increment middle part
+            $counter = isset($matches[3]) ? intval($matches[3]) : 0;
+        } else {
+            $baseNumber = 2;
+            $counter = 1;
+        }
+
+        $newEntryNumber = sprintf('%s-%03d-%07d',
+            $journalCode,
+            $baseNumber,
+            $counter
+        );
+
+        // Check for uniqueness and increment counter if needed
+        while (self::where('entry_number', $newEntryNumber)->exists()) {
+            $counter++;
+            $newEntryNumber = sprintf('%s-%03d-%07d',
+                $journalCode,
+                $baseNumber,
+                $counter
+            );
+        }
+
+        return $newEntryNumber;
     }
 
 

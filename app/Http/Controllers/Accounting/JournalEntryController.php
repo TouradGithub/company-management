@@ -79,7 +79,7 @@ class JournalEntryController extends Controller
             $journalCode = $journal->code;
 
             $journalEntry = JournalEntry::create([
-                'entry_number' =>$journalCode.'-'.JournalEntry::generateEntryNumber(Auth::user()->model_id),
+                'entry_number' =>JournalEntry::generateEntryNumber( $journalCode,Auth::user()->model_id),
                 'entry_date' => $request->date,
                 'branch_id' => $request->branch,
                 'company_id' => Auth::user()->model_id,

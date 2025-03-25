@@ -144,6 +144,9 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::get('/journals', [JournalController::class, 'index'])->name('journals.index');
 
 
+    Route::get('/income-statement', [App\Http\Controllers\Accounting\IncomeStatementController::class, 'index'])->name('income.statement.index');
+    Route::get('/income-statement-data', [App\Http\Controllers\Accounting\IncomeStatementController::class, 'getIncomeStatementData'])->name('income.statement.data');
+
     Route::get('/trial-balance', [App\Http\Controllers\Accounting\TrialBalanceController::class, 'index'])->name('trial.balance');
     Route::get('/trial-balance/data', [App\Http\Controllers\Accounting\TrialBalanceController::class, 'getTrialBalance'])->name('trial.balance.data');
 
