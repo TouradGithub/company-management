@@ -34,7 +34,7 @@ class JournalEntryController extends Controller
         $costcenters = CostCenter::where('company_id', Auth::user()->model_id)->get();
         $branches = Branch::where('company_id', Auth::user()->model_id)->get();
         $journals = Journal::where('company_id' , Auth::user()->model_id)->get();
-        $entry_number = JournalEntry::generateEntryNumber(Auth::user()->model_id);
+        $entry_number = JournalEntry::generateEntryNumber('JR0' ,Auth::user()->model_id);
         return view('financialaccounting.journalEntries.create'  , compact('accounts' ,'branches', 'costcenters' , 'journals' , 'entry_number'));
     }
     public function store(Request $request){

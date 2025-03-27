@@ -115,7 +115,9 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
 
     Route::get('CostCenter/index' , [App\Http\Controllers\Accounting\CostCenterController::class , 'index'])->name('cost-center.index');
     Route::post('CostCenter/store' , [App\Http\Controllers\Accounting\CostCenterController::class , 'store'])->name('cost-center.store');
-
+    Route::get('/cost-centers/edit/{id}', [App\Http\Controllers\Accounting\CostCenterController::class, 'edit'])->name('cost-center.edit');
+    Route::put('/cost-centers/update/{id}', [App\Http\Controllers\Accounting\CostCenterController::class, 'update'])->name('cost-center.update');
+    Route::delete('/cost-centers/delete/{id}', [App\Http\Controllers\Accounting\CostCenterController::class, 'destroy'])->name('cost-center.delete');
 
 
     Route::get('/account-statement/index', [App\Http\Controllers\Accounting\AccountStatementController::class, 'index'])->name('account.statement.index');
@@ -125,8 +127,10 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::get('Acounting/index-table' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'accountTable'])->name('accounting.index.table');
     Route::get('Acounting/delete/{id}' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'delete'])->name('accounting.delete');
     Route::get('Acounting/accountsTree' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'index'])->name('accounting.accountsTree.index');
+    Route::get('Acounting/edit/{id}' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'edit'])->name('accounting.accountsTree.edit');
+    Route::post('Acounting/update-account' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'update'])->name('accounting.accountsTree.update');
     Route::post('Acounting/accountsTree' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'store'])->name('accounting.accountsTree.store');
-
+    Route::get('/accounting/accounts-tree/filter', [App\Http\Controllers\Accounting\AccountsTreeController::class, 'filterAccounts'])->name('accounting.accountsTree.filter');
 
 //    Route::resource('journals', \App\Http\Controllers\Accounting\JournalController::class);
 //    Route::get('/journals/get', [\App\Http\Controllers\Accounting\JournalController::class, 'get']);
