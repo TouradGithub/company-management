@@ -110,11 +110,10 @@
             </tbody>
             <tfoot id="accountsTableFooter" style="display: none;">
             <tr>
-                <td colspan="4">الإجمالي</td>
+                <td colspan="3">الإجمالي</td>
                 <td class="total-debit">0</td>
                 <td class="total-credit">0</td>
                 <td class="total-balance">0</td>
-                <td></td>
             </tr>
             </tfoot>
         </table>
