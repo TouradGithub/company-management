@@ -9,4 +9,9 @@ class CostCenter extends Model
 {
     use HasFactory;
     protected $fillable = ['name', 'code' , 'company_id'];
+    public function journalEntryDetails()
+    {
+        return $this->hasMany(JournalEntryDetail::class, 'cost_center_id');
+    }
+
 }

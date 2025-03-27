@@ -332,7 +332,6 @@
                     _token: $('meta[name="csrf-token"]').attr('content')
                 };
 
-                console.log(data);
 
                 $.ajax({
                     url: "{{ route('journal-entry.store') }}",
