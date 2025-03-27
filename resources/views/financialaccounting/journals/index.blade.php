@@ -36,12 +36,12 @@
             <form id="journal-form">
                 <div class="invoice-header-section">
                     <div class="form-row">
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <label>كود الدفتر</label>
                             <input type="text" id="code" name="code" required>
                             <span id="error-code" class="error"></span>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group-model">
                             <label>اسم الدفتر</label>
                             <input type="text" id="name" name="name" required>
                             <span id="error-name" class="error"></span>
