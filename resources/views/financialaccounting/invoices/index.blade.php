@@ -196,8 +196,10 @@
                             </div>
                             <div class="invoice-total">${invoice.total} ريال</div>
                             <div class="card-actions">
-                                <button class="action-btn view" title="عرض"><i class="fas fa-eye"></i></button>
-                                <button class="action-btn edit" title="تعديل"><i class="fas fa-edit"></i></button>
+ <a href="" target="_blank" style="text-decoration: none">
+                                <button class="action-btn view"  title="عرض">
+                                       <i class="fas fa-eye"></i></button></a>
+
                                 <button class="action-btn delete" title="حذف"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>`;

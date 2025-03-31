@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="addition-card">
-                <a href="{{ route('suppliers.customers') }}" style="text-decoration: none">
+                <a href="{{ route('customers.index') }}" style="text-decoration: none">
                     <i class="fas fa-users"></i>
                     <h3>العملاء</h3>
                     <p class="balance">485,750 ريال</p>

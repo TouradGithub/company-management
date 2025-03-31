@@ -137,9 +137,8 @@
                                         <p class="product-price"><i class="fas fa-money-bill-wave"></i> ${product.price} ريال</p>
                                     </div>
                                     <div class="product-actions">
-                                        <button class="action-btn view" title="عرض">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
+
+
                                         <button class="action-btn edit" title="تعديل" data-id="${product.id}">
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -183,7 +182,7 @@
                             $('#productCost').val(response.product.cost);
                             $('#productMinPrice').val(response.product.min_price || '');
                             $('#productTax').val(response.product.tax || '');
-                            $('#branch_id').val(response.product.branch_id || 'all');
+                            $('#branch_id').val(response.branch_id || 'all');
                             $('#product_id').val(response.product.id);
 
                             // Open modal with "Edit" title

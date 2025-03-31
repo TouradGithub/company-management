@@ -108,6 +108,7 @@
                     إضافة مورد
                 </button>
                 <button class="print-btn" type="button" onclick="window.print()">طباعة</button>
+                <button class="print-btn" type="button" onclick="addNewSalesItem('purchaseItemsTable')">إضافة صنف</button>
                 <button class="save-btn" id="savePurchaseInvoiceBtn" type="button">حفظ</button>
             </div>
         </form>
