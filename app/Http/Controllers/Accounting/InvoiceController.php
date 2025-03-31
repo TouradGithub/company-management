@@ -63,12 +63,19 @@ class InvoiceController extends Controller
     }
     public function destroy($id)
     {
-        $invoice = Invoice::find($id);
+//        dd($id);
+        $invoice = Invoice::where('invoice_number',$id)->first();
 
         if (!$invoice) {
             return response()->json(['success' => false, 'message' => 'الفاتورة غير موجودة.'], 404);
         }
 
+        foreach ($invoice->items as $item) {
+
+            $product = Product::find($item->product_id);
+            $product->increment('stock', $item->quantity);
+        }
+        $invoice->items()->delete();
         $invoice->delete();
 
         return response()->json(['success' => true, 'message' => 'تم حذف الفاتورة بنجاح.']);

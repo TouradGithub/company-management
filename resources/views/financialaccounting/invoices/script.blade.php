@@ -448,4 +448,68 @@
         $('.nav-tabs button').removeClass('active');
         $(this).addClass('active');
     });
+
+
+    function addNewSalesItem(section) {
+        const tableId = `#${section}`;
+        const $tbody = $(`${tableId} tbody`);
+        const existingRows = $tbody.find('tr');
+
+        // التحقق من السطر الأخير إذا كان موجودًا
+        if (existingRows.length > 0) {
+            const lastRow = existingRows.last();
+            const itemSelect = lastRow.find('.item-select').val();
+
+            if (!itemSelect) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'خطأ',
+                    text: 'يرجى اختيار صنف في السطر الحالي قبل إضافة سطر جديد',
+                });
+                return;
+            }
+        }
+
+        const rowCount = $tbody.children().length + 1;
+        const selectedIds = getSelectedItems(tableId);
+        const availableProducts = products.filter(product => !selectedIds.includes(product.id.toString()));
+
+        const $newRow = $(`
+            <tr>
+                <td class="serial">${rowCount}</td>
+                <td>
+                    <select class="item-select form-select" style="width: 100%;">
+                        <option value="">اختر صنف</option>
+                        ${availableProducts.map(product =>
+                `<option value="${product.id}" data-price="${product.price}">${product.id} - ${product.name}</option>`
+                ).join('')}
+                        </select>
+                    </td>
+                    <td>
+                        <select class="item-unit">
+                            <option value="حبة" selected>حبة</option>
+                            <option value="كرتون">كرتون</option>
+                            <option value="كيلو">كيلو</option>
+                            <option value="نص كيلو">نص كيلو</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="item-qty" min="1" value="1"></td>
+                    <td><input type="number" class="item-price" step="0.01" placeholder="0.00"></td>
+                    <td class="item-total">0.00</td>
+                    <td><button type="button" class="delete-btn">×</button></td>
+                </tr>
+        `);
+        $tbody.append($newRow);
+
+        const $select = $newRow.find('.item-select');
+        $select.select2({
+            placeholder: "اختر صنف",
+            allowClear: true,
+            dir: "rtl",
+            minimumResultsForSearch: Infinity
+        });
+
+        addCalculationListeners($newRow, tableId);
+        $select.focus();
+    }
 </script>

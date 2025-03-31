@@ -153,43 +153,43 @@
                 </a>
                 <ul class="submenu">
                     <li>
-                        <a href="#add-employee">
+                        <a href="{{route('company.employees.create')}}">
                             <i class="fas fa-user-plus"></i>
                             <span>إضافة موظف</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#vacations">
+                        <a href="{{route('branch.leaves.index')}}">
                             <i class="fas fa-umbrella-beach"></i>
                             <span>الإجازات</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#overtime">
+                        <a href="{{route('branch.overtimes.index')}}">
                             <i class="fas fa-clock"></i>
                             <span>الإضافي</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#deductions">
+                        <a href="{{route('deductions.index')}}">
                             <i class="fas fa-minus-circle"></i>
                             <span>الخصومات</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#salary-sheets">
+                        <a href="{{route('company.payrolls.index')}}">
                             <i class="fas fa-file-invoice-dollar"></i>
                             <span>كشوفات الرواتب</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#categories">
+                        <a href="{{route('categories.index')}}">
                             <i class="fas fa-layer-group"></i>
                             <span>الفئات</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#advances">
+                        <a href="{{route('loans.index')}}">
                             <i class="fas fa-hand-holding-usd"></i>
                             <span>السلف</span>
                         </a>
@@ -203,7 +203,7 @@
                 </a>
             </li>
             <li>
-                <a href="#" id="settingsBtn">
+                <a href="{{route('settings.index')}}" id="settingsBtn">
                     <i class="fas fa-cog"></i>
                     <span>الإعدادات</span>
                 </a>

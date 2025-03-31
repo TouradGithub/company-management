@@ -105,6 +105,7 @@
                     إضافة عميل
                 </button>
                 <button class="print-btn" type="button" onclick="window.print()">طباعة</button>
+                <button class="print-btn" type="button" onclick="addNewSalesItem('salesItemsTable')">إضافة صنف</button>
                 <button class="save-btn" id="saveSalesInvoiceBtn" type="button">حفظ</button>
             </div>
         </form>
