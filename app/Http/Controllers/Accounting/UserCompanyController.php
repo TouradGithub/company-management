@@ -81,6 +81,7 @@ class UserCompanyController extends Controller
             'password' => Hash::make($request->password),
             'model_type' => $request->user_type === 'company' ? 'COMPANY' : 'BRANCH',
             'model_id' => $request->user_type === 'company' ? Auth::user()->model_id : $request->branch_id,
+            'is_admin' => 0,
         ]);
 
         $role = $request->user_type === 'company' ? 'company_admin' : 'branch_user';
