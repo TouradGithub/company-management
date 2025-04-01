@@ -147,7 +147,9 @@ class JournalEntryController extends Controller
     {
         $entry = JournalEntry::findOrFail($id);
         if($entry){
+
             $entry->details()->delete();
+            AccountTransactionHelper::deleteAccountTransactions($entry);
             $entry->delete();
 
             return response()->json(['status' => 'success', 'message' => 'تم الحذف بنجاح']);

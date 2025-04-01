@@ -60,6 +60,7 @@
                 <div class="client-info" style="padding-right: 2rem; border-right: 2px dashed #e67e22;">
                     <h3 style="color: #e67e22; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e67e22;">العميل المرتجع</h3>
                     <select name="customer_id" class="customers sales-return-customer-id" id="salesReturnCustomerSelect" style="width: 100%; padding: 10px; font-size: 16px;"></select>
+                    <div class="limit-credit" style="display: none"></div>
                 </div>
                 <div class="company-info">
                     <h3>شركة بوادي المتحده {{ getCompany()->name }}</h3>

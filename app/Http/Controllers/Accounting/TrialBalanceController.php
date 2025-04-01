@@ -40,8 +40,16 @@ class TrialBalanceController extends Controller
             $openingCredit = $account->opening_balance >= 0 ? $account->opening_balance : 0;
 
             $transactions = $account->transactions;
-            $currentDebit = $transactions->sum('debit');
-            $currentCredit = $transactions->sum('credit');
+            $currentDebit = 0;
+            $currentCredit= 0;
+
+            if($account->getCreditDebit()>= 0 ){
+                $currentDebit = $account->getCreditDebit();
+            }else{
+
+                $currentCredit = abs($account->getCreditDebit());
+            }
+
 
             $closingBalance = $account->opening_balance + $currentDebit - $currentCredit;
             $closingDebit = $closingBalance < 0 ? abs($closingBalance) : 0;
