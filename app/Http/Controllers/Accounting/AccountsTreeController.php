@@ -13,19 +13,14 @@ class AccountsTreeController extends Controller
     public function index(){
         $accounttypes =  AccountType::all();
         $accounts = Account::where('company_id', Auth::user()->model_id)->get();
-
-
         $accountsTree = $this->buildTree($accounts);
-
         return view('financialaccounting.accountsTree.index', compact('accounttypes', 'accountsTree','accounts'));
     }
     public function accountTable(){
         $accounttypes =  AccountType::all();
         $accounts = Account::where('company_id', Auth::user()->model_id)->get();
 
-        // تحويل الحسابات إلى شجرة
         $accountsTree = $this->buildTree($accounts);
-//        dd($accountsTree);
         return view('financialaccounting.accountsTree.account-table', compact('accounttypes', 'accountsTree','accounts'));
     }
 
@@ -37,7 +32,7 @@ class AccountsTreeController extends Controller
 
     public  function update(Request $request)
     {
-//        return $request;
+
         $validated = $request->validate([
             'account_number' => 'required',
             'id' => 'required',
@@ -92,8 +87,7 @@ class AccountsTreeController extends Controller
 
     public function store(Request $request)
     {
-//        return $request;
-        // التحقق من صحة البيانات
+
         $validated = $request->validate([
             'account_number' => 'required|unique:accounts,account_number,NULL,id,company_id,' . auth()->user()->model_id,
             'name' => 'required|string|max:255',
@@ -165,19 +159,13 @@ class AccountsTreeController extends Controller
         $accounts = collect();
 
         if ($level == 'all') {
-//
-            // Fetch all accounts with children
+
             $accounts = Account::where('company_id' ,Auth::user()->model_id)->with(['children', 'accountType'])
-//                ->where('parent_id',0) // Start with root accounts
                 ->get();
         } else {
-//            dd("OK");
-            // Determine level based on hierarchy
             $level = (int)$level;
             $accounts = $this->getAccountsByLevel($level);
         }
-
-        // Format data for frontend
         $formattedAccounts = $accounts->map(function ($account) {
             $balance = $account->getBalanceDetails();
             return [

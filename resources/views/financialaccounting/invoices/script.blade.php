@@ -38,7 +38,7 @@
         let defaultOption = `<option value="">اختر عميل</option>`;
         $('.sales-customer-id, .sales-return-customer-id').append(defaultOption);
         $.each(customers, function(index, customer) {
-            let option = `<option value="${customer.id}">${customer.name} - ${customer.contact_info}</option>`;
+            let option = `<option data-credit="${customer.credit_limit}" value="${customer.id}">${customer.name} - ${customer.contact_info}</option>`;
             $('.sales-customer-id, .sales-return-customer-id').append(option);
         });
     }
@@ -447,6 +447,34 @@
         $(`#${section}-invoice`).removeClass('hidden');
         $('.nav-tabs button').removeClass('active');
         $(this).addClass('active');
+    });
+
+    $('#salesCustomerSelect').on('change' , function (){
+
+        let selectedOption = $(this).find('option:selected'); // العنصر المختار
+        let creditLimit = selectedOption.data('credit'); // جلب قيمة data-credit
+        let customerId = selectedOption.val(); // جلب قيمة العميل (id)
+
+        if (creditLimit !== undefined) {
+            $('.limit-credit').show();
+            $('.limit-credit').text(`الحد الائتماني: ${creditLimit}`);
+        } else {
+            $('.limit-credit').hide();
+        }
+    });
+
+    $('#salesReturnCustomerSelect').on('change' , function (){
+
+        let selectedOption = $(this).find('option:selected'); // العنصر المختار
+        let creditLimit = selectedOption.data('credit'); // جلب قيمة data-credit
+        let customerId = selectedOption.val(); // جلب قيمة العميل (id)
+
+        if (creditLimit !== undefined) {
+            $('.limit-credit').show();
+            $('.limit-credit').text(`الحد الائتماني: ${creditLimit}`);
+        } else {
+            $('.limit-credit').hide();
+        }
     });
 
 

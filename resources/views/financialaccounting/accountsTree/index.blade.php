@@ -23,10 +23,6 @@
                         @include('financialaccounting.accountsTree.accountsTree', ['account' => $account])
                     @endforeach
                 </div>
-
-
-
-
         </div>
 
 

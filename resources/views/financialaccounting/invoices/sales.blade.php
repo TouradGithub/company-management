@@ -50,6 +50,7 @@
                 <div class="client-info">
                     <h3>العميل:</h3>
                     <select name="customer_id" class="customers sales-customer-id" id="salesCustomerSelect" style="width: 100%; padding: 10px; font-size: 16px;"></select>
+                    <div class="limit-credit" style="display: none"></div>
                 </div>
                 <div class="company-info">
                     <h3>شركة بوادي المتحده {{ getCompany()->name }}</h3>

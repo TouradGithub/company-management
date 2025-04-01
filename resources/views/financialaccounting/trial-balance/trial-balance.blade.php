@@ -89,42 +89,53 @@
                 }
 
 
-
                 $.ajax({
                     url: "{{ route('trial.balance.data') }}",
                     type: "GET",
-                    data: { from_date: startDate, to_date: endDate,branch_id: branch_id },
+                    data: { from_date: startDate, to_date: endDate, branch_id: branch_id },
                     success: function (response) {
                         let tableBody = $('.trial-balance-table tbody');
                         tableBody.empty();
 
+                        // تعريف الإجماليات
                         let totalOpeningDebit = 0, totalOpeningCredit = 0;
                         let totalCurrentDebit = 0, totalCurrentCredit = 0;
                         let totalClosingDebit = 0, totalClosingCredit = 0;
 
+                        // معالجة كل صف من البيانات
                         response.forEach(row => {
-                            totalOpeningDebit += parseFloat(row.opening_debit) || 0;
-                            totalOpeningCredit += parseFloat(row.opening_balance) >= 0 ? parseFloat(row.opening_balance) : 0;
-                            totalCurrentDebit += parseFloat(row.opening_balance)<0 ? parseFloat(row.opening_balance) : 0;
-                            totalCurrentCredit += parseFloat(row.current_credit) || 0;
-                            totalClosingDebit += parseFloat(row.closing_debit) || 0;
-                            totalClosingCredit += parseFloat(row.closing_credit) || 0;
+                            // تحويل القيم إلى أرقام مع التأكد من القيم الافتراضية
+                            const openingDebit = parseFloat(row.opening_debit) || 0;
+                            const openingCredit = parseFloat(row.opening_credit) || 0;
+                            const currentDebit = parseFloat(row.current_debit) || 0;
+                            const currentCredit = parseFloat(row.current_credit) || 0;
+                            const closingDebit = parseFloat(row.closing_debit) || 0;
+                            const closingCredit = parseFloat(row.closing_credit) || 0;
 
+                            // إضافة القيم إلى الإجماليات
+                            totalOpeningDebit += openingDebit;
+                            totalOpeningCredit += openingCredit;
+                            totalCurrentDebit += currentDebit;
+                            totalCurrentCredit += currentCredit;
+                            totalClosingDebit += closingDebit;
+                            totalClosingCredit += closingCredit;
+
+                            // إضافة الصف إلى الجدول
                             tableBody.append(`
-                        <tr>
-                            <td>${row.account_number}</td>
-                            <td>${row.account_name}</td>
-                        <td>${row.opening_debit === 0 ? '-' : row.opening_debit}</td>
-                        <td>${row.opening_credit === 0 ? '-' : row.opening_credit}</td>
-                            <td>${row.current_debit  === 0 ? '-' : row.current_debit}</td>
-                            <td>${row.current_credit  === 0 ? '-' : row.current_credit}</td>
-                            <td>${row.closing_debit}</td>
-                            <td>${row.closing_credit}</td>
-                        </tr>
-                    `);
+                <tr>
+                    <td>${row.account_number}</td>
+                    <td>${row.account_name}</td>
+                    <td>${openingDebit === 0 ? '-' : openingDebit.toFixed(2)}</td>
+                    <td>${openingCredit === 0 ? '-' : openingCredit.toFixed(2)}</td>
+                    <td>${currentDebit === 0 ? '-' : currentDebit.toFixed(2)}</td>
+                    <td>${currentCredit === 0 ? '-' : currentCredit.toFixed(2)}</td>
+                    <td>${closingDebit === 0 ? '-' : closingDebit.toFixed(2)}</td>
+                    <td>${closingCredit === 0 ? '-' : closingCredit.toFixed(2)}</td>
+                </tr>
+            `);
                         });
 
-
+                        // عرض الإجماليات في الواجهة
                         $('#totalOpeningDebit').text(totalOpeningDebit.toFixed(2));
                         $('#totalOpeningCredit').text(totalOpeningCredit.toFixed(2));
                         $('#totalCurrentDebit').text(totalCurrentDebit.toFixed(2));
@@ -132,11 +143,11 @@
                         $('#totalClosingDebit').text(totalClosingDebit.toFixed(2));
                         $('#totalClosingCredit').text(totalClosingCredit.toFixed(2));
 
-
+                        // إظهار الجدول
                         $('#hidetable').show();
                     },
-                    error: function () {
-                        alert("❌ حدث خطأ أثناء جلب البيانات.");
+                    error: function (xhr) {
+                        alert("❌ حدث خطأ أثناء جلب البيانات: " + (xhr.responseJSON?.error || "غير معروف"));
                     }
                 });
             });

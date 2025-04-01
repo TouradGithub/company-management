@@ -96,4 +96,28 @@ class AccountTransactionHelper
             $transaction->update(['balance' => $balance[$accountId]]);
         }
     }
+
+
+
+    public static function deleteAccountTransactions($model)
+    {
+
+        $sourceType = null;
+        $sourceId = $model->id;
+        $companyId = $model->company_id;
+
+        if ($model instanceof JournalEntry) {
+            $sourceType = 'JournalEntry';
+        } elseif ($model instanceof Invoice) {
+            $sourceType = 'Invoice';
+        }
+
+        if ($sourceType) {
+            AccountTransaction::where('source_type', $sourceType)
+                ->where('source_id', $sourceId)
+                ->delete();
+
+            self::updateRunningBalance($companyId);
+        }
+    }
 }

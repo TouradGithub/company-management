@@ -1,3 +1,8 @@
+@php
+    $segment = Request::segment(1);
+    $route = Route::currentRouteName();
+@endphp
+
 <aside class="sidebar">
     <div class="logo">
         <a href="#" class="logo-link">
@@ -7,8 +12,8 @@
     </div>
     <nav>
         <ul>
-            <li>
-                <a href="{{route('accounting.accountsTree.index')}}">
+            <li >
+                <a href="{{route('accounting.accountsTree.index')}}"  class="{{ $route == 'accounting.accountsTree.index' ? 'activesideli' : '' }}">
                     <i class="fas fa-sitemap"></i>
                     <span>شجرة الحسابات</span>
                 </a>
@@ -21,19 +26,19 @@
             </li>
 
 
-            <li class="menu-group">
+            <li class="menu-group {{ $segment == 'journal-entry' || $segment == 'cost-center' ? 'active' : '' }}" >
                 <a href="#financial-accounting">
                     <i class="fas fa-file-invoice-dollar"></i>
                     <span>الحسابات العامة</span>
                 </a>
                 <ul class="submenu">
-                    <li>
+                    <li class="{{ $route == 'journal-entry.create' ? 'active' : '' }}">
                         <a href="{{route('journal-entry.create')}}">
                             <i class="fas fa-plus-circle"></i>
                             <span>إنشاء قيد يومية</span>
                         </a>
                     </li>
-                    <li>
+                    <li class="{{ $route == 'journal-entry.index' ? 'active' : '' }}">
                         <a href="{{route('journal-entry.index')}}">
                             <i class="fas fa-journal-whills"></i>
                             <span>قيود اليومية</span>
@@ -63,7 +68,7 @@
                     </li>
                 </ul>
             </li>
-            <li class="menu-group">
+            <li class="menu-group  {{ $segment == 'invoices' ? 'active' : '' }}">
                 <a href="#invoices">
                     <i class="fas fa-file-invoice"></i>
                     <span>الفواتير والمنتجات</span>
@@ -120,7 +125,7 @@
                     </li>
                 </ul>
             </li>
-            <li class="menu-group">
+            <li class="menu-group  {{ $segment == 'trial-balance' || $segment == 'income-statement' ? 'active' : '' }}">
                 <a href="#final-accounts">
                     <i class="fas fa-balance-scale"></i>
                     <span>الحسابات الختامية</span>
