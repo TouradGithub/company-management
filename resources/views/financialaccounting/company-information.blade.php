@@ -4,10 +4,10 @@
     <div id="mainDashboard">
         <h1>تعديل المعلومات الأساسية للشركة</h1>
         <div class="dashboard-cards">
-            <!-- افتراض أن لديك شركة واحدة فقط للتحديث، يمكنك تمرير $company من الـ Controller -->
+
             <form method="POST" action="{{route('update.company.info.update' ,Auth::user()->model_id)}}">
                 @csrf
-                @method('PUT') <!-- لتحديد أن هذا طلب تحديث -->
+                @method('PUT')
 
                 <div class="form-row">
                     <div class="form-group-model">

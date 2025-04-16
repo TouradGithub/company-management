@@ -31,7 +31,7 @@ class UserCompanyController extends Controller
                 ->where('model_id', $companyId)
                 ->orWhere('model_type', 'BRANCH')
                 ->whereIn('model_id', $branchIds);
-        })->with('branch')->get();
+        })->get();
         $companyPermissions =  Role::findByName('company_admin')->permissions->pluck('name');
          $branchPermissions = Role::findByName('branch_user')->permissions->pluck('name');
         return view('financialaccounting.users.index' , compact('companies' , 'users' , 'branches' , 'companyPermissions' , 'branchPermissions'));
@@ -39,12 +39,14 @@ class UserCompanyController extends Controller
 
     public function edit($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
         $branches = Branch::where('company_id', Auth::user()->model_id)->get();
-        $companyPermissions = \Spatie\Permission\Models\Role::findByName('company_admin')->permissions->pluck('name')->toArray();
-        $branchPermissions = \Spatie\Permission\Models\Role::findByName('branch_user')->permissions->pluck('name')->toArray();
+        $companyPermissions = \Spatie\Permission\Models\Role::findByName('company_admin')->permissions;
+        $branchPermissions = \Spatie\Permission\Models\Role::findByName('branch_user')->permissions;
+        $userPermission = $user->getDirectPermissions()->pluck('name')->toArray();
 
-        return view('financialaccounting.users.edit', compact('user', 'branches', 'companyPermissions', 'branchPermissions'));
+//        dd($companyPermissions);
+        return view('financialaccounting.users.edit', compact('user','userPermission', 'branches', 'companyPermissions', 'branchPermissions'));
     }
 
     public function destroy($id)
@@ -93,5 +95,36 @@ class UserCompanyController extends Controller
 
         return response()->json(['success' => true, 'message' => 'تم إضافة المستخدم بنجاح']);
     }
+
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|confirmed|min:6',
+            'user_type' => 'required|in:company,branch',
+            'permissions' => 'array',
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        if ($request->password) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->role = $request->user_type;
+        $user->model_id =$request->user_type === 'company'? Auth::user()->model_id:$request->branch_id ;
+        $user->model_type = $request->user_type === 'company' ? "COMPANY" : "BRANCH";
+
+        $user->save();
+
+        $user->syncPermissions($request->permissions);
+
+        return response()->json(['success' => true, 'message' => 'تم تحديث المستخدم بنجاح']);
+    }
+
 
 }

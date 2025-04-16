@@ -2,19 +2,24 @@
 
 namespace App\Http\Controllers\Accounting;
 
+use App\Exports\AccountsExport;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\AccountType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Excel;
+use Mpdf\Mpdf;
 
 class AccountsTreeController extends Controller
 {
     public function index(){
         $accounttypes =  AccountType::all();
         $accounts = Account::where('company_id', Auth::user()->model_id)->get();
+        $addAccounts = Account::where('company_id', Auth::user()->model_id)
+            ->where('islast','!=' ,1)->get();
         $accountsTree = $this->buildTree($accounts);
-        return view('financialaccounting.accountsTree.index', compact('accounttypes', 'accountsTree','accounts'));
+        return view('financialaccounting.accountsTree.index', compact('addAccounts' ,'accounttypes', 'accountsTree','accounts'));
     }
     public function accountTable(){
         $accounttypes =  AccountType::all();
@@ -95,8 +100,10 @@ class AccountsTreeController extends Controller
             'parent_id' => 'required',
             'opening_balance' => 'nullable|numeric',
             'closing_list_type' => 'required|in:1,2',
+            'islast' => 'nullable|boolean',
 
-        ], [
+        ],
+            [
             'account_number.required' => 'رقم الحساب مطلوب.',
             'account_number.unique' => 'رقم الحساب مستخدم بالفعل.',
             'name.required' => 'اسم الحساب مطلوب.',
@@ -119,7 +126,10 @@ class AccountsTreeController extends Controller
         $account->company_id = auth()->user()->model_id;
         $account->opening_balance = $validated['opening_balance']  ?? 0;
         $account->closing_list_type = $validated['closing_list_type'];
+        $account->islast = $request->boolean('islast');
         $account->save();
+
+
         return redirect()->back()->with('success', 'تم إنشاء الحساب بنجاح!');
 
     }
@@ -159,13 +169,108 @@ class AccountsTreeController extends Controller
         $accounts = collect();
 
         if ($level == 'all') {
-
-            $accounts = Account::where('company_id' ,Auth::user()->model_id)->with(['children', 'accountType'])
+            $accounts = Account::where('company_id', Auth::user()->model_id)
+                ->with(['children', 'accountType'])
                 ->get();
+
+//            $accounts = $this->buildTree($accounts);
         } else {
             $level = (int)$level;
             $accounts = $this->getAccountsByLevel($level);
         }
+        $formattedAccounts = $accounts->map(function ($account) {
+            return $this->formatAccount($account);
+        });
+
+        return response()->json(['accounts' => $formattedAccounts]);
+    }
+
+    private function getAccountsByLevel($targetLevel)
+    {
+        $allAccounts = Account::where('company_id' ,Auth::user()->model_id)->with(['children', 'accountType'])->get();
+        $filteredAccounts = collect();
+
+        foreach ($allAccounts as $account) {
+            $level = $this->calculateLevel($account);
+            if ($level == $targetLevel) {
+                $filteredAccounts->push($account);
+            }
+        }
+
+        return $filteredAccounts;
+    }
+    private function formatAccount($account)
+    {
+        return [
+            'id' => $account->id,
+            'account_number' => $account->account_number,
+            'name' => $account->name,
+            'account_type_name' => $account->accountType->name ?? '',
+            'islast' => $account->islast,
+            'balance' => $account->getBalanceDetails(),
+            'children' => $account->children->map(function ($child) {
+                return $this->formatAccount($child); // Recursive
+            })->toArray(),
+        ];
+    }
+
+
+    private function calculateLevel($account, $currentLevel = 1)
+    {
+        if (!$account->parent_id || $account->parent_id == 0) {
+            return $currentLevel;
+        }
+
+        $parent = Account::find($account->parent_id);
+        if ($parent) {
+            return $this->calculateLevel($parent, $currentLevel + 1);
+        }
+
+        return $currentLevel;
+    }
+
+    // تصدير إلى PDF
+    public function exportPdf(Request $request)
+    {
+        $level = $request->query('level');
+        $accounts = $this->getAccountsForExport($level);
+        $mpdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4']);
+        $html = view('financialaccounting.accountsTree.exports.accounts_pdf', compact('accounts', 'level'))->render();
+
+        $mpdf->WriteHTML($html);
+        return $mpdf->Output('accounts.pdf', 'D'); // 'D' للتحميل مباشرة
+    }
+
+    // تصدير إلى Excel
+    public function exportExcel(Request $request)
+    {
+        $level = $request->query('level');
+        return \Maatwebsite\Excel\Facades\Excel::download(new AccountsExport($level), 'accounts.xlsx');
+    }
+
+    // جلب البيانات للتصدير
+    private function getAccountsForExport($level)
+    {
+        if ($level === 'all') {
+            return Account::where('company_id' , Auth::user()->model_id)->with(['children', 'accountType'])
+                ->where('parent_id',0)
+                ->get();
+        } else {
+            return $this->getAccountsByLevel((int)$level);
+        }
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+
+        $accounts = Account::where('company_id', Auth::user()->model_id)
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%")
+                    ->orWhere('account_number', 'LIKE', "%{$query}%");
+            })
+            ->get();
+
         $formattedAccounts = $accounts->map(function ($account) {
             $balance = $account->getBalanceDetails();
             return [
@@ -189,32 +294,6 @@ class AccountsTreeController extends Controller
         return response()->json(['accounts' => $formattedAccounts]);
     }
 
-    private function getAccountsByLevel($targetLevel)
-    {
-        $allAccounts = Account::where('company_id' ,Auth::user()->model_id)->with(['children', 'accountType'])->get();
-        $filteredAccounts = collect();
 
-        foreach ($allAccounts as $account) {
-            $level = $this->calculateLevel($account);
-            if ($level == $targetLevel) {
-                $filteredAccounts->push($account);
-            }
-        }
 
-        return $filteredAccounts;
-    }
-
-    private function calculateLevel($account, $currentLevel = 1)
-    {
-        if (!$account->parent_id || $account->parent_id == 0) {
-            return $currentLevel;
-        }
-
-        $parent = Account::find($account->parent_id);
-        if ($parent) {
-            return $this->calculateLevel($parent, $currentLevel + 1);
-        }
-
-        return $currentLevel;
-    }
 }

@@ -13,15 +13,33 @@
             @endif
             <div class="accounts-header">
                 <h1> كشف الحساب</h1>
-
+                <div class="table-actions">
+                    <button class="export-excel-btn" id="export-excel-btn-account">
+                        <i class="fas fa-file-excel"></i> تصدير Excel
+                    </button>
+                    <button class="export-pdf-btn" id="export-pdf-btn-account">
+                        <i class="fas fa-file-pdf"></i> تصدير PDF
+                    </button>
+                </div>
 
             </div>
                 <div class="table-actions">
-                    <div class="form-group" style="width: 30%;height: 100%">
+                    <div class="form-group" style="width: 20%;height: 100%">
                         <label>الحساب:</label>
                         <select id="accountSelect" class="select2"  >
                             <option value="">اختر الحساب</option>
                             @foreach($accounts as $item)
+                                <option value="{{$item->id}}"> {{$item->name}}</option>
+                            @endforeach
+
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="width: 20%;height: 100%">
+                        <label>الفرع:</label>
+                        <select id="branchSelect" class="select2 branchSelect"  >
+                            <option value="">اختر الفرع</option>
+                            @foreach($branches as $item)
                                 <option value="{{$item->id}}"> {{$item->name}}</option>
                             @endforeach
 
@@ -93,10 +111,17 @@
                 placeholder: "اختر الحساب",
                 allowClear: true
             });
+
+            $('.branchSelect').select2({
+                width: '100%',
+                placeholder: "اختر لفرع",
+                allowClear: true
+            });
             $('#searchBtn').on('click', function() {
                 let accountId = $('#accountSelect').val();
                 let startDate = $('#entryDateDebut').val();
                 let endDate = $('#entryDateFin').val();
+                let branchId = $('#branchSelect').val();
 
                 if (!accountId) {
                     alert("يرجى اختيار الحساب!");
@@ -109,7 +134,8 @@
                     data: {
                         account_id: accountId,
                         from_date: startDate,
-                        to_date: endDate
+                        to_date: endDate,
+                        branch_id: branchId
                     },
                     success: function(response) {
                         let tableBody = $('#resultsTable');
@@ -179,6 +205,44 @@
                     }
                 });
             });
+
+            $('#export-excel-btn-account').on('click', function () {
+                let accountId = $('#accountSelect').val();
+                let startDate = $('#entryDateDebut').val();
+                let endDate = $('#entryDateFin').val();
+                if(!accountId || !startDate || !endDate){
+                    alert("يرجى اختيار الحساب!");
+                    return;
+                }
+                let params = buildQueryParams();
+                window.location.href = "{{ route('account.statement.export.excel') }}?" + params;
+            });
+            $('#export-pdf-btn-account').on('click', function () {
+                let accountId = $('#accountSelect').val();
+                let startDate = $('#entryDateDebut').val();
+                let endDate = $('#entryDateFin').val();
+                if(!accountId || !startDate || !endDate){
+                    alert("يرجى اختيار الحساب!");
+                    return;
+                }
+                let params = buildQueryParams();
+                window.open("{{ route('account.statement.export.pdf') }}?" + params, '_blank');
+            });
+
+            function buildQueryParams() {
+                let accountId = $('#accountSelect').val();
+                let startDate = $('#entryDateDebut').val();
+                let endDate = $('#entryDateFin').val();
+                let branchId = $('#branchSelect').val();
+
+                return $.param({
+                    account_id: accountId,
+                    from_date: startDate,
+                    to_date: endDate,
+                    branch_id: branchId
+                });
+            }
+
 
 
         });

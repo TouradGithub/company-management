@@ -12,11 +12,8 @@
             <div class="header">
                 <div>
                     <h1 style="color: #e67e22;">فاتورة مرتجع مبيعات</h1>
-                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                        <p style="margin: 0; background: #fdf2e9; padding: 8px; border-radius: 4px; border: 1px solid #e67e22;">
-                            مرجع الفاتورة: <span id="salesReturnRef" style="font-weight: bold; color: #e67e22;">SR-{{ date('Ymd') }}-001</span>
-                        </p>
-                    </div>
+
+
                 </div>
                 <svg viewBox="0 0 40 40" style="color: #e67e22;"></svg>
             </div>

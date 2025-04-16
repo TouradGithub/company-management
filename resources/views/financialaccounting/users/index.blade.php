@@ -80,7 +80,7 @@
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->email }}</td>
                         @if($item->model_type == 'BRANCH')
-                            <td>{{ $item->branch->name }}</td>
+                            <td>{{ $item->branch?->name??'' }}</td>
                         @else
                             <td>فرع رئيسي</td>
                         @endif
@@ -113,34 +113,116 @@
     const branchPermissions = @json($branchPermissions);
 
     const permissionsLabels = {
-        'view_accounts': ' شجرة الحسابات',
-        'add_accounts':  ' جدول الحسابات',
-        'edit_accounts': 'تعديل قيد',
-        'delete_accounts': 'حذف قيد',
-        'view_purchases': 'عرض المشتريات',
-        'add_purchases': 'إضافة فاتورة مشتريات',
-        'edit_purchases': 'تعديل فاتورة مشتريات',
-        'delete_purchases': 'حذف فاتورة مشتريات',
-        'view_sales': 'عرض المبيعات',
-        'add_sales': 'إضافة فاتورة مبيعات',
-        'edit_sales': 'تعديل فاتورة مبيعات',
-        'delete_sales': 'حذف فاتورة مبيعات',
-        'view_hr': 'عرض بيانات الموظفين',
-        'add_hr': 'إضافة موظف',
-        'edit_hr': 'تعديل بيانات موظف',
-        'manage_salaries': 'إدارة الرواتب'
+        // الحسابات
+        'company_view_accounts_tree': 'عرض شجرة الحسابات',
+        'company_manage_accounts': 'إدارة الحسابات',
+        'company_create_accounts': 'إنشاء حساب',
+        'company_cmanage_edit_account': 'تعديل حساب',
+        'company_cmanage_delete_account': 'حذف حساب',
+
+        // الحسابات العامة
+        'company_create_journal_entry': 'إضافة قيد يومية',
+        'company_view_journal_entries': 'عرض قيود اليومية',
+        'company_edit_journal_entries': 'تعديل قيد',
+        'company_delete_journal_entries': 'حذف قيد',
+        'company_manage_cost_centers': 'إدارة مراكز التكلفة',
+        'company_view_journals': 'عرض القيود',
+        'company_view_account_statement': 'كشف حساب',
+
+        // الفواتير والمنتجات
+        'company_view_invoices': 'عرض الفواتير',
+        'company_create_sales_invoice': 'إصدار فاتورة مبيعات',
+        'company_create_sales_return': 'فاتورة مرتجع مبيعات',
+        'company_create_purchase_invoice': 'إصدار فاتورة مشتريات',
+        'company_create_purchase_return': 'فاتورة مرتجع مشتريات',
+        'company_manage_products': 'إدارة المنتجات',
+        'company_manage_categories': 'إدارة التصنيفات',
+        'company_manage_customers': 'إدارة العملاء',
+
+        // الحسابات الختامية
+        'company_view_trial_balance': 'عرض ميزان المراجعة',
+        'company_view_income_statement': 'عرض قائمة الدخل',
+        'company_view_balance_sheet': 'عرض الميزانية العمومية',
+
+        // الموارد البشرية
+        'company_manage_employees': 'إدارة الموظفين',
+        'company_manage_leaves': 'إدارة الإجازات',
+        'company_manage_overtimes': 'إدارة الساعات الإضافية',
+        'company_manage_deductions': 'إدارة الخصومات',
+        'company_manage_payrolls': 'إدارة الرواتب',
+        'company_manage_hr_categories': 'تصنيفات الموارد البشرية',
+        'company_manage_loans': 'إدارة السلف',
+
+        // الإعدادات
+        'company_manage_suppliers': 'إدارة الموردين',
+        'company_manage_settings': 'إعدادات عامة',
+        'company_manage_company_information': 'معلومات الشركة',
+        'company_manage_backup': 'النسخ الاحتياطي',
+        'company_manage_years': 'السنوات المالية',
+        'comapny_manage_users': 'إدارة المستخدمين',
+
+        // الإضافات
+        'company_link_account_customers': 'ربط حساب العملاء',
+        'company_link_account_suppliers': 'ربط حساب الموردين',
+        'company_link_account_cach_register': 'ربط الصندوق النقدي'
     };
 
     const permissionGroups = {
-        'الحسابات': ['view_accounts', 'add_accounts', 'edit_accounts', 'delete_accounts'],
-        'الحسابات': ['view_accounts', 'add_accounts', 'edit_accounts', 'delete_accounts'],
-        'الحسابات العامة': ['view_purchases', 'add_purchases', 'edit_purchases', 'delete_purchases'],
-        'الفواتير والمنتجات': ['view_sales', 'add_sales', 'edit_sales', 'delete_sales'],
-        ' الحسابات الختاميه': ['view_sales', 'add_sales', 'edit_sales', 'delete_sales'],
-        'الموارد البشريه': ['view_sales', 'add_sales', 'edit_sales', 'delete_sales'],
-        'الإضافات ': ['view_sales', 'add_sales', 'edit_sales', 'delete_sales'],
-        ' الإعدادات': ['view_hr', 'add_hr', 'edit_hr', 'manage_salaries']
+        'الحسابات': [
+            'company_view_accounts_tree',
+            'company_manage_accounts',
+            'company_create_accounts',
+            'company_cmanage_edit_account',
+            'company_cmanage_delete_account'
+        ],
+        'الحسابات العامة': [
+            'company_create_journal_entry',
+            'company_view_journal_entries',
+            'company_edit_journal_entries',
+            'company_delete_journal_entries',
+            'company_manage_cost_centers',
+            'company_view_journals',
+            'company_view_account_statement'
+        ],
+        'الفواتير والمنتجات': [
+            'company_view_invoices',
+            'company_create_sales_invoice',
+            'company_create_sales_return',
+            'company_create_purchase_invoice',
+            'company_create_purchase_return',
+            'company_manage_products',
+            'company_manage_categories',
+            'company_manage_customers'
+        ],
+        'الحسابات الختامية': [
+            'company_view_trial_balance',
+            'company_view_income_statement',
+            'company_view_balance_sheet'
+        ],
+        'الموارد البشرية': [
+            'company_manage_employees',
+            'company_manage_leaves',
+            'company_manage_overtimes',
+            'company_manage_deductions',
+            'company_manage_payrolls',
+            'company_manage_hr_categories',
+            'company_manage_loans'
+        ],
+        'الإعدادات': [
+            'company_manage_suppliers',
+            'company_manage_settings',
+            'company_manage_company_information',
+            'company_manage_backup',
+            'company_manage_years',
+            'comapny_manage_users'
+        ],
+        'الإضافات': [
+            'company_link_account_customers',
+            'company_link_account_suppliers',
+            'company_link_account_cach_register'
+        ]
     };
+
 
     $(document).ready(function () {
         $('#user_type').on('change', function () {
@@ -163,16 +245,15 @@
             $.each(permissionGroups, function (groupName, permissions) {
                 let groupHtml = `<div class="permission-group"><h3>${groupName}</h3>`;
                 let hasPermissions = false;
-                permissions.forEach(function (permission) {
-                    console.log(permission)
 
+                permissions.forEach(function (permission) {
                     // if (availablePermissions.includes(permission)) {
                         groupHtml += `
-                                <div class="permission-item">
-                                    <input type="checkbox" id="${permission}" name="permissions[]" value="${permission}">
-                                    <label for="${permission}">${permissionsLabels[permission]}</label>
-                                </div>
-                            `;
+                    <div class="permission-item">
+                        <input type="checkbox" id="${permission}" name="permissions[]" value="${permission}">
+                        <label for="${permission}">${permissionsLabels[permission]}</label>
+                    </div>
+                `;
                         hasPermissions = true;
                     // }
                 });
@@ -182,6 +263,7 @@
                     $permissionsGrid.append(groupHtml);
                 // }
             });
+
         });
 
         $('#userForm').on('submit', function (e) {

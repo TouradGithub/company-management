@@ -12,6 +12,10 @@
             </div>
         </div>
         <div class="node-actions">
+            <button class="show-account-btn" id="{{ $account->id}}" title="عرض الحساب">
+                <i class="fas fa-eye"></i>
+            </button>
+
             <button class="add-sub-account" title="إضافة حساب فرعي">
                 <i class="fas fa-plus"></i>
             </button>

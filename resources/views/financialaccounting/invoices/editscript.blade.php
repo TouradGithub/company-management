@@ -2,6 +2,8 @@
     const { jsPDF } = window.jspdf;
     const products = @json($products);
     const customers = @json($customers);
+    const invoiceEdited = @json($invoice);
+    const section = @json($section);
 
     const suppliers = @json($suppliers??[]);
 
@@ -13,6 +15,7 @@
         addNewItem('#purchaseReturnItemsTable');
         updateCustomers();
         updateSuppliers();
+        fetchInvoiceData(section, invoiceEdited);
 
 
         ['sales', 'purchase', 'salesReturn', 'purchaseReturn'].forEach(section => {
@@ -274,14 +277,22 @@
     function saveInvoice(section) {
         let sectionIds = section;
 
-        if(section == 'sales-return'){
+        if(section == 'salesItemsTable'){
+            sectionIds  =  'sales';
+        }
+
+        if(section == 'salesReturnItemsTable'){
             sectionIds  =  'salesReturn';
         }
 
-        if(section == 'purchase-return'){
+        if(section == 'purchaseItemsTable'){
+            sectionIds  =  'purchase';
+        }
+
+        if(section == 'purchaseReturnItemsTable'){
             sectionIds = 'purchaseReturn';
         }
-        const tableId = `#${sectionIds}ItemsTable`;
+        const tableId = `#${section}`;
         const items = [];
         $(`${tableId} tbody tr`).each(function() {
             const $row = $(this);
@@ -292,31 +303,30 @@
                 price: parseFloat($row.find('.item-price').val()) || 0,
                 total: parseFloat($row.find('.item-total').text()) || 0
             };
+            //
             if (item.productId) items.push(item);
         });
 
 
 
         const invoiceData = {
-            customer_id: section.includes('sales') ? $(`#${sectionIds}CustomerSelect`).val() : null,
-            supplier_id: section.includes('purchase') ? $(`#${sectionIds}SupplierSelect`).val() : null, // تصحيح هنا
+            id:  $(`#invoice_id_section`).val() ,
+            customer_id:  $(`#${sectionIds}CustomerSelect`).val() ??null,
+            supplier_id:  $(`#${sectionIds}SupplierSelect`).val()??null, // تصحيح هنا
             invoice_date: $(`#${sectionIds}InvoiceDate`).val(),
             branch_id: $(`#${sectionIds}BranchSelect`).val(),
-            original_invoice_number: section.includes('return') ? $(`#original${section.includes('sales') ? 'Sales' : 'Purchase'}InvoiceNumber`).val() : null,
-            subtotal: parseFloat($(`${tableId} #${section}Subtotal`).text()) || 0,
-            discount: parseFloat($(`${tableId} #${section}DiscountPercent`).val()) || 0,
-            discount_amount: parseFloat($(`${tableId} #${section}DiscountAmount`).text()) || 0,
-            tax: parseFloat($(`${tableId} #${section}TaxPercent`).val()) || 0,
-            tax_amount: parseFloat($(`${tableId} #${section}TaxAmount`).text()) || 0,
-            total: parseFloat($(`${tableId} #${section}GrandTotal`).text()) || 0,
+            original_invoice_number: $(`#original${sectionIds}InvoiceNumber`).val() ,
+            subtotal: parseFloat($(`#${sectionIds}Subtotal`).text()) || 0,
+            discount: parseFloat($(`#${sectionIds}DiscountPercent`).val()) || 0,
+            discount_amount: parseFloat($(`#${sectionIds}DiscountAmount`).text()) || 0,
+            tax: parseFloat($(`#${sectionIds}TaxPercent`).val()) || 0,
+            tax_amount: parseFloat($(`#${sectionIds}TaxAmount`).text()) || 0,
+            total: parseFloat($(`#${sectionIds}GrandTotal`).text()) || 0,
             items: items
         };
-        console.log(section);
+        console.log(invoiceData);
 
-        const url = section === 'sales' ? '/invoices/store' :
-            section === 'purchase' ? '/invoices/purchases/store' :
-                section === 'sales-return' ? '/invoices/sales-returns/store' :
-                    '/invoices/purchase-returns/store';
+        const url =  '/invoices/update';
 
         $.ajax({
             url: url,
@@ -327,14 +337,15 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
-
                 Swal.fire({
                     icon: 'success',
                     title: 'تم الحفظ',
                     text: 'تم حفظ الفاتورة بنجاح!',
                 }).then(() => {
                     const invoiceId = response.invoice_id;
-                    window.location.href = `/invoices/index`;
+                    window.open(`/invoices/index`);
+                    window.location.reload();
+
                 });
             },
             error: function(xhr) {
@@ -350,48 +361,69 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'خطأ',
-                    text: message || 'غير معروف',
+                    text: message || 'خطأ غير معروف',
                 });
             }
         });
+
     }
 
-    function fetchInvoiceData(section, invoiceNumber) {
-        const url = section === 'sales-return' ? `/invoices/${invoiceNumber}` : `/invoices/purchases/${invoiceNumber}`;
-        const tableId = section === 'sales-return' ?  `#salesReturnItemsTable` : `#purchaseReturnItemsTable`;
-        console.log(tableId);
+    function fetchInvoiceData(section, invoice) {
+        $('#invoice_id_section').val(invoice.id);
 
-        $.ajax({
-            url: url,
-            method: 'GET',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                console.log(response);
-                if (response && response.items) {
-                    // مسح الجدول الحالي
+        showLoadingOverlay();
+        const tableId = `#${section}`;
+
                     $(`${tableId} tbody`).empty();
                     let forSection = '';
 
-                    if (section === 'sales-return' && response.customer_id) {
-                        forSection = 'purchaseReturn';
-                        $(`#salesReturnCustomerSelect`).val(response.customer_id).trigger('change');
+                    if (section === 'salesItemsTable' && invoice.customer_id) {
+                        forSection = 'sales';
+                        $(`#${forSection}CustomerSelect`).val(invoice.customer_id).trigger('change');
+                        $(`#${forSection}InvoiceNumber`).val(invoice.invoice_number).trigger('change');
 
-                    } else if (section === 'purchase-return' && response.supplier_id) {
+                    }
+                    else if (section === 'purchaseReturnItemsTable' && invoice.supplier_id) {
+                        forSection = 'purchaseReturn';
+                        $(`#purchaseReturnSupplierSelect`).val(invoice.supplier_id).trigger('change');
+                        $(`#${forSection}InvoiceNumber`).val(invoice.invoice_number).trigger('change');
+                    }
+                    else if(section === 'salesReturnItemsTable' && invoice.customer_id){
                         forSection = 'salesReturn';
-                        $(`#purchaseReturnSupplierSelect`).val(response.supplier_id).trigger('change');
+                        $(`#salesReturnCustomerSelect`).val(invoice.customer_id).trigger('change');
+                        $(`#${forSection}InvoiceNumber`).val(invoice.invoice_number).trigger('change');
+                    }
+                    else if(section === 'purchaseItemsTable' && invoice.supplier_id){
+                        forSection = 'purchase';
+                        console.log("IN purchase")
+                        $(`#purchaseSupplierSelect`).val(invoice.supplier_id).trigger('change');
+                        $(`#${forSection}InvoiceNumber`).val(invoice.invoice_number).trigger('change');
                     }
 
-                    $(`#${forSection}InvoiceDate`).val(response.invoice_date);
-                    $(`#${forSection}BranchSelect`).val(response.branch_id);
-                    response.items.forEach((item, index) => {
+        $(`#${forSection}DiscountPercent`).val(parseInt(invoice.discount));
+        $(`#${forSection}TaxPercent`).val(parseInt(invoice.tax));
+
+
+
+        $(`#${forSection}InvoiceDate`).val(invoice.invoice_date);
+                    $(`#${forSection}BranchSelect`).val(invoice.branch_id);
+                    invoice.items.forEach((item, index) => {
+                    const selectedIds = getSelectedItems(tableId);
+                    const availableProducts = products.filter(product => !selectedIds.includes(item.product_id.toString()));
                         const $newRow = $(`
                             <tr>
                                 <td class="serial">${index + 1}</td>
                                 <td>
                                     <select class="item-select form-select" style="width: 100%;">
-                                        <option value="${item.productId}" data-price="${item.price}" selected>${item.productId} - ${products.find(p => p.id == item.productId)?.name || 'غير معروف'}</option>
+
+                                      ${availableProducts.map(product => `
+                                        <option value="${product.id}" data-price="${product.price}"
+                                            ${product.id == item.product_id ? 'selected' : ''}>
+                                            ${product.id} - ${product.name}
+                                        </option>
+                                    `).join('')}
+<!--                                        <option value="${item.productId}" data-price="${item.price}" selected>${item.product_id} - ${products.find(p => p.id == item.product_id)?.name || 'غير معروف'}</option>-->
+
                                     </select>
                                 </td>
                                 <td>
@@ -421,36 +453,15 @@
                         addCalculationListeners($newRow, tableId);
                     });
 
-                    // تحديث الإجماليات
                     calculateGrandTotal(tableId);
+        hideLoadingOverlay();
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'تم الجلب',
-                        text: 'تم جلب بيانات الفاتورة بنجاح!',
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'لا توجد بيانات',
-                        text: 'لم يتم العثور على الفاتورة المطلوبة.',
-                    });
-                }
-            },
-            error: function(xhr) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'خطأ',
-                    text: xhr.responseJSON?.message || 'حدث خطأ أثناء جلب الفاتورة.',
-                });
-            }
-        });
     }
 
-    $('#saveSalesInvoiceBtn').on('click', () => saveInvoice('sales'));
-    $('#savePurchaseInvoiceBtn').on('click', () => saveInvoice('purchase'));
-    $('#saveSalesReturnInvoiceBtn').on('click', () => saveInvoice('sales-return'));
-    $('#savePurchaseReturnInvoiceBtn').on('click', () => saveInvoice('purchase-return'));
+    $('#saveSalesInvoiceBtn').on('click', () => saveInvoice('salesItemsTable'));
+    $('#savePurchaseInvoiceBtn').on('click', () => saveInvoice('purchaseItemsTable'));
+    $('#saveSalesReturnInvoiceBtn').on('click', () => saveInvoice('salesReturnItemsTable'));
+    $('#savePurchaseReturnInvoiceBtn').on('click', () => saveInvoice('purchaseReturnItemsTable'));
 
     $('.nav-tabs button').on('click', function() {
         const section = $(this).data('section');

@@ -28,7 +28,7 @@ class JournalEntry extends Model
 
         if ($lastEntry && $lastEntry->entry_number) {
             // Extract parts from format JRN-002-0000001
-            preg_match('/([A-Z]+)-(\d+)-(\d+)$/', $lastEntry->entry_number, $matches);
+            preg_match('/([A-Z]+)-(\d+)$/', $lastEntry->entry_number, $matches);
             $baseNumber = isset($matches[2]) ? intval($matches[2]) + 1 : 2; // Increment middle part
             $counter = isset($matches[3]) ? intval($matches[3]) : 0;
         } else {
@@ -36,7 +36,7 @@ class JournalEntry extends Model
             $counter = 1;
         }
 
-        $newEntryNumber = sprintf('%s-%03d-%07d',
+        $newEntryNumber = sprintf('%s-%03d%07d',
             $journalCode,
             $baseNumber,
             $counter
@@ -57,10 +57,10 @@ class JournalEntry extends Model
 
 
 
-public function details()
-    {
-        return $this->hasMany(JournalEntryDetail::class, 'journal_entry_id');
-    }
+    public function details()
+        {
+            return $this->hasMany(JournalEntryDetail::class, 'journal_entry_id');
+        }
 
     public function branch()
     {

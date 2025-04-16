@@ -5,21 +5,29 @@
         <div class="node-info">
             <span class="account-name">{{ $account->name }} - {{ $account->account_number }}</span>
             <div class="account-details">
-                <span class="account-balance">{{ number_format($account->balance, 2) }} ريال</span>
+                <span class="account-balance">{{ number_format($account->getBalanceDetails(), 2) }} ريال</span>
                 <span class="account-type" data-type="{{ $account->accountType->name }}">
                     {{ $account->accountType->name }}
                 </span>
             </div>
         </div>
         <div class="node-actions">
-            <button class="add-sub-account" title="إضافة حساب فرعي">
-                <i class="fas fa-plus"></i>
+            <button class="show-account-btn" id="{{ $account->id}}" title="عرض الحساب">
+                <i class="fas fa-eye"></i>
             </button>
+            @if($account->islast != 1)
+                <button class="add-sub-account" title="إضافة حساب فرعي">
+                    <i class="fas fa-plus"></i>
+                </button>
+            @endif
+
             @if(count($account->children ?? []) > 0)
                 <button class="toggle-node" title="توسيع/طي">
                     <i class="fas fa-chevron-down"></i>
                 </button>
             @endif
+
+
         </div>
     </div>
 

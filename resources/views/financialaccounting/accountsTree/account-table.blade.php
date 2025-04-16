@@ -2,8 +2,9 @@
 
 @section('css')
     <style>
+
         .container-tabs {
-            width: 50%;
+            width: 80%;
             margin-right: 0;
             margin-left: auto;
         }
@@ -28,6 +29,23 @@
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s ease;
+        }
+
+        .row .search-container button {
+            width: 100%;
+            padding: 10px 20px;
+            color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+
+        .row .search-input {
+            width: 100%;
+            padding: 10px 20px;
         }
 
         .row button:hover {
@@ -64,10 +82,10 @@
     <h2>جدول الحسابات</h2>
 
     <div class="table-actions">
-        <button class="export-excel-btn">
+        <button class="export-excel-btn" id="export-excel-btn-account">
             <i class="fas fa-file-excel"></i> تصدير Excel
         </button>
-        <button class="export-pdf-btn">
+        <button class="export-pdf-btn" id="export-pdf-btn-account">
             <i class="fas fa-file-pdf"></i> تصدير PDF
         </button>
     </div>
@@ -89,7 +107,19 @@
             <div>
                 <button type="button" id="4" class="level-btn">المستوى 4</button>
             </div>
+
+            <div >
+                <input type="text" id="search-account" placeholder="ابحث عن الحساب..." class="search-input">
+            </div>
+
+            <div >
+                <button id="search-btn" class="search-button">بحث</button>
+            </div>
+
+
+
         </div>
+
     </div>
 
     <div class="accounts-table-container">
@@ -119,7 +149,7 @@
         </table>
     </div>
 
-    <!-- Modal (unchanged) -->
+
     <div class="account-form-modal" style="display: none;">
         <div class="modal-content">
             <h2></h2>
@@ -177,6 +207,74 @@
             </form>
         </div>
     </div>
+
+    <div class="account-form-modal-show">
+        <div class="modal-content">
+            <h2>  </h2>
+            <form action="{#" method="POST">
+                @csrf
+                <div class="form-row">
+                    <div class="form-group-model">
+                        <label>رقم الحساب</label>
+                        <input type="text" name="account_number" id="accountNumberShow" required>
+                    </div>
+                    <div class="form-group-model">
+                        <label>اسم الحساب</label>
+                        <input type="text" name="name" id="accountNameShow" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group-model">
+                        <label>نوع الحساب</label>
+                        <select name="account_type_id" id="accountTypeShow" required>
+                            @foreach($accounttypes as $item)
+                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group-model">
+                        <label>الحساب الرئيسي</label>
+                        <select name="parent_id" id="parentAccountShow" required>
+                            <option value="">اختر الحساب الرئيسي...</option>
+                            <option value="0">حساب رئيسي</option>
+                            @foreach($accounts as $item)
+                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group-model" id="openingBalanceRowShow" style="display: none;">
+                        <label>الرصيد الافتتاحي</label>
+                        <input type="number"  name="opening_balance" id="openingBalance" step="0.01" value="0" required>
+                    </div>
+                    <div class="form-group-model">
+                        <label> القائمة الختامية</label>
+                        <select name="closing_list_type" id="closingListTypeShow">
+                            <option value="">اختر نوع</option>
+                            <option value="1">قائمة الدخل</option>
+                            <option value="2">الميزانيه العموميه</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group-model">
+                        <label>
+                            هل هو حساب فرعي (نهائي)؟ </label>
+                        <input type="checkbox"  id="isLastCheckboxShow" name="islast" value="1">
+
+                    </div>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="cancel-btn">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
 @endsection
 
 @section('js')
@@ -186,13 +284,16 @@
     <script>
         $(document).ready(function() {
             // Load all accounts by default
+            let currentLevel = 'all';
             fetchAccounts('all');
 
             // Handle level button clicks
             $('.level-btn').on('click', function() {
+                $('#search-account').val('');
                 let level = $(this).attr('id');
                 $('.level-btn').removeClass('active');
                 $(this).addClass('active');
+                currentLevel = level;
                 fetchAccounts(level);
             });
 
@@ -242,7 +343,8 @@
                             totalDebit += debit;
                             totalCredit += credit;
                             totalBalance += balance;
-
+                            let balanceDisplay = account.islast == "1" ? balance : '';
+                                console.log(account.islast);
                             // الحساب الرئيسي (المستوى 1)
                             let row = `
                                 <tr>
@@ -251,12 +353,12 @@
                                     <td>${account.account_type_name}</td>
                                     <td class="total-debit">${debit}</td>
                                     <td class="total-credit">${credit}</td>
-                                    <td class="total-balance">${balance}</td>
+                                    <td class="total-balance">${balanceDisplay}</td>
                                     <td>
                                         <div>
-                                            <a href="#" style="margin: 10px; font-size: 20px;">
-                                                <i class="fas fa-edit edit-account-btn" id="${account.id}" style="color: green;"></i>
-                                            </a>
+                                            <a href="#" style="margin: 10px; font-size: 20px;" ><i class="fas fa-edit edit-account-btn" id="${account.id}" style="color: green;"></i></a>
+
+                                             <a href="#" style="margin: 10px; font-size: 20px;" class="view-account"><i class="fas fa-eye show-account-btn" id="${account.id}" style="color: green;"></i></a>
                                             <a href="{{ route('accounting.delete', ':id') }}".replace(':id', account.id)"
                                                style="margin: 10px; font-size: 20px;"
                                                onclick="return confirm('هل أنت متأكد أنك تريد حذف هذا الحساب؟');">
@@ -266,75 +368,6 @@
                                     </td>
                                 </tr>`;
 
-                            // الأبناء (المستوى 2 وما دون)
-                            if (account.children && account.children.length > 0) {
-                                account.children.forEach(function(child) {
-                                    let childBalance = child.balance || 0;
-                                    let childDebit = childBalance < 0 ? Math.abs(childBalance) : 0;
-                                    let childCredit = childBalance >= 0 ? childBalance : 0;
-
-                                    totalDebit += childDebit;
-                                    totalCredit += childCredit;
-                                    totalBalance += childBalance;
-
-                                    row += `
-                                        <tr class="child-level-1">
-                                            <td class="child-level-1">${child.account_number}</td>
-                                            <td class="child-level-1">${child.name}</td>
-                                            <td>${child.account_type_name}</td>
-                                            <td class="total-debit">${childDebit}</td>
-                                            <td class="total-credit">${childCredit}</td>
-                                            <td class="total-balance">${childBalance}</td>
-                                            <td>
-                                                <div>
-                                                    <a href="#" style="margin: 10px; font-size: 20px;">
-                                                        <i class="fas fa-edit edit-account-btn" id="${child.id}" style="color: green;"></i>
-                                                    </a>
-                                                    <a href="{{ route('accounting.delete', ':id') }}".replace(':id', child.id)"
-                                                       style="margin: 10px; font-size: 20px;"
-                                                       onclick="return confirm('هل أنت متأكد أنك تريد حذف هذا الحساب؟');">
-                                                        <i class="fas fa-trash" style="color: red;"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>`;
-
-                                    // الأحفاد (المستوى 3)
-                                    if (child.children && child.children.length > 0) {
-                                        child.children.forEach(function(grandchild) {
-                                            let grandBalance = grandchild.balance || 0;
-                                            let grandDebit = grandBalance < 0 ? Math.abs(grandBalance) : 0;
-                                            let grandCredit = grandBalance >= 0 ? grandBalance : 0;
-
-                                            totalDebit += grandDebit;
-                                            totalCredit += grandCredit;
-                                            totalBalance += grandBalance;
-
-                                            row += `
-                                                <tr class="child-level-2">
-                                                    <td class="child-level-2">${grandchild.account_number}</td>
-                                                    <td class="child-level-2">${grandchild.name}</td>
-                                                    <td>${grandchild.account_type_name}</td>
-                                                    <td class="total-debit">${grandDebit}</td>
-                                                    <td class="total-credit">${grandCredit}</td>
-                                                    <td class="total-balance">${grandBalance}</td>
-                                                    <td>
-                                                        <div>
-                                                            <a href="#" style="margin: 10px; font-size: 20px;">
-                                                                <i class="fas fa-edit edit-account-btn" id="${grandchild.id}" style="color: green;"></i>
-                                                            </a>
-                                                            <a href="{{ route('accounting.delete', ':id') }}".replace(':id', grandchild.id)"
-                                                               style="margin: 10px; font-size: 20px;"
-                                                               onclick="return confirm('هل أنت متأكد أنك تريد حذف هذا الحساب؟');">
-                                                                <i class="fas fa-trash" style="color: red;"></i>
-                                                            </a>
-                                                        </div>
-                                                    </td>
-                                                </tr>`;
-                                        });
-                                    }
-                                });
-                            }
 
                             tbody.append(row);
                         });
@@ -348,6 +381,7 @@
                             totalDebit += debit;
                             totalCredit += credit;
                             totalBalance += balance;
+                            let balanceDisplay = account.islast == "1" ? balance : '';
 
                             let row = `
                                 <tr>
@@ -356,12 +390,13 @@
                                     <td>${account.account_type_name}</td>
                                     <td class="total-debit">${debit}</td>
                                     <td class="total-credit">${credit}</td>
-                                    <td class="total-balance">${balance}</td>
+                                    <td class="total-balance">${balanceDisplay}</td>
                                     <td>
                                         <div>
-                                            <a href="#" style="margin: 10px; font-size: 20px;">
-                                                <i class="fas fa-edit edit-account-btn" id="${account.id}" style="color: green;"></i>
-                                            </a>
+                                              <a href="#" style="margin: 10px; font-size: 20px;" ><i class="fas fa-edit edit-account-btn" id="${account.id}" style="color: green;"></i></a>
+
+                                             <a href="#" style="margin: 10px; font-size: 20px;" class="view-account"><i class="fas fa-eye show-account-btn" id="${account.id}" style="color: green;"></i></a>
+
                                             <a href="{{ route('accounting.delete', ':id') }}".replace(':id', account.id)"
                                                style="margin: 10px; font-size: 20px;"
                                                onclick="return confirm('هل أنت متأكد أنك تريد حذف هذا الحساب؟');">
@@ -383,6 +418,7 @@
 
                 // Rebind edit button events
                 bindEditEvents();
+                bindShowEvents();
             }
 
             // Edit button click handler
@@ -403,6 +439,46 @@
                             $('#openingBalance').val(response.opening_balance);
                             $('#closingListType').val(response.closing_list_type);
                             $('.account-form-modal').show();
+                            hideLoadingOverlay();
+                        },
+                        error: function(xhr) {
+                            hideLoadingOverlay();
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطأ',
+                                text: xhr.responseJSON?.message || 'فشل في جلب بيانات الحساب',
+                            });
+                        }
+                    });
+                });
+            }
+            function bindShowEvents() {
+                $('.show-account-btn').on('click', function() {
+                    let accountId = $(this).attr('id');
+                    showLoadingOverlay();
+                    $.ajax({
+                        url: `/Acounting/edit/${accountId}`,
+                        method: 'GET',
+                        success: function(response) {
+                            $('#accountId').val(response.id);
+                            $('.account-form-modal-show h2').text(`عرض حساب ${response.name}`);
+
+                            $('#accountNumberShow').val(response.account_number).prop('readonly', true);
+                            $('#accountNameShow').val(response.name).prop('readonly', true);
+                            $('#accountTypeShow').val(response.account_type_id).prop('disabled', true);
+                            $('#parentAccountShow').val(response.parent_id).prop('disabled', true);
+                            $('#openingBalanceShow').val(response.opening_balance).prop('readonly', true);
+                            $('#closingListTypeShow').val(response.closing_list_type).prop('disabled', true);
+                            $('#isLastCheckboxShow').prop('checked', response.islast == 1).prop('disabled', true);
+
+                            if(response.islast == 1){
+                                $('#openingBalanceRowShow').show();
+                            } else {
+                                $('#openingBalanceRowShow').hide();
+                            }
+                            $('#isLastCheckboxShow').prop('checked', response.islast == 1);
+
+                            $('.account-form-modal-show').show();
                             hideLoadingOverlay();
                         },
                         error: function(xhr) {
@@ -468,12 +544,65 @@
             // Cancel button
             $('.cancel-btn').on('click', function() {
                 $('.account-form-modal').hide();
+                $('.account-form-modal-show').hide();
                 resetForm();
             });
 
+            // Export to Excel
+            $('#export-excel-btn-account').on('click', function() {
+                window.location.href = '{{ route("accounting.export.excel") }}?level=' + currentLevel;
+            });
+
+            // Export to PDF
+            $('#export-pdf-btn-account').on('click', function() {
+                window.location.href = '{{ route("accounting.export.pdf") }}?level=' + currentLevel;
+            });
 
             function resetForm() {
                 $('#accountId').val('');
+            }
+
+
+            $('#search-btn').on('click', function() {
+                searchAccounts();
+            });
+
+            $('#search-account').on('keypress', function(event) {
+                if (event.which === 13) { // زر Enter
+                    searchAccounts();
+                }
+            });
+
+            function searchAccounts() {
+                let query = $('#search-account').val().trim();
+
+                if (query === '') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'تنبيه',
+                        text: 'يرجى إدخال كلمة للبحث!',
+                    });
+                    return;
+                }
+
+                showLoadingOverlay();
+                $.ajax({
+                    url: '{{ route("accounting.accountsTree.search") }}',
+                    method: 'GET',
+                    data: { query: query },
+                    success: function(response) {
+                        updateTable(response.accounts);
+                        hideLoadingOverlay();
+                    },
+                    error: function(xhr) {
+                        hideLoadingOverlay();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطأ',
+                            text: xhr.responseJSON?.message || 'حدث خطأ أثناء البحث!',
+                        });
+                    }
+                });
             }
 
         });

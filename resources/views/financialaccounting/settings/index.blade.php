@@ -25,25 +25,21 @@
                 </div>
             </div>
             <div class="settings-card">
-
                 <i class="fas fa-calendar-plus"></i>
                 <h3>فتح سنة جديدة</h3>
                 <p>إنشاء سنة مالية جديدة</p>
                 <div class="card-actions">
-
+                    <a style="text-decoration: none;color: white" href="{{route('session-years.index')}}">
                     <button class="action-btn new-year" title="سنة جديدة"><i class="fas fa-plus"></i></button>
-
+                    </a>
                 </div>
-
             </div>
-            <div class="settings-card"> <a style="text-decoration: none;color: white" href="{{route('users-company.index')}}">
-
-
+            <div class="settings-card">
+                <a style="text-decoration: none;color: white" href="{{route('users-company.index')}}">
                 <i class="fas fa-users-cog"></i>
                 <h3>صلاحيات المستخدمين</h3>
                 <p>إدارة صلاحيات المستخدمين</p>
                 <div class="card-actions">
-
                     <button class="action-btn permissions"  title="الصلاحيات"><i class="fas fa-key"></i></button>
                 </div>
                 </a>
