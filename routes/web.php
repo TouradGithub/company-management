@@ -112,6 +112,8 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::delete('/journal-entry/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'destroy'])->name('journal-entry.destroy');
     Route::delete('/journal-entry-details/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'destroyEntryDetails'])->name('journal-entry.destroy-entry-details');
     Route::get('/journal-entry/edit/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'edit'])->name('journal-entry.edit');
+    Route::get('/journal-entry/export/pdf', [App\Http\Controllers\Accounting\JournalEntryController::class, 'exportPdf'])->name('journal-entry.export.pdf');
+    Route::get('/journal-entry/export/excel', [App\Http\Controllers\Accounting\JournalEntryController::class, 'exportExcel'])->name('journal-entry.export.excel');
 
     Route::get('CostCenter/index' , [App\Http\Controllers\Accounting\CostCenterController::class , 'index'])->name('cost-center.index');
     Route::post('CostCenter/store' , [App\Http\Controllers\Accounting\CostCenterController::class , 'store'])->name('cost-center.store');
@@ -122,6 +124,9 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
 
     Route::get('/account-statement/index', [App\Http\Controllers\Accounting\AccountStatementController::class, 'index'])->name('account.statement.index');
     Route::get('/account-statement', [App\Http\Controllers\Accounting\AccountStatementController::class, 'getStatement'])->name('account.statement.getStatement-by-ajax');
+    Route::get('account-statement/export/excel', [App\Http\Controllers\Accounting\AccountStatementController::class, 'exportExcel'])->name('account.statement.export.excel');
+    Route::get('account-statement/export/pdf', [App\Http\Controllers\Accounting\AccountStatementController::class, 'exportPDF'])->name('account.statement.export.pdf');
+
 
     Route::get('Acounting/index' , [App\Http\Controllers\Accounting\HomeController::class , 'index'])->name('accounting.index');
     Route::get('Acounting/index-table' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'accountTable'])->name('accounting.index.table');
@@ -131,7 +136,10 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::post('Acounting/update-account' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'update'])->name('accounting.accountsTree.update');
     Route::post('Acounting/accountsTree' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'store'])->name('accounting.accountsTree.store');
     Route::get('/accounting/accounts-tree/filter', [App\Http\Controllers\Accounting\AccountsTreeController::class, 'filterAccounts'])->name('accounting.accountsTree.filter');
+    Route::get('/accounting/accountsTree/search', [App\Http\Controllers\Accounting\AccountsTreeController::class, 'search'])->name('accounting.accountsTree.search');
 
+    Route::get('/accounting/export/pdf', [App\Http\Controllers\Accounting\AccountsTreeController::class, 'exportPdf'])->name('accounting.export.pdf');
+    Route::get('/accounting/export/excel', [App\Http\Controllers\Accounting\AccountsTreeController::class, 'exportExcel'])->name('accounting.export.excel');
 //    Route::resource('journals', \App\Http\Controllers\Accounting\JournalController::class);
 //    Route::get('/journals/get', [\App\Http\Controllers\Accounting\JournalController::class, 'get']);
 
@@ -174,10 +182,13 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::get('/invoices/purchases', [InvoiceController::class, 'purchasePage'])->name('invoices.purchases');
     Route::get('/invoices/sales-returns', [InvoiceController::class, 'salesReturns'])->name('invoices.sales-returns');
     Route::get('/invoices/purchase-returns', [InvoiceController::class, 'purchaseReturns'])->name('invoices.purchase-returns');
+    Route::get('/invoices/print/{id}', [InvoiceController::class, 'printInvoice'])->name('invoices.print');
+    Route::get('/invoices/edit/{id}', [InvoiceController::class, 'editInvoice'])->name('invoices.edit');
 
     Route::get('/invoices/index', [App\Http\Controllers\Accounting\InvoiceController::class, 'index'])->name('invoices.index');
     Route::get('/invoices/create', [App\Http\Controllers\Accounting\InvoiceController::class, 'create'])->name('invoices.create');
     Route::post('/invoices/store', [App\Http\Controllers\Accounting\InvoiceController::class, 'store'])->name('invoices.store');
+    Route::post('/invoices/update', [App\Http\Controllers\Accounting\InvoiceController::class, 'updateInvoice'])->name('invoices.updateInvoice');
     Route::post('/invoices/purchases/store', [App\Http\Controllers\Accounting\InvoiceController::class, 'purchases'])->name('invoices.purchases.store');
     Route::post('/invoices/sales-returns/store', [App\Http\Controllers\Accounting\InvoiceController::class, 'salesReturn'])->name('invoices.salesreturns.store');
     Route::post('/invoices/purchase-returns/store', [App\Http\Controllers\Accounting\InvoiceController::class, 'purchaseReturn'])->name('invoices.purchasereturns.store');
@@ -212,6 +223,14 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::get('/categorie-invoices/categories/{id}', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'delete']);
     Route::get('/categorie-invoices/categories/{id}/edit', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'edit']);
     Route::put('/categorie-invoices/categories/{id}', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'update']);
+
+
+    Route::get('/session-years', [App\Http\Controllers\Accounting\SessionYearController::class, 'getPage'])->name('session-years.index');
+    Route::get('/session-years/get', [App\Http\Controllers\Accounting\SessionYearController::class, 'index']);
+    Route::post('/session-years/store', [App\Http\Controllers\Accounting\SessionYearController::class, 'store'])->name('session-years.store');
+    Route::get('/session-years/edit/{id}', [App\Http\Controllers\Accounting\SessionYearController::class, 'edit']);
+    Route::put('/session-years/update/{id}', [App\Http\Controllers\Accounting\SessionYearController::class, 'update']);
+    Route::delete('/session-years/delete/{id}', [App\Http\Controllers\Accounting\SessionYearController::class, 'destroy']);
 
 
 });

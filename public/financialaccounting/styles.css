@@ -2869,6 +2869,23 @@ h1 {
     overflow-y: auto;
 }
 
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 10px;
+    color: #fff;
+}
+
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-secondary {
+    background-color: #6c757d;
+}
+
 .invoice-form-modal.active {
     display: block;
     animation: fadeIn 0.3s ease;
@@ -3445,89 +3462,176 @@ h1 {
 }
 
 .account-form-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  z-index: 1001;
-  display: none;
-  width: 90%;
-  max-width: 40%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    z-index: 1001;
+    display: none;
+    width: 90%;
+    max-width: 40%;
+}
+
+.account-form-modal-show {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    z-index: 1001;
+    display: none;
+    width: 90%;
+    max-width: 40%;
 }
 
 .account-form-modal.active {
-  display: block;
-  animation: fadeIn 0.3s ease;
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.account-form-modal-show.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
 }
 
 .account-form-modal h2 {
-  color: rgb(30,144,255);
-  margin-bottom: 2rem;
-  text-align: center;
+    color: rgb(30,144,255);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.account-form-modal-show h2 {
+    color: rgb(30,144,255);
+    margin-bottom: 2rem;
+    text-align: center;
 }
 
 .account-form-modal .form-group {
-  margin-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.account-form-modal-show .form-group {
+    margin-bottom: 1.5rem;
 }
 
 .account-form-modal label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #2c3e50;
-  font-weight: 600;
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.account-form-modal-show label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    font-weight: 600;
 }
 
 .account-form-modal input,
 .account-form-modal select {
-  width: 100%;
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.account-form-modal-show input,
+.account-form-modal-show select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
 }
 
 .account-form-modal input:focus,
 .account-form-modal select:focus {
-  outline: none;
-  border-color: rgb(30,144,255);
-  box-shadow: 0 0 0 2px rgba(30,144,255,0.1);
+    outline: none;
+    border-color: rgb(30,144,255);
+    box-shadow: 0 0 0 2px rgba(30,144,255,0.1);
+}
+
+.account-form-modal-show input:focus,
+.account-form-modal-show select:focus {
+    outline: none;
+    border-color: rgb(30,144,255);
+    box-shadow: 0 0 0 2px rgba(30,144,255,0.1);
 }
 
 .account-form-modal .modal-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.account-form-modal-show .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
 }
 
 .account-form-modal .save-btn,
 .account-form-modal .cancel-btn {
-  padding: 0.8rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+
+.account-form-modal-show .save-btn,
+.account-form-modal-show .cancel-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
 .account-form-modal .save-btn {
-  background: rgb(30,144,255);
-  color: white;
+    background: rgb(30,144,255);
+    color: white;
+}
+
+.account-form-modal-show .save-btn {
+    background: rgb(30,144,255);
+    color: white;
 }
 
 .account-form-modal .cancel-btn {
-  background: #f0f0f0;
-  color: #666;
+    background: #f0f0f0;
+    color: #666;
+}
+
+.account-form-modal-show .cancel-btn {
+    background: #f0f0f0;
+    color: #666;
 }
 
 .account-form-modal .save-btn:hover,
 .account-form-modal .cancel-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.account-form-modal-show .save-btn:hover,
+.account-form-modal-show .cancel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 
@@ -3553,11 +3657,19 @@ h1 {
     margin-bottom: 5px;
 }
 
-.form-group-model input,
+.form-group-model input[type="text"],
+.form-group-model input[type="number"],
 .form-group-model select {
     width: 100%;
     padding: 8px;
     box-sizing: border-box;
+}
+
+.form-group-model input[type="checkbox"] {
+    width: auto;
+    transform: scale(1.2);
+    /*margin-left: 10px;*/
+    cursor: pointer;
 }
 
 .modal-buttons {

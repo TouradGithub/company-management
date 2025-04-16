@@ -90,7 +90,13 @@
                 </table>
             </div>
 
-            <button id="saveEntry" type="submit" style="padding: 0.8rem 1.5rem; background: rgb(30,144,255); width: 20%; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">حفظ التعديلات</button>
+            <button  id="saveEntry" type="submit" style="  padding: 0.8rem 1.5rem;background: rgb(30,144,255);
+                 width: 20%; color: white; border: none;border-radius: 8px; cursor: pointer;font-weight: 600;
+                  transition: all 0.3s ease;">حفظ</button>
+
+            <button  id="addNewLine" type="button" style="  padding: 0.8rem 1.5rem;background: rgb(30,144,255);
+                 width: 10%; color: white; border: none;border-radius: 8px; cursor: pointer;font-weight: 600;
+                  transition: all 0.3s ease;">أضف سطر</button>
         </div>
     </div>
 @endsection
@@ -165,6 +171,29 @@
                 // ضبط التركيز على أول عنصر في الصف الجديد
                 setTimeout(() => $('#entriesTable tbody tr:last-child td:first-child select').focus(), 100);
             }
+            $('#addNewLine').on('click',function (){
+                const $tbody = $(`#entriesTable tbody`);
+                const existingRows = $tbody.find('tr');
+
+                // التحقق من السطر الأخير إذا كان موجودًا
+                if (existingRows.length > 0) {
+                    const lastRow = existingRows.last();
+                    const itemSelect = lastRow.find('.account-select').val();
+                    const itemcredit = lastRow.find('.debit').val();
+                    const itemdebit= lastRow.find('.credit').val();
+                    const itemcostCenter= lastRow.find('.select-cost-center').val();
+
+                    if (!itemSelect || !itemcostCenter || (!itemcredit && !itemdebit)  ) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'خطأ',
+                            text: 'يرجى ملئ القيد الحالي قبل إضافة سطر جديد',
+                        });
+                        return;
+                    }
+                }
+                addNewRow();
+            });
 
             // تعطيل أحد الحقول عند إدخال قيمة في الآخر
             $(document).on('input', '.debit', function () {

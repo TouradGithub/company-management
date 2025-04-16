@@ -5,19 +5,19 @@
         <form id="customer-supplier-form">
             <div class="invoice-header-section">
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group-model">
                         <label>الاسم</label>
                         <input type="text" id="name_customer_supplier" name="name" required>
                         <span id="error-name" class="error"></span>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group-model">
                         <label>رقم الهاتف</label>
                         <input type="number" id="contact_customer_supplier" name="contact_info" required>
                         <span id="error-contact_info" class="error"></span>
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group-model">
                         <label>الفرع</label>
                         <select id="branch_id_customer_supplier" name="branch_id" required>
                             <option value="all">اختر الفرع...</option>
@@ -26,7 +26,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group-model">
                         <label>الحساب</label>
                         <select id="account_id_customer_supplier" name="account_id" required>
                             <option>اختر الحساب...</option>

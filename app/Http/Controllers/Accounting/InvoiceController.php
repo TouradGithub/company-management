@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Accounting;
-
+use Mpdf\Mpdf;
+use setasign\Fpdi\Fpdi;
 use App\Helpers\AccountTransactionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
@@ -10,6 +11,7 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Journal;
+use FPDF;
 use App\Models\Product;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -55,10 +57,16 @@ class InvoiceController extends Controller
 
     public function getInvoices(Request $request) {
         $query = Invoice::query();
+
         if ($request->has('status') && $request->status != 'all') {
             $query->where('invoice_type', $request->status);
         }
-        $invoices = $query->with(['branch','customer' , 'Supplier'])->get();
+        if ($request->has('search') && $request->search != '') {
+            $query->where('invoice_number', 'like', "%$request->search%");
+        }
+
+
+        $invoices = $query->where('company_id',Auth::user()->model_id)->with(['branch','customer' , 'Supplier'])->get();
         return response()->json($invoices);
     }
     public function destroy($id)
@@ -182,10 +190,10 @@ class InvoiceController extends Controller
             ]);
             $product->decrement('stock', $item['quantity']);
         }
-
         return response()->json([
-            'status' =>true,
-            'message' =>"تم إضافة الفاتورة بنجاح"
+            'status' => true,
+            'message' => 'تم إضافة الفاتورة بنجاح',
+            'invoice_id' => $invoice->id, // Return invoice ID for printing
         ], 201);
     }
 
@@ -205,30 +213,31 @@ class InvoiceController extends Controller
             'discount' => 'required|numeric',
             'tax' => 'required|numeric',
             'total' => 'required|numeric',
-        ], [
-            'invoice_date.required' => 'تاريخ الفاتورة مطلوب.',
-            'invoice_date.date' => 'تاريخ الفاتورة يجب أن يكون تاريخًا صالحًا.',
-            'customer_id.required' => 'العميل مطلوب.',
-            'branch_id.required' => 'الفرع مطلوب.',
-            'items.required' => 'الأصناف مطلوبة.',
-            'items.array' => 'الأصناف يجب أن تكون مصفوفة.',
-            'items.*.productId.required' => 'معرف المنتج مطلوب لكل صنف.',
-            'items.*.quantity.required' => 'الكمية مطلوبة لكل صنف.',
-            'items.*.quantity.numeric' => 'الكمية يجب أن تكون رقمًا.',
-            'items.*.quantity.min' => 'الكمية يجب أن لا تقل عن 1.',
-            'items.*.price.required' => 'السعر مطلوب لكل صنف.',
-            'items.*.price.numeric' => 'السعر يجب أن يكون رقمًا.',
-            'items.*.total.required' => 'الإجمالي للصنف مطلوب.',
-            'items.*.total.numeric' => 'الإجمالي للصنف يجب أن يكون رقمًا.',
-            'subtotal.required' => 'الإجمالي الفرعي مطلوب.',
-            'subtotal.numeric' => 'الإجمالي الفرعي يجب أن يكون رقمًا.',
-            'discount.required' => 'الخصم مطلوب.',
-            'discount.numeric' => 'الخصم يجب أن يكون رقمًا.',
-            'tax.required' => 'الضريبة مطلوبة.',
-            'tax.numeric' => 'الضريبة يجب أن تكون رقمًا.',
-            'total.required' => 'الإجمالي مطلوب.',
-            'total.numeric' => 'الإجمالي يجب أن يكون رقمًا.',
-        ]);
+        ],
+            [
+                'invoice_date.required' => 'تاريخ الفاتورة مطلوب.',
+                'invoice_date.date' => 'تاريخ الفاتورة يجب أن يكون تاريخًا صالحًا.',
+                'customer_id.required' => 'العميل مطلوب.',
+                'branch_id.required' => 'الفرع مطلوب.',
+                'items.required' => 'الأصناف مطلوبة.',
+                'items.array' => 'الأصناف يجب أن تكون مصفوفة.',
+                'items.*.productId.required' => 'معرف المنتج مطلوب لكل صنف.',
+                'items.*.quantity.required' => 'الكمية مطلوبة لكل صنف.',
+                'items.*.quantity.numeric' => 'الكمية يجب أن تكون رقمًا.',
+                'items.*.quantity.min' => 'الكمية يجب أن لا تقل عن 1.',
+                'items.*.price.required' => 'السعر مطلوب لكل صنف.',
+                'items.*.price.numeric' => 'السعر يجب أن يكون رقمًا.',
+                'items.*.total.required' => 'الإجمالي للصنف مطلوب.',
+                'items.*.total.numeric' => 'الإجمالي للصنف يجب أن يكون رقمًا.',
+                'subtotal.required' => 'الإجمالي الفرعي مطلوب.',
+                'subtotal.numeric' => 'الإجمالي الفرعي يجب أن يكون رقمًا.',
+                'discount.required' => 'الخصم مطلوب.',
+                'discount.numeric' => 'الخصم يجب أن يكون رقمًا.',
+                'tax.required' => 'الضريبة مطلوبة.',
+                'tax.numeric' => 'الضريبة يجب أن تكون رقمًا.',
+                'total.required' => 'الإجمالي مطلوب.',
+                'total.numeric' => 'الإجمالي يجب أن يكون رقمًا.',
+            ]);
         $errors = [];
         foreach ($validated['items'] as $key => $item) {
             $product = Product::find($item['productId']);
@@ -269,10 +278,12 @@ class InvoiceController extends Controller
         }
 
         return response()->json([
-            'status' =>true,
-            'message' =>"تم إضافة الفاتورة بنجاح"
+            'status' => true,
+            'message' => 'تم إضافة الفاتورة بنجاح',
+            'invoice_id' => $invoice->id, // Return invoice ID for printing
         ], 201);
     }
+
     public function salesReturn(Request $request)
     {
 
@@ -367,8 +378,9 @@ class InvoiceController extends Controller
         }
 
         return response()->json([
-            'status' =>true,
-            'message' =>"تم إضافة الفاتورة بنجاح"
+            'status' => true,
+            'message' => 'تم إضافة الفاتورة بنجاح',
+            'invoice_id' => $invoice->id, // Return invoice ID for printing
         ], 201);
     }
     public function purchaseReturn(Request $request)
@@ -463,8 +475,9 @@ class InvoiceController extends Controller
         }
 
         return response()->json([
-            'status' =>true,
-            'message' =>"تم إضافة الفاتورة بنجاح"
+            'status' => true,
+            'message' => 'تم إضافة الفاتورة بنجاح',
+            'invoice_id' => $invoice->id, // Return invoice ID for printing
         ], 201);
     }
 
@@ -558,4 +571,174 @@ class InvoiceController extends Controller
 
         return view('financialaccounting.invoices.purchase-return', compact('branches', 'accounts', 'products', 'customers', 'suppliers'));
     }
+
+
+
+    // New method to print the invoice
+    public function printInvoice($id)
+    {
+        $invoice = Invoice::with('items')->findOrFail($id);
+
+        // تهيئة mPDF مع دعم RTL والخطوط العربية
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'cairo', // تأكد من إضافة الخط
+            'orientation' => 'P',
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+            'margin_left' => 15,
+            'margin_right' => 15,
+            'margin_top' => 15,
+            'margin_bottom' => 15,
+        ]);
+
+        $mpdf->showImageErrors = true; // لعرض أخطاء الصور إن وجدت
+
+        // جلب محتوى القالب
+        $html = view('financialaccounting.invoices.exports.print', compact('invoice'))->render();
+
+        // كتابة HTML إلى mPDF
+        $mpdf->WriteHTML($html);
+
+        // إخراج الملف كـ PDF
+        $mpdf->Output('invoice_' . $invoice->invoice_number . '.pdf', 'I');
+    }
+
+
+    public function editInvoice($id)
+    {
+        $invoice = Invoice::with('items')->findOrFail($id);
+
+        if (!$invoice) {
+            return redirect()->back()->with('error', 'Invoice Not Found');
+        }
+
+        $companyId = Auth::user()->model_id;
+        $branches = Branch::where('company_id', $companyId)->get();
+        $accounts = Account::where('company_id', $companyId)->get();
+        $products = Product::where('company_id', $companyId)->get();
+        $customers = Customer::where('company_id', $companyId)->get();
+        $suppliers = Supplier::where('company_id', $companyId)->get();
+
+        $type = $invoice->invoice_type;
+        $sectionsMap = [
+            'Sales' => ['view' => 'editSales', 'section' => 'salesItemsTable'],
+            'SalesReturn' => ['view' => 'editSalesReturn', 'section' => 'salesReturnItemsTable'],
+            'Purchases' => ['view' => 'editPurchases', 'section' => 'purchaseItemsTable'],
+            'PurchasesReturn' => ['view' => 'editPurchasesReturn', 'section' => 'purchaseReturnItemsTable'],
+        ];
+
+        $config = $sectionsMap[$type] ?? null;
+
+        if (!$config) {
+            return redirect()->back()->with('error', 'نوع الفاتورة غير معروف');
+        }
+
+
+        return view('financialaccounting.invoices.' . $config['view'], compact(
+            'invoice', 'branches', 'accounts', 'products', 'customers','suppliers'
+        ))->with('section', $config['section']);
+    }
+
+
+    public function updateInvoice(Request $request)
+    {
+
+        $validated = $request->validate([
+            'id' => 'required',
+            'invoice_date' => 'required|date',
+            'customer_id' => 'required_without:supplier_id',
+            'supplier_id' => 'required_without:customer_id',
+            'branch_id' => 'required',
+            'items' => 'required|array',
+            'items.*.productId' => 'required',
+            'items.*.quantity' => 'required|numeric|min:1',
+            'items.*.price' => 'required|numeric',
+            'items.*.total' => 'required|numeric',
+            'subtotal' => 'required|numeric',
+            'discount' => 'required|numeric',
+            'tax' => 'required|numeric',
+            'total' => 'required|numeric',
+        ],
+            [
+                'invoice_date.required' => 'تاريخ الفاتورة مطلوب.',
+                'invoice_date.date' => 'تاريخ الفاتورة يجب أن يكون تاريخًا صالحًا.',
+                'customer_id.required' => 'العميل مطلوب.',
+                'branch_id.required' => 'الفرع مطلوب.',
+                'items.required' => 'الأصناف مطلوبة.',
+                'items.array' => 'الأصناف يجب أن تكون مصفوفة.',
+                'items.*.productId.required' => 'معرف المنتج مطلوب لكل صنف.',
+                'items.*.quantity.required' => 'الكمية مطلوبة لكل صنف.',
+                'items.*.quantity.numeric' => 'الكمية يجب أن تكون رقمًا.',
+                'items.*.quantity.min' => 'الكمية يجب أن لا تقل عن 1.',
+                'items.*.price.required' => 'السعر مطلوب لكل صنف.',
+                'items.*.price.numeric' => 'السعر يجب أن يكون رقمًا.',
+                'items.*.total.required' => 'الإجمالي للصنف مطلوب.',
+                'items.*.total.numeric' => 'الإجمالي للصنف يجب أن يكون رقمًا.',
+                'subtotal.required' => 'الإجمالي الفرعي مطلوب.',
+                'subtotal.numeric' => 'الإجمالي الفرعي يجب أن يكون رقمًا.',
+                'discount.required' => 'الخصم مطلوب.',
+                'discount.numeric' => 'الخصم يجب أن يكون رقمًا.',
+                'tax.required' => 'الضريبة مطلوبة.',
+                'tax.numeric' => 'الضريبة يجب أن تكون رقمًا.',
+                'total.required' => 'الإجمالي مطلوب.',
+                'total.numeric' => 'الإجمالي يجب أن يكون رقمًا.',
+            ]);
+        $errors = [];
+        foreach ($validated['items'] as $key => $item) {
+            $product = Product::find($item['productId']);
+            if (!$product || $product->stock < $item['quantity']) {
+                $errors["items.$key.quantity"] = "الكمية المطلوبة للمنتج {$product->name} غير متوفرة، المتاح فقط: {$product->stock}.";
+            }
+        }
+
+        if (!empty($errors)) {
+            return response()->json(['errors' => $errors], 422);
+        }
+
+        $invoice = Invoice::find($validated['id']);
+
+//        $invoice->invoice_number = Invoice::generateEntryNumber(Auth::user()->model_id);
+        $invoice->invoice_date = $validated['invoice_date'];
+        $invoice->supplier_id = $validated['supplier_id'];
+        $invoice->customer_id = $validated['customer_id'];
+        $invoice->branch_id =$validated['branch_id'];
+        $invoice->company_id = Auth::user()->model_id;
+        $invoice->employee_id = Auth::user()->name;
+        $invoice->subtotal = $validated['subtotal'];
+        $invoice->discount = $validated['discount'] ?? 0;
+        $invoice->tax = $validated['tax']??0;
+        $invoice->total = $validated['total'];
+        $invoice->status =Invoice::STATUS_CONFIRMED;
+        $invoice->save();
+
+        foreach ($invoice->items as $item) {
+
+            $product = Product::find($item->product_id);
+            $product->increment('stock', $item->quantity);
+        }
+        $invoice->items()->delete();
+
+        foreach ($validated['items'] as $item) {
+            $product = Product::find($item['productId']);
+            InvoiceItem::create([
+                'invoice_id' => $invoice->id,
+                'product_id' => $item['productId'],
+                'product_name' => $item['productId'],
+                'quantity' => $item['quantity'],
+                'price' => $item['price'],
+                'total' => $item['total'],
+            ]);
+            $product->decrement('stock', $item['quantity']);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم إضافة الفاتورة بنجاح',
+            'invoice_id' => $invoice->id, // Return invoice ID for printing
+        ], 201);
+    }
+
+
 }

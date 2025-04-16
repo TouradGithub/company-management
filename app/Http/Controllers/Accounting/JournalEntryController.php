@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Accounting;
 
+use App\Exports\JournalEntriesExport;
 use App\Helpers\AccountTransactionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
@@ -16,7 +17,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 use Mockery\Exception;
+use Mpdf\Mpdf;
 
 class JournalEntryController extends Controller
 {
@@ -111,7 +114,7 @@ class JournalEntryController extends Controller
 
     public function fetchEntries(Request $request)
     {
-        $query = JournalEntry::with([
+        $query = JournalEntry::where('company_id' , Auth::user()->model_id)->with([
                 'details' => function ($query) {
                     $query->select('id', 'journal_entry_id', 'account_id', 'debit', 'credit', 'cost_center_id', 'comment');
                 },
@@ -134,6 +137,10 @@ class JournalEntryController extends Controller
             $query->where('entry_date', '>=', $request->from_date);
         } elseif ($request->filled('to_date')) {
             $query->where('entry_date', '<=', $request->to_date);
+        }
+        // Apply entry number search
+        if ($request->filled('entry_number')) {
+            $query->where('entry_number', 'like', '%' . $request->entry_number . '%');
         }
 
         $entries = $query->get();
@@ -163,13 +170,9 @@ class JournalEntryController extends Controller
     {
         $entry = JournalEntryDetail::findOrFail($id);
         if($entry){
-
             $entry->delete();
-
             return response()->json(['status' => 'success', 'message' => 'تم الحذف بنجاح']);
         }
-
-
         return response()->json(['status' => 'error', 'message' => 'هناك مشكله حاول مرة أخرى  ']);
     }
 
@@ -179,7 +182,6 @@ class JournalEntryController extends Controller
         $costcenters = CostCenter::where('company_id', Auth::user()->model_id)->get();
         $branches = Branch::where('company_id', Auth::user()->model_id)->get();
         $entry = JournalEntry::findOrFail($id);
-
         return view('financialaccounting.journalEntries.edit' , compact('entry','accounts' ,'branches', 'costcenters'));
     }
     public  function update(Request $request)
@@ -194,23 +196,23 @@ class JournalEntryController extends Controller
             'entries.*.credit' => 'nullable|numeric|required_without:entries.*.debit',
             'entries.*.cost_center' => 'required',
             'entries.*.notes' => 'nullable|string',
-        ], [
-            'entries.*.cost_center.required' => 'يجب اختيار مركز التكلفة.',
-            'branch.required' => 'يجب اختيار الفرع.',
-            'date.required' => 'يجب تحديد التاريخ.',
-            'date.date' => 'يجب إدخال تاريخ صحيح.',
-            'entry_id.required' => '   رقم القيد غير موجود.',
-            'entries.required' => 'يجب إدخال تفاصيل القيد.',
-            'entries.array' => 'يجب أن يكون تفاصيل القيد على شكل قائمة.',
-            'entries.min' => 'يجب إدخال قيد واحد على الأقل.',
-            'entries.*.account_id.required' => 'يجب اختيار الحساب لكل قيد.',
-            'entries.*.debit.numeric' => 'يجب أن يكون المبلغ المدين رقمًا صحيحًا.',
-            'entries.*.credit.numeric' => 'يجب أن يكون المبلغ الدائن رقمًا صحيحًا.',
-            'entries.*.debit.required_without' => 'يرجى ملء حقل الخصم أو الدائن.',
-            'entries.*.credit.required_without' => 'يرجى ملء حقل الدائن أو الخصم.',
-            'entries.*.notes.string' => 'يجب أن تكون الملاحظات نصية فقط.',
-        ]);
-
+        ],
+            [
+                'entries.*.cost_center.required' => 'يجب اختيار مركز التكلفة.',
+                'branch.required' => 'يجب اختيار الفرع.',
+                'date.required' => 'يجب تحديد التاريخ.',
+                'date.date' => 'يجب إدخال تاريخ صحيح.',
+                'entry_id.required' => '   رقم القيد غير موجود.',
+                'entries.required' => 'يجب إدخال تفاصيل القيد.',
+                'entries.array' => 'يجب أن يكون تفاصيل القيد على شكل قائمة.',
+                'entries.min' => 'يجب إدخال قيد واحد على الأقل.',
+                'entries.*.account_id.required' => 'يجب اختيار الحساب لكل قيد.',
+                'entries.*.debit.numeric' => 'يجب أن يكون المبلغ المدين رقمًا صحيحًا.',
+                'entries.*.credit.numeric' => 'يجب أن يكون المبلغ الدائن رقمًا صحيحًا.',
+                'entries.*.debit.required_without' => 'يرجى ملء حقل الخصم أو الدائن.',
+                'entries.*.credit.required_without' => 'يرجى ملء حقل الدائن أو الخصم.',
+                'entries.*.notes.string' => 'يجب أن تكون الملاحظات نصية فقط.',
+            ]);
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
@@ -225,7 +227,7 @@ class JournalEntryController extends Controller
             $journalEntry->branch_id = $request->branch;
             $journalEntry->entry_date = $request->date;
             $journalEntry->entry_number = $request->entry_id;
-            $journalEntry->created_by =Auth::user()->name;
+            $journalEntry->created_by = Auth::user()->name;
             $journalEntry->save();
             $journalEntry->details()->delete();
 
@@ -244,14 +246,52 @@ class JournalEntryController extends Controller
             DB::commit();
 
             return response()->json(['message' => 'تم تعديل القيد بنجاح ✅'], 200);
-        }catch (Exception $e){
+        } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'errors' => $e->getMessage()
             ], 500);
         }
-
     }
 
+        // Export to PDF
+    public function exportPdf(Request $request)
+    {
+            $entries = $this->getFilteredEntries($request);
+            $html = view('financialaccounting.journalEntries.exports.pdf', compact('entries'))->render();
+            $mpdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4']);
+            $mpdf->WriteHTML($html);
+            return $mpdf->Output('journal_entries.pdf', 'D');
+    }
+        // Helper method to get filtered entries
+    private function getFilteredEntries(Request $request)
+    {
+        $query = JournalEntry::with([
+            'details.account:id,name,account_number',
+            'branch:id,name',
+            'details.costcenter',
+        ]);
+
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $query->whereBetween('entry_date', [$request->from_date, $request->to_date]);
+        } elseif ($request->filled('from_date')) {
+            $query->where('entry_date', '>=', $request->from_date);
+        } elseif ($request->filled('to_date')) {
+            $query->where('entry_date', '<=', $request->to_date);
+        }
+        if ($request->filled('entry_number')) {
+            $query->where('entry_number', 'like', '%' . $request->entry_number . '%');
+        }
+        return $query->get();
+    }
+
+        // Export to Excel
+    public function exportExcel(Request $request)
+    {
+        return Excel::download(new JournalEntriesExport($request->all()), 'journal_entries.xlsx');
+    }
 
 }

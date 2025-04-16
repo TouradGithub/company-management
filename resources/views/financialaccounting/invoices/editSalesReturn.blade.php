@@ -1,48 +1,47 @@
-
 @extends('financialaccounting.layouts.master')
 
 @section('content')
-    <div class="invoices-header">
-        <h1>إضافة فاتورة مرتجع مشتريات</h1>
-    </div>
-    <div class="invoice-container active invoice-container-style" id="purchase-return-invoice">
-        <form id="purchaseReturnInvoiceForm">
+
+
+    <div class="invoice-container active invoice-container-style" id="sales-return-invoice">
+        <form id="salesReturnInvoiceForm">
+
             <div class="header">
                 <div>
-                    <h1 style="color: var(--secondary);">فاتورة مرتجع مشتريات</h1>
+                    <h1 style="color: #e67e22;">فاتورة مرتجع مبيعات</h1>
 
 
                 </div>
-                <svg viewBox="0 0 40 40"></svg>
+                <svg viewBox="0 0 40 40" style="color: #e67e22;"></svg>
             </div>
 
-            <div class="invoice-info" style="border: 2px solid var(--secondary); padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="invoice-info" style="border: 2px solid #e67e22; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
                 <div style="display: flex; gap: 2rem; align-items: center; width: 100%;">
                     <div class="return-info-group" style="flex: 1;">
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--secondary); font-weight: bold;">رقم فاتورة المشتريات:</label>
-                        <input type="text" id="originalPurchaseInvoiceNumber" style="background: #e6f4ff; border: 1px solid var(--secondary); padding: 8px 12px; border-radius: 6px; width: 100%;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: #e67e22; font-weight: bold;">رقم فاتورة المبيعات:</label>
+                        <input type="text" id="originalSalesInvoiceNumber" style="background: #fdf2e9; border: 1px solid #e67e22; padding: 8px 12px; border-radius: 6px; width: 100%;">
                     </div>
                     <div class="return-date-group" style="flex: 1;">
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--secondary); font-weight: bold;">تاريخ المرتجع:</label>
-                        <input type="date" id="purchaseReturnInvoiceDate" value="{{ date('Y-m-d') }}" style="border: 1px solid var(--secondary); padding: 8px; border-radius: 6px; width: 100%;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: #e67e22; font-weight: bold;">تاريخ المرتجع:</label>
+                        <input type="date" id="salesReturnInvoiceDate" value="{{ date('Y-m-d') }}" style="border: 1px solid #e67e22; padding: 8px; border-radius: 6px; width: 100%;">
                     </div>
                 </div>
                 <div style="display: flex; gap: 2rem; align-items: center; width: 100%;">
                     <div class="employee-info-group" style="flex: 1;">
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--secondary); font-weight: bold;">اسم الموظف:</label>
-                        <input type="text" id="purchaseReturnEmployeeName" list="employeeListPurchaseReturn" style="border: 1px solid var(--secondary); padding: 8px 12px; border-radius: 6px; width: 100%;">
-                        <datalist id="employeeListPurchaseReturn"></datalist>
+                        <label style="display: block; margin-bottom: 0.5rem; color: #e67e22; font-weight: bold;">اسم الموظف:</label>
+                        <input type="text" id="salesReturnEmployeeName" list="employeeListSalesReturn" style="border: 1px solid #e67e22; padding: 8px 12px; border-radius: 6px; width: 100%;">
+                        <datalist id="employeeListSalesReturn"></datalist>
                     </div>
                     <div class="shift-info-group" style="flex: 1;">
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--secondary); font-weight: bold;">الوردية:</label>
-                        <select id="purchaseReturnShiftSelect" style="border: 1px solid var(--secondary); padding: 8px 12px; border-radius: 6px; width: 100%;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: #e67e22; font-weight: bold;">الوردية:</label>
+                        <select id="salesReturnShiftSelect" style="border: 1px solid #e67e22; padding: 8px 12px; border-radius: 6px; width: 100%;">
                             <option value="صباح">صباح</option>
                             <option value="مساء">مساء</option>
                         </select>
                     </div>
                     <div class="branch-info-group" style="flex: 1;">
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--secondary); font-weight: bold;">الفرع:</label>
-                        <select id="purchaseReturnBranchSelect" style="border: 1px solid var(--secondary); padding: 8px 12px; border-radius: 6px; width: 100%;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: #e67e22; font-weight: bold;">الفرع:</label>
+                        <select id="salesReturnBranchSelect" style="border: 1px solid #e67e22; padding: 8px 12px; border-radius: 6px; width: 100%;">
                             @foreach($branches as $branch)
                                 <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                             @endforeach
@@ -51,10 +50,11 @@
                 </div>
             </div>
 
-            <div class="info-section supplier-return-info" style="border: 2px solid var(--secondary); padding: 1.5rem; border-radius: 12px;  background: #f8fcff;">
-                <div class="client-info" style="padding-right: 2rem; border-right: 2px dashed var(--secondary);">
-                    <h3 style="color: var(--secondary); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--secondary);">المورد المرتجع</h3>
-                    <select name="supplier_id" class="suppliers purchase-return-supplier-id" id="purchaseReturnSupplierSelect" style="width: 100%; padding: 10px; font-size: 16px;"></select>
+            <div class="info-section supplier-return-info" style="border: 2px solid #e67e22; padding: 1.5rem; border-radius: 12px;  background: #fffaf5;">
+                <div class="client-info" style="padding-right: 2rem; border-right: 2px dashed #e67e22;">
+                    <h3 style="color: #e67e22; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e67e22;">العميل المرتجع</h3>
+                    <select name="customer_id" class="customers sales-return-customer-id" id="salesReturnCustomerSelect" style="width: 100%; padding: 10px; font-size: 16px;"></select>
+                    <div class="limit-credit" style="display: none"></div>
                 </div>
                 <div class="company-info">
                     <h3>شركة بوادي المتحده {{ getCompany()->name }}</h3>
@@ -63,16 +63,17 @@
                     <p>الرقم الضريبي 102031141121</p>
                 </div>
             </div>
+            <input type="hidden" id="invoice_id_section">
 
-            <table id="purchaseReturnItemsTable">
-                <datalist id="purchaseReturnItemsDatalist"></datalist>
+            <table id="salesReturnItemsTable">
+                <datalist id="salesReturnItemsDatalist"></datalist>
                 <thead>
                 <tr>
                     <th>مسلسل</th>
                     <th>الصنف</th>
                     <th>الوحدة</th>
                     <th>الكمية</th>
-                    <th>سعر الشراء</th>
+                    <th>السعر</th>
                     <th>الإجمالي</th>
                     <th>حذف</th>
                 </tr>
@@ -81,41 +82,42 @@
                 <tfoot>
                 <tr class="total-row">
                     <td colspan="5">المبلغ الإجمالي</td>
-                    <td id="purchaseReturnSubtotal">0.00</td>
+                    <td id="salesReturnSubtotal">0.00</td>
                     <td></td>
                 </tr>
                 <tr class="calculation-row">
-                    <td colspan="5">الخصم (%) <input type="number" id="purchaseReturnDiscountPercent" step="0.01" value="0"></td>
-                    <td id="purchaseReturnDiscountAmount">0.00</td>
+                    <td colspan="5">الخصم (%) <input type="number" id="salesReturnDiscountPercent" step="0.01" value="0"></td>
+                    <td id="salesReturnDiscountAmount">0.00</td>
                     <td></td>
                 </tr>
                 <tr class="calculation-row">
-                    <td colspan="5">الضريبة (%) <input type="number" id="purchaseReturnTaxPercent" step="0.01" value="15"></td>
-                    <td id="purchaseReturnTaxAmount">0.00</td>
+                    <td colspan="5">الضريبة (%) <input type="number" id="salesReturnTaxPercent" step="0.01" value="15"></td>
+                    <td id="salesReturnTaxAmount">0.00</td>
                     <td></td>
                 </tr>
                 <tr class="total-row">
                     <td colspan="5">المبلغ النهائي</td>
-                    <td id="purchaseReturnGrandTotal">0.00</td>
+                    <td id="salesReturnGrandTotal">0.00</td>
                     <td></td>
                 </tr>
                 </tfoot>
             </table>
 
             <div class="actions">
-                <button class="add-client-btn" type="button" onclick="addNewClient('purchase-return')">
+                <button class="add-client-btn" type="button" onclick="addNewClient('sales-return')">
                     <svg viewBox="0 0 24 24" width="20" height="20" style="margin-left:8px" fill="currentColor">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
                     </svg>
-                    إضافة مورد
+                    إضافة عميل
                 </button>
                 <button class="print-btn" type="button" onclick="window.print()">طباعة</button>
-                <button class="save-btn" id="savePurchaseReturnInvoiceBtn" type="button">حفظ</button>
+                <button class="save-btn" id="saveSalesReturnInvoiceBtn" type="button">حفظ</button>
             </div>
         </form>
     </div>
     @include('financialaccounting.invoices.modal')
 @endsection
+
 @section('css')
     <style>
         /* Copy all styles from the provided HTML here */
@@ -377,5 +379,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @include('financialaccounting.invoices.script')
+    @include('financialaccounting.invoices.editscript')
 @endsection

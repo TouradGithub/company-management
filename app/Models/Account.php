@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class Account extends Model
 {
     use HasFactory;
-    protected $fillable = ['account_number', 'name', 'account_type_id', 'parent_id', 'company_id','opening_balance', 'closing_list_type',];
+    protected $fillable = ['account_number', 'name', 'account_type_id', 'parent_id', 'company_id','opening_balance', 'closing_list_type','islast'];
 
 
     public function accountType()

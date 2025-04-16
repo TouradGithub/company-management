@@ -2,129 +2,121 @@
 @extends('financialaccounting.layouts.master')
 @section('content')
 
-<div id="salesInvoiceSection" >
-    <div class="invoices-container">
-        <div class="invoices-header">
-            <h1>الفواتير </h1>
-{{--            <a href="{{route('invoices.create')}}" style="text-decoration: none">--}}
+    <div id="salesInvoiceSection" >
+        <div class="invoices-container">
+            <div class="invoices-header">
+                <h1>الفواتير </h1>
+            </div>
+
+            <div class="invoice-search">
+                <input type="search" id="searchKeyword" placeholder="بحث في الفواتير...">
+                <select >
+                    <option value="all">جميع الأنواع</option>
+                    <option value="Purchases">مشتريات</option>
+                    <option value="PurchasesReturn">مرتجع مشتريات</option>
+                    <option value="Sales">مبيعات</option>
+                    <option value="SalesReturn">مرتجع مبيعات</option>
+                </select>
+            </div>
+
+            <div class="invoices-grid">
 
 
-{{--            <button >--}}
-{{--                <i class="fas fa-plus"></i>--}}
-{{--                فاتورة جديدة--}}
-{{--            </button>--}}
-{{--            </a>--}}
-        </div>
-
-        <div class="invoice-search">
-            <input type="search" placeholder="بحث في الفواتير...">
-            <select ">
-                <option value="all">جميع الأنواع</option>
-                <option value="Purchases">مشتريات</option>
-                <option value="PurchasesReturn">مرتجع مشتريات</option>
-                <option value="Sales">مبيعات</option>
-                <option value="SalesReturn">مرتجع مبيعات</option>
-            </select>
-        </div>
-
-        <div class="invoices-grid">
-
-
+            </div>
         </div>
     </div>
-</div>
 
-<div class="invoice-form-modal">
-    <div class="modal-content">
-        <h2>فاتورة مبيعات جديدة</h2>
-        <form >
-            <div class="invoice-header-section">
-                <div class="form-row">
-
+    <div class="invoice-form-modal">
+        <div class="modal-content">
+            <h2>فاتورة مبيعات جديدة</h2>
+            <form >
+                <div class="invoice-header-section">
+                    <div class="form-row">
 
 
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>التاريخ</label>
-                        <input type="date" id="invoice_date" required>
-                        <span id="error-invoice_date" class="error"></span>
+
                     </div>
-                    <div class="form-group">
-                        <label>العميل</label>
-                        <select id="customer_id" required>
-                            <option value="">اختر العميل...</option>
-                            @foreach($customers as $customer)
-                                <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>الفرع</label>
-                        <select id="branchSelect" required>
-                            <option value="">اختر الفرع...</option>
-                            @foreach($branches as $item)
-                                <option value="{{$item->id}}"> {{$item->name}}</option>
-                            @endforeach
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>التاريخ</label>
+                            <input type="date" id="invoice_date" required>
+                            <span id="error-invoice_date" class="error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>العميل</label>
+                            <select id="customer_id" required>
+                                <option value="">اختر العميل...</option>
+                                @foreach($customers as $customer)
+                                    <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>الفرع</label>
+                            <select id="branchSelect" required>
+                                <option value="">اختر الفرع...</option>
+                                @foreach($branches as $item)
+                                    <option value="{{$item->id}}"> {{$item->name}}</option>
+                                @endforeach
 
-                        </select>
-                    </div>
+                            </select>
+                        </div>
 
-                </div>
-            </div>
-
-            <div class="invoice-items-section">
-                <h3>الأصناف</h3>
-                <div class="invoice-items-table">
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>اسم الصنف</th>
-
-                            <th>الكمية</th>
-                            <th>السعر</th>
-                            <th>الإجمالي</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody id="invoiceItemsBody">
-                        </tbody>
-                    </table>
-                    <button type="button" class="add-item-btn">
-                        <i class="fas fa-plus"></i>
-                        إضافة صنف
-                    </button>
-                </div>
-            </div>
-
-            <div class="invoice-totals-section">
-                <div class="totals-grid">
-                    <div class="total-group">
-                        <label>الإجمالي</label>
-                        <input type="number" id="subtotal" readonly>
-                    </div>
-                    <div class="total-group">
-                        <label>الخصم</label>
-                        <input type="number" id="discount" step="0.01">
-                    </div>
-                    <div class="total-group">
-                        <label>الضريبة (%15)</label>
-                        <input type="number" id="tax" readonly>
-                    </div>
-                    <div class="total-group">
-                        <label>الصافي بعد الضريبة</label>
-                        <input type="number" id="total" readonly>
                     </div>
                 </div>
-            </div>
 
-            <div class="modal-buttons">
-                <button type="button" class="cancel-btn">إلغاء</button>
-                <button type="button" class="save-btn" id="save-btn">حفظ الفاتورة</button>
-            </div>
-        </form>
+                <div class="invoice-items-section">
+                    <h3>الأصناف</h3>
+                    <div class="invoice-items-table">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>اسم الصنف</th>
+
+                                <th>الكمية</th>
+                                <th>السعر</th>
+                                <th>الإجمالي</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody id="invoiceItemsBody">
+                            </tbody>
+                        </table>
+                        <button type="button" class="add-item-btn">
+                            <i class="fas fa-plus"></i>
+                            إضافة صنف
+                        </button>
+                    </div>
+                </div>
+
+                <div class="invoice-totals-section">
+                    <div class="totals-grid">
+                        <div class="total-group">
+                            <label>الإجمالي</label>
+                            <input type="number" id="subtotal" readonly>
+                        </div>
+                        <div class="total-group">
+                            <label>الخصم</label>
+                            <input type="number" id="discount" step="0.01">
+                        </div>
+                        <div class="total-group">
+                            <label>الضريبة (%15)</label>
+                            <input type="number" id="tax" readonly>
+                        </div>
+                        <div class="total-group">
+                            <label>الصافي بعد الضريبة</label>
+                            <input type="number" id="total" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="cancel-btn">إلغاء</button>
+                    <button type="button" class="save-btn" id="save-btn">حفظ الفاتورة</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 @endsection
 @section('js')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -133,7 +125,7 @@
     <script >
         $(document).ready(function () {
 
-            getSelInvoices('all');
+            getSelInvoices('all','');
 
             let products = @json($products);
             function getAvailableProducts() {
@@ -152,11 +144,11 @@
 
                 return options;
             }
-            function getSelInvoices(status = '') {
+            function getSelInvoices(status = '',search = '') {
                 $.ajax({
                     url: '/getInvoices',
                     type: 'GET',
-                    data: { status: status }, // إرسال الحالة المحددة كمعامل
+                    data: { status: status ,search:search }, // إرسال الحالة المحددة كمعامل
                     dataType: 'json',
                     success: function (data) {
                         var body = $('.invoices-grid');
@@ -196,21 +188,37 @@
                             </div>
                             <div class="invoice-total">${invoice.total} ريال</div>
                             <div class="card-actions">
- <a href="" target="_blank" style="text-decoration: none">
-                                <button class="action-btn view"  title="عرض">
-                                       <i class="fas fa-eye"></i></button></a>
+                             <a href="" target="_blank" style="text-decoration: none">
+                             <a href="/invoices/print/${invoice.id}" style="text-decoration: none;" target="_blank">
+                                <button class="action-btn view" title="عرض">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </a>
+
+                            <a href="/invoices/edit/${invoice.id}" style="text-decoration: none;" target="_blank">
+                                <button class="action-btn view" title="عرض">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </a>
+
 
                                 <button class="action-btn delete" title="حذف"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>`;
-                                body.append(row);
-                            });
+                            body.append(row);
+                        });
                     },
                     error: function () {
                         alert('حدث خطأ أثناء تحميل الفواتير');
                     }
                 });
             }
+
+            $('#searchKeyword').on('keypress', function(event) {
+                if (event.which === 13) { // زر Enter
+                    getSelInvoices($('.invoice-search select').val(),$('#searchKeyword').val());
+                }
+            });
 
             $('.invoice-search select').on('change', function () {
                 let selectedStatus = $(this).val();

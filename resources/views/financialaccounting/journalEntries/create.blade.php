@@ -16,7 +16,7 @@
         <div class="accounts-summary">
             <h2>قيد يوميه</h2>
 
-            <div class="table-actions">
+            <div class="table-actions" style="display: flex; justify-content: space-between;">
 
                 <div class="form-group">
                     <label>الدفتر:</label>
@@ -84,9 +84,30 @@
                 </table>
 
             </div>
+
+            <div class="totals" style="display: flex; margin: 10px; justify-content: space-between; padding: 10px; background-color: #f7f7f7; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+                <div style="text-align: center; font-size: 16px; font-weight: 600;">
+                    <span style="color: #4CAF50;">إجمالي المدين: </span><span id="totalDebit">0</span>
+                </div>
+                <div style="text-align: center; font-size: 16px; font-weight: 600;">
+                    <span style="color: #2196F3;">إجمالي الدائن: </span><span id="totalCredit">0</span>
+                </div>
+                <div style="text-align: center; font-size: 16px; font-weight: 600;">
+                    <span style="color: #FF5722;">القيد غير متساوي: </span><span id="balanceDiff">0</span>
+                </div>
+            </div>
+
+
+
+
+
             <button  id="saveEntry" type="submit" style="  padding: 0.8rem 1.5rem;background: rgb(30,144,255);
                  width: 20%; color: white; border: none;border-radius: 8px; cursor: pointer;font-weight: 600;
                   transition: all 0.3s ease;">حفظ</button>
+
+            <button  id="addNewLine" type="button" style="  padding: 0.8rem 1.5rem;background: rgb(30,144,255);
+                 width: 10%; color: white; border: none;border-radius: 8px; cursor: pointer;font-weight: 600;
+                  transition: all 0.3s ease;">أضف سطر</button>
         </div>
     </div>
 @endsection
@@ -117,10 +138,30 @@
 
             });
 
+            function updateTotals() {
+                let totalDebit = 0;
+                let totalCredit = 0;
+
+                $('#entriesTable tbody tr').each(function() {
+                    let row = $(this);
+                    let debit = parseFloat(row.find('.debit').val()) || 0;
+                    let credit = parseFloat(row.find('.credit').val()) || 0;
+
+                    totalDebit += debit;
+                    totalCredit += credit;
+                });
+
+                // عرض الإجماليات في الصفحة
+                $('#totalDebit').text(totalDebit.toFixed(2));
+                $('#totalCredit').text(totalCredit.toFixed(2));
+                $('#balanceDiff').text((totalDebit - totalCredit).toFixed(2));
+            }
+
+
             document.addEventListener('DOMContentLoaded', function() {
                 $(document).on('click', '.delete-row', function() {
                     $(this).closest('tr').remove();
-                    checkRows();
+
                 });
 
             const accountsData = @json($accounts);
@@ -186,13 +227,35 @@
                 }).on('select2:select', function () {
                     moveToNextField(this);
                 });
-
-
                 populateAccountSelect(newRow.querySelector('.account-select'), accountsData);
                 populateSelect(newRow.querySelector('.cost-center-select'), costCentersData);
 
                 addInputListeners(newRow);
             }
+            $('#addNewLine').on('click',function (){
+                const $tbody = $(`#entriesTable tbody`);
+                const existingRows = $tbody.find('tr');
+
+                // التحقق من السطر الأخير إذا كان موجودًا
+                if (existingRows.length > 0) {
+                    const lastRow = existingRows.last();
+                    const itemSelect = lastRow.find('.account-select').val();
+                    const itemcredit = lastRow.find('.debit').val();
+                    const itemdebit= lastRow.find('.credit').val();
+                    const itemcostCenter= lastRow.find('.select-cost-center').val();
+
+                    if (!itemSelect || !itemcostCenter || (!itemcredit && !itemdebit)  ) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'خطأ',
+                            text: 'يرجى ملئ القيد الحالي قبل إضافة سطر جديد',
+                        });
+                        return;
+                    }
+                }
+                addNewRow();
+                updateTotals();
+            });
 
             function addInputListeners(row) {
                 const inputs = [...row.querySelectorAll('input, select')];
@@ -210,17 +273,6 @@
                     });
                 });
             }
-
-                function checkRows() {
-                    let rowCount = document.querySelectorAll('#entriesTable tbody tr').length;
-                    let saveButton = document.getElementById('saveEntry');
-                    console.log("O");
-                    if (rowCount === 0) {
-                        saveButton.style.display = 'none'; // إخفاء الزر
-                    } else {
-                        saveButton.style.display = 'block'; // إظهاره عند وجود صفوف
-                    }
-                }
 
             function moveToNextField(input) {
                 const row = input.closest('tr');
@@ -256,6 +308,7 @@
                 populateAccountSelect(row.querySelector('.account-select'), accountsData);
                 populateSelect(row.querySelector('.cost-center-select'), costCentersData);
                 addInputListeners(row);
+                updateTotals();
             });
 
             document.querySelectorAll('.account-input, .cost-center, .debit, .credit, .notes, select').forEach(input => {
@@ -285,6 +338,8 @@
                     debitField.prop('disabled', false);
                     creditField.prop('disabled', false);
                 }
+
+                updateTotals();
             });
 
             $('#saveEntry').on('click', function() {

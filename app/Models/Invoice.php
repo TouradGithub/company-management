@@ -37,6 +37,8 @@ class Invoice extends Model
     {
         return $this->belongsTo(Branch::class);
     }
+
+
     public  function items(){
         return $this->hasMany(InvoiceItem::class);
     }

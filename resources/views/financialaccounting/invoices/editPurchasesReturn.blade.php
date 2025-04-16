@@ -50,7 +50,7 @@
                     </div>
                 </div>
             </div>
-
+            <input type="hidden" id="invoice_id_section">
             <div class="info-section supplier-return-info" style="border: 2px solid var(--secondary); padding: 1.5rem; border-radius: 12px;  background: #f8fcff;">
                 <div class="client-info" style="padding-right: 2rem; border-right: 2px dashed var(--secondary);">
                     <h3 style="color: var(--secondary); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--secondary);">المورد المرتجع</h3>
@@ -377,5 +377,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @include('financialaccounting.invoices.script')
+    @include('financialaccounting.invoices.editscript')
 @endsection

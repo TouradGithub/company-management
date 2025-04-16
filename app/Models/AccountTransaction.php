@@ -36,7 +36,7 @@ class AccountTransaction extends Model
         'transaction_date' => 'date',
         'debit' => 'decimal:2',
         'credit' => 'decimal:2',
-        'balance' => 'decimal:2',
+//        'balance' => 'decimal:2',
         'source_type' => 'string',
     ];
 
@@ -44,7 +44,11 @@ class AccountTransaction extends Model
 
     public function account()
     {
-        return $this->belongsTo(Account::class);
+        return $this->belongsTo(Account::class , 'account_id');
+    }
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class , 'branch_id');
     }
 
 

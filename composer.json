@@ -14,8 +14,10 @@
         "laravel/ui": "^4.6",
         "maatwebsite/excel": "^3.1",
         "mpdf/mpdf": "^8.2",
+        "setasign/fpdf": "^1.8",
         "spatie/laravel-backup": "^9.2",
         "spatie/laravel-permission": "^6.10",
+        "tecnickcom/tcpdf": "^6.9",
         "yoeunes/toastr": "2.1"
     },
     "require-dev": {
