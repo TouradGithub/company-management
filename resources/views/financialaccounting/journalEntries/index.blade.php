@@ -14,7 +14,7 @@
         <div id="responseMessage" style="text-align: center; color: red;"></div>
 
         <div class="accounts-summary">
-            <div class="table-actions">
+            <div class="table-actions" >
                 <button class="export-excel-btn" id="export-excel-btn-account">
                     <i class="fas fa-file-excel"></i> تصدير Excel
                 </button>
@@ -30,9 +30,9 @@
                     </a>
                 </button>
             </div>
-            <div class="table-actions">
-
-                <div class="form-group">
+            <div class="table-actions" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: flex; gap: 1rem;">
+                <div class="form-group" style="width: 50%">
                     <label>الفرع:</label>
                     <select id="branchSelect">
                         <option value="">اختر الفرع</option>
@@ -41,18 +41,25 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>من التاريخ:</label>
-                    <input type="date" id="entryDateDebut" value="{{ now()->format('Y-m-d') }}">
+                    <div class="form-group" style="width: 50%">
+                        <label>من التاريخ:</label>
+                        <input type="date" id="entryDateDebut" value="{{ now()->format('Y-m-d') }}">
+                    </div>
+
                 </div>
-                <div class="form-group">
+                <div style="display: flex; gap: 1rem;">
+                    <div class="form-group" style="width: 50%">
+                        <label>البحث برقم القيد:</label>
+                        <input type="text" id="entryNumberSearch" style="width: 100%" placeholder="أدخل رقم القيد">
+                    </div>
+                <div class="form-group" style="width: 50%">
                     <label>إلى التاريخ:</label>
                     <input type="date" id="entryDateFin" value="{{ now()->format('Y-m-d') }}">
                 </div>
-                <div class="form-group">
-                    <label>البحث برقم القيد:</label>
-                    <input type="text" id="entryNumberSearch" style="width: 200%" placeholder="أدخل رقم القيد">
+
+
                 </div>
+
             </div>
 
             <div class="accounts-table-container">

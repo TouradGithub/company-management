@@ -41,18 +41,18 @@ class JournalEntryController extends Controller
         return view('financialaccounting.journalEntries.create'  , compact('accounts' ,'branches', 'costcenters' , 'journals' , 'entry_number'));
     }
     public function store(Request $request){
+
         $validator = Validator::make($request->all(), [
             'branch' => 'required',
             'journal_id' => 'required',
             'date' => 'required|date',
             'entries' => 'required|array|min:1',
             'entries.*.account_id' => 'required',
-            'entries.*.debit' => 'numeric|required_without:entries.*.credit',
-            'entries.*.credit' => 'numeric|required_without:entries.*.debit',
+            'entries.*.debit' => 'nullable|numeric|required_without:entries.*.credit',
+            'entries.*.credit' => 'nullable|numeric|required_without:entries.*.debit',
             'entries.*.cost_center' => 'required',
             'entries.*.notes' => 'nullable|string',
-        ],
-            [
+        ], [
             'entries.*.cost_center.required' => 'يجب اختيار مركز التكلفة.',
             'branch.required' => 'يجب اختيار الفرع.',
             'journal_id.required' => 'يجب اختيار الدفتر.',
@@ -68,6 +68,21 @@ class JournalEntryController extends Controller
             'entries.*.credit.required_without' => 'يرجى ملء حقل الدائن أو الخصم.',
             'entries.*.notes.string' => 'يجب أن تكون الملاحظات نصية فقط.',
         ]);
+
+// ✅ تحقق إضافي بعد التحقق الأساسي
+        $validator->after(function ($validator) use ($request) {
+            $entries = $request->input('entries', []);
+            foreach ($entries as $index => $entry) {
+                $debit = floatval($entry['debit'] ?? 0);
+                $credit = floatval($entry['credit'] ?? 0);
+
+                if ($debit <= 0 && $credit <= 0) {
+                    $validator->errors()->add("entries.$index.debit", 'يجب أن يكون أحد الحقول دائن أو مدين بقيمة أكبر من الصفر.');
+                }
+            }
+        });
+
+
 
         if ($validator->fails()) {
             return response()->json([

@@ -1,5 +1,4 @@
 @extends('financialaccounting.layouts.master')
-
 @section('content')
     <div>
         <h1>الإضافات</h1>
@@ -19,19 +18,17 @@
                     <h3>العملاء</h3>
                     <p class="balance">485,750 ريال</p>
                     @if($account)
-                    <p class="balance">{{$account->name}} - {{$account->account_number}} </p>
+                        <p class="balance">{{$account->name}} - {{$account->account_number}} </p>
                     @endif
                 </a>
                 <div class="card-actions">
-                    <button class="action-btn add" title="إضافة"><i class="fas fa-plus-circle"></i></button>
-                    <button class="action-btn view" title="عرض"><i class="fas fa-eye"></i></button>
                     @if(!$account)
-
                         <button class="action-btn link-account" id="linkAccountBtn" title="ربط حساب"><i class="fas fa-link"></i></button>
                     @endif
                 </div>
             </div>
             <div class="addition-card">
+                <a href="{{ route('suppliers-company.index') }}" style="text-decoration: none">
                 <i class="fas fa-truck"></i>
                 <h3>الموردين</h3>
                 <p class="balance">326,900 ريال</p>
@@ -39,12 +36,11 @@
                     <p class="balance">{{$supplier->name . ' - ' . $supplier->account_number}}</p>
                 @endif
                 <div class="card-actions">
-                    <button class="action-btn add" title="إضافة"><i class="fas fa-plus-circle"></i></button>
-                    <button class="action-btn view" title="عرض"><i class="fas fa-eye"></i></button>
                     @if(!$supplier)
                         <button class="action-btn link-account" id="link-to-supplier" title="ربط حساب"><i class="fas fa-link"></i></button>
                     @endif
                 </div>
+                </a>
             </div>
             <div class="addition-card">
                 <i class="fas fa-cash-register"></i>
@@ -55,8 +51,6 @@
                 @endif
 
                 <div class="card-actions">
-                    <button class="action-btn add" title="إضافة"><i class="fas fa-plus-circle"></i></button>
-                    <button class="action-btn view" title="عرض"><i class="fas fa-eye"></i></button>
                     @if(!$cach_register)
                         <button class="action-btn link-account" id="link-cash-register" title="ربط حساب"><i class="fas fa-link"></i></button>
                     @endif
@@ -67,8 +61,6 @@
                 <h3>البنوك</h3>
                 <p class="balance">892,450 ريال</p>
                 <div class="card-actions">
-                    <button class="action-btn add" title="إضافة"><i class="fas fa-plus-circle"></i></button>
-                    <button class="action-btn view" title="عرض"><i class="fas fa-eye"></i></button>
                 </div>
             </div>
             <div class="addition-card">
@@ -76,8 +68,6 @@
                 <h3>الفروع</h3>
                 <p class="balance">245,600 ريال</p>
                 <div class="card-actions">
-                    <button class="action-btn add" title="إضافة"><i class="fas fa-plus-circle"></i></button>
-                    <button class="action-btn view" title="عرض"><i class="fas fa-eye"></i></button>
                 </div>
             </div>
             <div class="addition-card">
@@ -86,14 +76,11 @@
                 <p class="balance">567,800 ريال</p>
 
                 <div class="card-actions">
-                    <button class="action-btn add" title="إضافة"><i class="fas fa-plus-circle"></i></button>
-                    <button class="action-btn view" title="عرض"><i class="fas fa-eye"></i></button>
                 </div>
             </div>
         </div>
     </div>
 @endsection
-
 @section('css')
     <style>
         .additions-grid {
@@ -153,7 +140,6 @@
         }
     </style>
 @endsection
-
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

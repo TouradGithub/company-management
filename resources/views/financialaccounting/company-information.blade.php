@@ -25,10 +25,7 @@
                         @enderror
                     </div>
                 </div>
-
                 <div class="form-row">
-
-
                     <div class="form-group-model">
                         <label>تاريخ البدء</label>
                         <input type="date" id="start_date" name="start_date" value="{{ old('start_date', $company->start_date ?? '') }}" required>
@@ -45,6 +42,22 @@
                     </div>
                 </div>
 
+                <div class="form-row">
+                    <div class="form-group-model">
+                        <label> لعنوان</label>
+                        <input type="text" id="address" name="address" value="{{ old('address', $company->address ?? '') }}" required>
+                        @error('address')
+                        <span class="error">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="form-group-model">
+                        <label> الرقم الضريبي</label>
+                        <input type="number" id="tax_number" name="tax_number" value="{{ old('tax_number', $company->tax_number ?? '') }}" required>
+                        @error('tax_number')
+                        <span class="error">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
 
                 <div class="form-row">
                     <button type="submit" class="save-btn">حفظ التعديلات</button>

@@ -12,49 +12,40 @@
             </div>
         @endif
             <div id="responseMessage" style="text-align: center;color: red"></div>
-
         <div class="accounts-summary">
             <h2>قيد يوميه</h2>
-
-            <div class="table-actions" style="display: flex; justify-content: space-between;">
-
-                <div class="form-group">
-                    <label>الدفتر:</label>
-                    <select id="journal_id" >
-                        <option value="">اختر الدفتر</option>
-                        @foreach($journals as $item)
-                            <option value="{{$item->id}}"> {{$item->name}}</option>
-                        @endforeach
-
-                    </select>
+            <div class="table-actions" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: flex; gap: 1rem;">
+                    <div class="form-group" style="width: 50%">
+                        <label>الدفتر:</label>
+                        <select id="journal_id">
+                            <option value="">اختر الدفتر</option>
+                            @foreach($journals as $item)
+                                <option value="{{$item->id}}"> {{$item->name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group"  style="width: 50%">
+                        <label>الفرع:</label>
+                        <select id="branchSelect">
+                            <option value="">اختر الفرع</option>
+                            @foreach($branches as $item)
+                                <option value="{{$item->id}}"> {{$item->name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label>الفرع:</label>
-                    <select id="branchSelect" >
-                        <option value="">اختر الفرع</option>
-                        @foreach($branches as $item)
-                            <option value="{{$item->id}}"> {{$item->name}}</option>
-                        @endforeach
-
-                    </select>
+                <div style="display: flex; gap: 1rem;">
+                    <div class="form-group" style="width: 50%">
+                        <label>التاريخ:</label>
+                        <input type="date" id="entryDate" value="{{ now()->format('Y-m-d') }}">
+                    </div>
+                    <div class="form-group"  style="width: 50%">
+                        <label>رقم القيد:</label>
+                        <input type="number" id="entryNumber" value="{{$entry_number}}">
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label>التاريخ:</label>
-                    <input type="date" id="entryDate" value="{{ now()->format('Y-m-d') }}">
-                </div>
-
-
-                <div class="form-group">
-                    <label>رقم القيد:</label>
-                    <input type="number" id="entryDate" value="{{$entry_number}}">
-                </div>
-
-
-
             </div>
-
             <div class="accounts-table-container">
                 <table class="accounts-table" id="entriesTable">
                     <thead>
@@ -82,9 +73,7 @@
                     </tr>
                     </tbody>
                 </table>
-
             </div>
-
             <div class="totals" style="display: flex; margin: 10px; justify-content: space-between; padding: 10px; background-color: #f7f7f7; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
                 <div style="text-align: center; font-size: 16px; font-weight: 600;">
                     <span style="color: #4CAF50;">إجمالي المدين: </span><span id="totalDebit">0</span>
@@ -96,15 +85,9 @@
                     <span style="color: #FF5722;">القيد غير متساوي: </span><span id="balanceDiff">0</span>
                 </div>
             </div>
-
-
-
-
-
             <button  id="saveEntry" type="submit" style="  padding: 0.8rem 1.5rem;background: rgb(30,144,255);
                  width: 20%; color: white; border: none;border-radius: 8px; cursor: pointer;font-weight: 600;
                   transition: all 0.3s ease;">حفظ</button>
-
             <button  id="addNewLine" type="button" style="  padding: 0.8rem 1.5rem;background: rgb(30,144,255);
                  width: 10%; color: white; border: none;border-radius: 8px; cursor: pointer;font-weight: 600;
                   transition: all 0.3s ease;">أضف سطر</button>
@@ -205,13 +188,14 @@
                 const newRow = document.createElement('tr');
                 newRow.className = 'entry-row';
                 newRow.innerHTML = `
-                    <td><select class="account-select select2"></select></td>
-                    <td><input type="number" class="debit"></td>
-                    <td><input type="number" class="credit"></td>
-                    <td><select class="cost-center-select select-cost-center"></select></td>
-                    <td><input type="text" class="notes"></td>
-                    <td><button class="action-btn delete-row" ><i class="fas fa-trash"></i></button></td>
+                    <td style="width: 16%;height: 100%"><select style=" height: 100% !important;width:100%  !important" class="account-select select2"></select></td>
+                    <td style="width: 16%;"><input type="number" class="debit"></td>
+                    <td style="width: 16%;"><input type="number" class="credit"></td>
+                    <td style="width: 16%;"><select style=" height: 100% !important;" class="cost-center-select select-cost-center"></select></td>
+                    <td style="width: 16%;"><input type="text" class="notes"></td>
+                    <td style="width: 16%;"><button class="action-btn delete-row"><i class="fas fa-trash"></i></button></td>
                 `;
+
                 table.appendChild(newRow);
                 $(newRow).find('.select2').select2({
                     width: '100%',
@@ -369,7 +353,7 @@
                 // Check if total debit and credit are equal
                 console.log(totalCredit);
                 console.log(totalDebit);
-                if (totalDebit != totalCredit) {
+                if (totalDebit != totalCredit && (totalCredit !=0 || totalDebit !=0)) {
                     Swal.fire({
                         title: 'خطأ!',
                         text: "يجب أن يكون مجموع المدين والدائن متساويًا.",

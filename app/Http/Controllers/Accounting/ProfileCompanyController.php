@@ -27,17 +27,16 @@ class ProfileCompanyController extends Controller
             'email' => 'required|email|unique:companies,email,' . $id,
             'password' => 'nullable|string|min:8',
             'start_date' => 'required|date',
+            'tax_number'=>'required',
+            'address'=>'required',
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
         $company = Company::findOrFail($id);
-
-        $data = $request->only(['name', 'email', 'start_date', 'end_date']);
-
+        $data = $request->only(['name', 'email', 'start_date', 'end_date' , 'address' , 'tax_number']);
         if ($request->filled('password')) {
             $data['password'] = bcrypt($request->password);
         }
-
         $company->update($data);
 
         return redirect()->back()->with('success', 'تم تحديث بيانات الشركة بنجاح!');

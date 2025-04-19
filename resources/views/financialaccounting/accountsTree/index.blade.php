@@ -24,8 +24,6 @@
                     @endforeach
                 </div>
         </div>
-
-
         <div class="account-form-modal">
             <div class="modal-content">
                 <h2>إضافة حساب جديد</h2>
@@ -75,16 +73,13 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="form-row">
                         <div class="form-group-model">
                             <label>
                                 هل هو حساب فرعي (نهائي)؟ </label>
                             <input type="checkbox"  id="isLastCheckbox" name="islast" value="1">
-
                         </div>
                     </div>
-
                     <div class="modal-buttons">
                         <button type="button" class="cancel-btn">إلغاء</button>
                         <button type="submit" class="save-btn">حفظ</button>
@@ -92,8 +87,6 @@
                 </form>
             </div>
         </div>
-
-
         <div class="account-form-modal-show">
             <div class="modal-content">
                 <h2>  </h2>
@@ -160,8 +153,6 @@
             </div>
         </div>
     </div>
-
-
     </div>
 @endsection
 @section('js')
@@ -170,7 +161,7 @@
     <script >
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.add-sub-account').forEach(btn => {
-                btn.addEventListener('click', function(e) {
+                btn.addEventListener('click', async  function(e) {
                     const parentNode = this.closest('.tree-node');
                     const parentName = parentNode.querySelector('.account-name').textContent;
                     const parentId = parentNode.dataset.id || '';
@@ -181,13 +172,10 @@
                     document.querySelector('.modal-overlay').classList.add('active');
                     console.log("GOOD");
                     console.log(parentId);
-                    // تحديث عنوان المودال
                     modal.querySelector('h2').textContent = `إضافة حساب فرعي لـ ${parentName}`;
 
-                    // تحديث القائمة المنسدلة واختيار الحساب الرئيسي تلقائيًا
                     const parentAccountSelect = modal.querySelector('#parentAccount');
                     Array.from(parentAccountSelect.options).forEach(option => {
-
                         if (option.value == parentId && parentId != '') {
                             console.log("GOOD A");
 
@@ -196,8 +184,15 @@
                             option.selected = false;
                         }
                     });
-                    // parentAccountSelect.disabled = true;
-                    // parentAccountSelect.val();
+                    if (parentId) {
+                        try {
+                            const response = await fetch(`/accounts/next-number/${parentId}`);
+                            const data = await response.json();
+                            document.getElementById('accountNumber').value = data.account_number;
+                        } catch (error) {
+                            console.error('فشل في جلب رقم الحساب:', error);
+                        }
+                    }
                 });
             });
             document.querySelector('.add-account-btn').addEventListener('click', function(e) {
@@ -208,10 +203,8 @@
                 modal.classList.add('active');
                 document.querySelector('.modal-overlay').classList.add('active');
             });
-
             const checkbox = document.getElementById('isLastCheckbox');
             const openingBalanceRow = document.getElementById('openingBalanceRow');
-
             checkbox.addEventListener('change', function () {
                 if (this.checked) {
                     openingBalanceRow.style.display = 'block';
@@ -224,10 +217,7 @@
 
 
             });
-
-
         });
-
         $(document).ready(function (){
             $('.show-account-btn').on('click', function() {
                 let accountId = $(this).attr('id');
@@ -271,7 +261,6 @@
             $('.cancel-btn').on('click', function() {
                 $('.account-form-modal').hide();
                 $('.account-form-modal-show').hide();
-                resetForm();
             });
         });
     </script>

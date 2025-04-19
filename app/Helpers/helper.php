@@ -22,8 +22,24 @@ use App\Models\Company;
         $branch = Branch::find( auth()->user()->model_id);
         return $branch;
     }
+    function getCompanyId(){
+        if(auth()->user()->model == "BRANCH"){
+            $branch = Branch::find(auth()->user()->model_id);
+            return $branch->company_id;
+        }else{
+            return auth()->user()->model_id;
+        }
 
+    }
 
+// get the curect year
+    function getCurrentYear(){
+        $currentYear = \App\Models\SessionYear::where('is_current', true)->where('company_id', getCompanyId())->first();
+        if ($currentYear) {
+            return $currentYear->id;
+        }
+        return null;
+    }
 
      function getAccountTreeIds($accounts, &$accountIds = [])
     {

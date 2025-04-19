@@ -111,6 +111,7 @@
                             <span>المنتجات</span>
                         </a>
                     </li>
+
                     <li>
                         <a href="{{route('categorie-invoices.index')}}">
                             <i class="fas fa-tags"></i>
@@ -123,6 +124,9 @@
                             <span> العملاء</span>
                         </a>
                     </li>
+
+
+
                 </ul>
             </li>
             <li class="menu-group  {{ $segment == 'trial-balance' || $segment == 'income-statement' ? 'active' : '' }}">
@@ -216,6 +220,6 @@
         </ul>
     </nav>
     <div class="sidebar-footer">
-        OMAR KHEDR
+        TOURAD LEHCENE
     </div>
 </aside>

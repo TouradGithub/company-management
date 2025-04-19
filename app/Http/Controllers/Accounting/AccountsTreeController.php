@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Accounting;
-
 use App\Exports\AccountsExport;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
@@ -10,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Excel;
 use Mpdf\Mpdf;
-
 class AccountsTreeController extends Controller
 {
     public function index(){
@@ -28,13 +25,11 @@ class AccountsTreeController extends Controller
         $accountsTree = $this->buildTree($accounts);
         return view('financialaccounting.accountsTree.account-table', compact('accounttypes', 'accountsTree','accounts'));
     }
-
     public  function edit($id)
     {
         $account = Account::where('company_id',Auth::user()->model_id)->where('id' ,$id)->first();
         return response()->json($account,200);
     }
-
     public  function update(Request $request)
     {
 
@@ -85,11 +80,14 @@ class AccountsTreeController extends Controller
         $account->opening_balance = $validated['opening_balance']  ?? 0;
         $account->closing_list_type = $validated['closing_list_type'];
         $account->save();
+        $curent_year = getCurrentYear();
+        $account->updateOwnBalance($curent_year);
+        $account->updateParentBalanceFromChildren($curent_year);
+
         return response()->json([
             'message'=>'تم تعديل الحساب بنجاح'
         ],200);
     }
-
     public function store(Request $request)
     {
 
@@ -128,12 +126,13 @@ class AccountsTreeController extends Controller
         $account->closing_list_type = $validated['closing_list_type'];
         $account->islast = $request->boolean('islast');
         $account->save();
-
+        $curent_year = getCurrentYear();
+        $account->updateOwnBalance($curent_year);
+        $account->updateParentBalanceFromChildren($curent_year);
 
         return redirect()->back()->with('success', 'تم إنشاء الحساب بنجاح!');
 
     }
-
     private function buildTree($accounts, $parentId = 0)
     {
         $tree = [];
@@ -151,18 +150,21 @@ class AccountsTreeController extends Controller
         return $tree;
 
     }
-    public  function  delete($id){
-        $account  = Account::find($id);
-
-        if($account){
+    public function delete($id)
+    {
+        $account = Account::find($id);
+        if ($account) {
+            $curent_year = getCurrentYear();
+            $parentAccount = $account->parentAccount;
             $account->delete();
-            return redirect()->back()->with('success' , 'تم حذف الحساب بنجاح');
+
+            if ($parentAccount) {
+                $parentAccount->updateParentBalanceFromChildren($curent_year);
+            }
+            return redirect()->back()->with('success', 'تم حذف الحساب بنجاح');
         }
-        return redirect()->back()->with('error' , 'هناك مشكلة حاول مرة أخرى');
+        return redirect()->back()->with('error', 'هناك مشكلة حاول مرة أخرى');
     }
-
-
-
     public function filterAccounts(Request $request)
     {
         $level = $request->query('level');
@@ -170,33 +172,30 @@ class AccountsTreeController extends Controller
 
         if ($level == 'all') {
             $accounts = Account::where('company_id', Auth::user()->model_id)
-                ->with(['children', 'accountType'])
+                ->with(['children','sessionBalance','accountType'])
                 ->get();
-
-//            $accounts = $this->buildTree($accounts);
         } else {
             $level = (int)$level;
             $accounts = $this->getAccountsByLevel($level);
         }
+
         $formattedAccounts = $accounts->map(function ($account) {
             return $this->formatAccount($account);
         });
 
         return response()->json(['accounts' => $formattedAccounts]);
     }
-
     private function getAccountsByLevel($targetLevel)
     {
-        $allAccounts = Account::where('company_id' ,Auth::user()->model_id)->with(['children', 'accountType'])->get();
+        $allAccounts = Account::where('company_id' ,Auth::user()->model_id)
+                            ->with(['children','sessionBalance','accountType'])->get();
         $filteredAccounts = collect();
-
         foreach ($allAccounts as $account) {
             $level = $this->calculateLevel($account);
             if ($level == $targetLevel) {
                 $filteredAccounts->push($account);
             }
         }
-
         return $filteredAccounts;
     }
     private function formatAccount($account)
@@ -207,29 +206,25 @@ class AccountsTreeController extends Controller
             'name' => $account->name,
             'account_type_name' => $account->accountType->name ?? '',
             'islast' => $account->islast,
-            'balance' => $account->getBalanceDetails(),
-            'children' => $account->children->map(function ($child) {
-                return $this->formatAccount($child); // Recursive
-            })->toArray(),
+            'balance' => $account->sessionBalance->balance??0 ,
+            'credit' => $account->sessionBalance->credit??0 ,
+            'debit' => $account->sessionBalance->debit??0,
+            'children' => $account->children->map(function ($child) { return $this->formatAccount($child);})->toArray(),
         ];
     }
-
-
     private function calculateLevel($account, $currentLevel = 1)
     {
         if (!$account->parent_id || $account->parent_id == 0) {
             return $currentLevel;
         }
 
-        $parent = Account::find($account->parent_id);
+        $parent = Account::with('sessionBalance')->find($account->parent_id);
         if ($parent) {
             return $this->calculateLevel($parent, $currentLevel + 1);
         }
 
         return $currentLevel;
     }
-
-    // تصدير إلى PDF
     public function exportPdf(Request $request)
     {
         $level = $request->query('level');
@@ -240,15 +235,11 @@ class AccountsTreeController extends Controller
         $mpdf->WriteHTML($html);
         return $mpdf->Output('accounts.pdf', 'D'); // 'D' للتحميل مباشرة
     }
-
-    // تصدير إلى Excel
     public function exportExcel(Request $request)
     {
         $level = $request->query('level');
         return \Maatwebsite\Excel\Facades\Excel::download(new AccountsExport($level), 'accounts.xlsx');
     }
-
-    // جلب البيانات للتصدير
     private function getAccountsForExport($level)
     {
         if ($level === 'all') {
@@ -259,7 +250,6 @@ class AccountsTreeController extends Controller
             return $this->getAccountsByLevel((int)$level);
         }
     }
-
     public function search(Request $request)
     {
         $query = $request->input('query');
@@ -294,6 +284,23 @@ class AccountsTreeController extends Controller
         return response()->json(['accounts' => $formattedAccounts]);
     }
 
-
+    // AccountController.php
+    public function getNextAccountNumber($parentId)
+    {
+        $lastSubAccount = Account::where('parent_id', $parentId)->where('company_id', getCompanyId())
+            ->orderByDesc('account_number')
+            ->first();
+        if ($lastSubAccount) {
+            $nextNumber = (int) $lastSubAccount->account_number + 1;
+        } else {
+            $parent = Account::find($parentId);
+            if ($parent) {
+                $nextNumber = $parent->account_number . '01'; // مثلاً 100 → 10001
+            } else {
+                $nextNumber = '100'; // افتراضي لو لم يُرسل أب
+            }
+        }
+        return response()->json(['account_number' => $nextNumber]);
+    }
 
 }
