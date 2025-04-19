@@ -5,7 +5,7 @@
         <div class="node-info">
             <span class="account-name">{{ $account->name }} - {{ $account->account_number }}</span>
             <div class="account-details">
-                <span class="account-balance">{{ number_format($account->getBalanceDetails(), 2) }} ريال</span>
+                <span class="account-balance">{{ number_format($account->sessionBalance->balance??0, 2) }} ريال</span>
                 <span class="account-type" data-type="{{ $account->accountType->name }}">
                     {{ $account->accountType->name }}
                 </span>

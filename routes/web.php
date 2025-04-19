@@ -102,6 +102,8 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::get('/get-employees-by-branch', [OvertimeController::class, 'getEmployeesByBranch']);
     Route::resource('categories', CategoryController::class);
     Route::resource('users', UserController::class);
+// web.php
+    Route::get('/next-number/{parentId}', [App\Http\Controllers\Accounting\AccountsTreeController::class, 'getNextAccountNumber']);
 
 
     Route::get('journal-entry/index' , [App\Http\Controllers\Accounting\JournalEntryController::class , 'index'])->name('journal-entry.index');
@@ -140,10 +142,6 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
 
     Route::get('/accounting/export/pdf', [App\Http\Controllers\Accounting\AccountsTreeController::class, 'exportPdf'])->name('accounting.export.pdf');
     Route::get('/accounting/export/excel', [App\Http\Controllers\Accounting\AccountsTreeController::class, 'exportExcel'])->name('accounting.export.excel');
-//    Route::resource('journals', \App\Http\Controllers\Accounting\JournalController::class);
-//    Route::get('/journals/get', [\App\Http\Controllers\Accounting\JournalController::class, 'get']);
-
-
 
 
     Route::get('/journals/get', [JournalController::class, 'get']);
@@ -177,6 +175,15 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::delete('/customers/delete/{id}', [App\Http\Controllers\Accounting\CustomerController::class, 'delete'])->name('customers.delete');
     Route::get('/customers/edit/{id}', [App\Http\Controllers\Accounting\CustomerController::class, 'edit']);
     Route::put('/customers/update/{id}', [App\Http\Controllers\Accounting\CustomerController::class, 'update']);
+
+    //suppliers-companys
+    Route::get('/suppliers-company/index', [App\Http\Controllers\Accounting\SupplierCompanyController::class, 'index'])->name('suppliers-company.index');
+    Route::post('/suppliers-company/store', [App\Http\Controllers\Accounting\SupplierCompanyController::class, 'store'])->name('suppliers-company.store');
+    Route::post('/suppliers-company/storeCustomer', [App\Http\Controllers\Accounting\SupplierCompanyController::class, 'store'])->name('suppliers-company.storeCustomer');
+    Route::get('/suppliers-company/get', [App\Http\Controllers\Accounting\SupplierCompanyController::class, 'getSuppliers']);
+    Route::delete('/suppliers-company/delete/{id}', [App\Http\Controllers\Accounting\SupplierCompanyController::class, 'delete'])->name('suppliers-company.delete');
+    Route::get('/suppliers-company/edit/{id}', [App\Http\Controllers\Accounting\SupplierCompanyController::class, 'edit']);
+    Route::put('/suppliers-company/update/{id}', [App\Http\Controllers\Accounting\SupplierCompanyController::class, 'update']);
 
     Route::get('/invoices/sales', [InvoiceController::class, 'sales'])->name('invoices.sales');
     Route::get('/invoices/purchases', [InvoiceController::class, 'purchasePage'])->name('invoices.purchases');
@@ -219,11 +226,11 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::post('/categorie-invoices/store', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'store'])->name('categorie-invoices.store');
 
     Route::get('/categorie-invoices/getCategories', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'getCategories'])->name('categorie-invoices.getCategories');
-// routes/web.php
+
+
     Route::get('/categorie-invoices/categories/{id}', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'delete']);
     Route::get('/categorie-invoices/categories/{id}/edit', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'edit']);
     Route::put('/categorie-invoices/categories/{id}', [App\Http\Controllers\Accounting\CategorieInvoiceController::class, 'update']);
-
 
     Route::get('/session-years', [App\Http\Controllers\Accounting\SessionYearController::class, 'getPage'])->name('session-years.index');
     Route::get('/session-years/get', [App\Http\Controllers\Accounting\SessionYearController::class, 'index']);

@@ -15,6 +15,7 @@ class Company extends Authenticatable
         'start_date',
         'end_date',
         'status',
+        'address' , 'tax_number'
     ];
     public function branches()
     {

@@ -33,4 +33,8 @@ class Supplier extends Model
     {
         return $this->belongsTo(Account::class, 'account_id');
     }
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'supplier_id');
+    }
 }

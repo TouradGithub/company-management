@@ -17,7 +17,7 @@ class SupplierController extends Controller
     public function index(){
         $accounts = Account::where('company_id', Auth::user()->model_id)->get();
         $account = Account::where('company_id', Auth::user()->model_id)
-            ->where('type_account_register', 1)
+            ->where('type_account_register', 3)
             ->first();
         $cach_register = Account::where('company_id', Auth::user()->model_id)
             ->where('type_account_register', 2)

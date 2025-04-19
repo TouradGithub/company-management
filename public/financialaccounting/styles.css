@@ -3658,6 +3658,8 @@ h1 {
 }
 
 .form-group-model input[type="text"],
+.form-group-model input[type="date"],
+.form-group-model input[type="email"],
 .form-group-model input[type="number"],
 .form-group-model select {
     width: 100%;

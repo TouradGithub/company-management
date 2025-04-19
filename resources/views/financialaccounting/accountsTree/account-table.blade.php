@@ -336,6 +336,7 @@
                     if (level === 'all') {
                         // عرض الشجرة عند اختيار "الكل"
                         accounts.forEach(function(account) {
+                            console.log(account);
                             let balance = account.balance || 0;
                             let debit = balance < 0 ? Math.abs(balance) : 0;
                             let credit = balance >= 0 ? balance : 0;
@@ -345,7 +346,6 @@
                             totalBalance += balance;
                             let balanceDisplay = account.islast == "1" ? balance : '';
                                 console.log(account.islast);
-                            // الحساب الرئيسي (المستوى 1)
                             let row = `
                                 <tr>
                                     <td>${account.account_number}</td>
@@ -357,7 +357,6 @@
                                     <td>
                                         <div>
                                             <a href="#" style="margin: 10px; font-size: 20px;" ><i class="fas fa-edit edit-account-btn" id="${account.id}" style="color: green;"></i></a>
-
                                              <a href="#" style="margin: 10px; font-size: 20px;" class="view-account"><i class="fas fa-eye show-account-btn" id="${account.id}" style="color: green;"></i></a>
                                             <a href="{{ route('accounting.delete', ':id') }}".replace(':id', account.id)"
                                                style="margin: 10px; font-size: 20px;"
@@ -367,12 +366,9 @@
                                         </div>
                                     </td>
                                 </tr>`;
-
-
                             tbody.append(row);
                         });
                     } else {
-                        // عرض مسطح للمستويات الأخرى (1، 2، 3، 4)
                         accounts.forEach(function(account) {
                             let balance = account.balance || 0;
                             let debit = balance < 0 ? Math.abs(balance) : 0;
@@ -408,8 +404,6 @@
                             tbody.append(row);
                         });
                     }
-
-                    // Update footer totals
                     tfoot.find('.total-debit').text(totalDebit);
                     tfoot.find('.total-credit').text(totalCredit);
                     tfoot.find('.total-balance').text(totalBalance);

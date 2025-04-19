@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="{{asset('financialaccounting/styles.css')}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @yield('css')
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
