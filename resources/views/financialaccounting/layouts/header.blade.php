@@ -9,7 +9,7 @@
         <div class="user-info">
             <i class="fas fa-bell"></i>
             <i class="fas fa-user-circle"></i>
-            <span>مرحباً، المستخدم</span>
+            <span>مرحباً، {{ auth()->user()->name }}</span>
         </div>
     </div>
 </header>

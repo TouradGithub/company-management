@@ -66,7 +66,6 @@
         });
         loadSessionYears();
         function loadSessionYears() {
-            showLoadingOverlay();
             $.get("/session-years/get", function (response) {
                 let tbody = $('#accountsTableBody');
                 tbody.empty();
@@ -97,9 +96,7 @@
                     `;
                     tbody.append(row);
                 });
-                hideLoadingOverlay();
             }).fail(function () {
-                hideLoadingOverlay();
                 $('#accountsTableBody').html('<tr><td colspan="4" style="text-align: center; color: red;">فشل تحميل البيانات</td></tr>');
             });
         }
