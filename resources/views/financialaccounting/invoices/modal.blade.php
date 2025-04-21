@@ -36,6 +36,22 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group-model">
+                        <label>الحد الائتماني</label>
+                        <input type="number" id="credit_limit" name="credit_limit" step="0.01" value="0" required>
+                        <span id="error-credit_limit" class="error"></span>
+                    </div>
+                    <div class="form-group-model">
+                        <div class="form-group-model">
+                            <label> الرقم الضريبي</label>
+                            <input type="number" id="tax_number" name="tax_number" value="" required>
+                            @error('tax_number')
+                            <span class="error">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-buttons">
                 <button type="button" class="cancel-btn" onclick="closeModal()">إلغاء</button>

@@ -84,6 +84,7 @@ class CustomerController extends Controller
         $request->validate([
             'name' => 'required',
             'contact_info' => 'required',
+            'tax_number' => 'required',
             'branch_id' => 'nullable',
             'account_id' => 'required',
 
@@ -92,6 +93,7 @@ class CustomerController extends Controller
         $customer = new Customer();
         $customer->name = $request->name;
         $customer->contact_info = $request->contact_info;
+        $customer->tax_number = $request->tax_number;
         $customer->account_id = $request->account_id;
         $customer->branch_id = $request->branch_id??'all';
         $customer->company_id = Auth::user()->model_id;
@@ -107,15 +109,16 @@ class CustomerController extends Controller
         $request->validate([
             'name' => 'required',
             'contact_info' => 'required',
+            'tax_number' => 'required',
             'branch_id' => 'nullable',
             'account_id' => 'required|numeric',
             'credit_limit' => 'required|numeric|min:0',
-
         ]);
 
         $customer = new Customer();
         $customer->name = $request->name;
         $customer->contact_info = $request->contact_info;
+        $customer->tax_number = $request->tax_number;
         $customer->credit_limit = $request->credit_limit;
         $customer->account_id = $request->account_id;
         $customer->branch_id = $request->branch_id??'all';
@@ -172,6 +175,7 @@ class CustomerController extends Controller
         $customer = Customer::findOrFail($id);
         $customer->update([
             'name'=>$request->name,
+            'tax_number' => $request->tax_number,
             'credit_limit' => $request->credit_limit,
             'contact_info'=>$request->contact_info,
             'branch_id'=>$request->branch_id??'all',

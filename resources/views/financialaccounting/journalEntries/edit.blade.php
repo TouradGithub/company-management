@@ -1,5 +1,4 @@
 @extends('financialaccounting.layouts.master')
-
 @section('content')
     <div id="accountsTreeSection">
         @if($errors->any())
@@ -12,33 +11,42 @@
             </div>
         @endif
         <div id="responseMessage" style="text-align: center; color: red"></div>
-
         <div class="accounts-summary">
             <h2>تعديل قيد يومية</h2>
-            <div class="table-actions">
-                <div class="form-group">
-                    <label>الفرع:</label>
-                    <select id="branchSelect">
-                        <option value="">اختر الفرع</option>
-                        @foreach($branches as $item)
-                            <option value="{{ $item->id }}" {{ $entry->branch_id == $item->id ? 'selected' : '' }}>
-                                {{ $item->name }}
-                            </option>
-                        @endforeach
-                    </select>
+            <div class="table-actions" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: flex; gap: 1rem;">
+                    <div class="form-group" style="width: 50%">
+                        <label>الدفتر:</label>
+                        <select id="journal_id">
+                            <option value="">اختر الدفتر</option>
+                            @foreach($journals as $item)
+                                <option value="{{$item->id}}"> {{$item->name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group" style="width: 50%">
+                        <label>الفرع:</label>
+                        <select id="branchSelect">
+                            <option value="">اختر الفرع</option>
+                            @foreach($branches as $item)
+                                <option value="{{ $item->id }}" {{ $entry->branch_id == $item->id ? 'selected' : '' }}>
+                                    {{ $item->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label>التاريخ:</label>
-                    <input type="date" value="{{ $entry->entry_date }}" id="entryDate">
-                </div>
-
-                <div class="form-group">
+                <div style="display: flex; gap: 1rem;">
+                    <div class="form-group" style="width: 50%">
+                            <label>التاريخ:</label>
+                            <input type="date" value="{{ $entry->entry_date }}" id="entryDate">
+                    </div>
+                <div class="form-group" style="width: 50%">
                     <label>رقم القيد:</label>
                     <input type="text" value="{{ $entry->entry_number }}" id="entryNumber" style=" background-color: #f1f1f1;" readonly>
                 </div>
+                </div>
             </div>
-
             <div class="accounts-table-container">
                 <table class="accounts-table" id="entriesTable">
                     <thead>
@@ -54,7 +62,7 @@
                     <tbody>
                     @foreach($entry->details as $detail)
                         <tr class="entry-row" data-id="{{ $detail->id}}">
-                            <td>
+                            <td style="width: 27%;">
                                 <select class="account-select select2">
                                     @foreach($accounts as $account)
                                         <option value="{{ $account->id }}" {{ $detail->account_id == $account->id ? 'selected' : '' }}>
@@ -63,12 +71,12 @@
                                     @endforeach
                                 </select>
                             </td>
-                            <td>
-                                <input type="number" class="debit"
+                            <td style="width: 13%;padding: 2px">
+                                <input  type="number" class="debit"
                                        value="{{ $detail->debit != 0 ? $detail->debit : '-' }}"
                                     {{ $detail->credit != 0 ? 'disabled' : '' }}>
                             </td>
-                            <td>
+                            <td style="width: 13%;padding: 2px">
                                 <input type="number" class="credit"
                                        value="{{ $detail->credit != 0 ? $detail->credit : '-' }}"
                                     {{ $detail->debit != 0 ? 'disabled' : '' }}>
@@ -89,18 +97,15 @@
                     </tbody>
                 </table>
             </div>
-
             <button  id="saveEntry" type="submit" style="  padding: 0.8rem 1.5rem;background: rgb(30,144,255);
                  width: 20%; color: white; border: none;border-radius: 8px; cursor: pointer;font-weight: 600;
                   transition: all 0.3s ease;">حفظ</button>
-
             <button  id="addNewLine" type="button" style="  padding: 0.8rem 1.5rem;background: rgb(30,144,255);
                  width: 10%; color: white; border: none;border-radius: 8px; cursor: pointer;font-weight: 600;
                   transition: all 0.3s ease;">أضف سطر</button>
         </div>
     </div>
 @endsection
-
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -112,8 +117,6 @@
                 placeholder: "اختر",
                 allowClear: true
             });
-
-            // التنقل بين الحقول عند الضغط على Enter
             $(document).on('keydown', 'input, select', function (e) {
                 if (e.key === "Enter") {
                     console.log("Enter ");
@@ -132,8 +135,6 @@
                     }
                 }
             });
-
-            // **معالجة التنقل في select2 عند الضغط على Enter**
             $(document).on('select2:close', '.select2, .select-cost-center', function () {
                 let inputs = $('input, select').not('[disabled], [readonly]');
                 let index = inputs.index(this);
@@ -141,8 +142,6 @@
                     inputs.eq(index + 1).focus(); // الانتقال إلى الحقل التالي بعد إغلاق select2
                 }
             });
-
-            // دالة لإنشاء سطر جديد
             function addNewRow() {
                 let newRow = `<tr class="entry-row">
                 <td>
@@ -194,8 +193,6 @@
                 }
                 addNewRow();
             });
-
-            // تعطيل أحد الحقول عند إدخال قيمة في الآخر
             $(document).on('input', '.debit', function () {
                 let row = $(this).closest('tr');
                 let creditField = row.find('.credit');
@@ -205,7 +202,6 @@
                     creditField.prop('disabled', false).val('');
                 }
             });
-
             $(document).on('input', '.credit', function () {
                 let row = $(this).closest('tr');
                 let debitField = row.find('.debit');
@@ -215,8 +211,6 @@
                     debitField.prop('disabled', false).val('');
                 }
             });
-
-            // حذف الصف عند النقر على زر الحذف
             $(document).on('click', '.delete-row', function () {
                 if($(this).closest('tr').data('id')){
                     let entryId = $(this).closest('tr').data('id');
@@ -249,10 +243,7 @@
                 }else {
                     $(this).closest('tr').remove();
                 }
-
-
             });
-
             $('#saveEntry').on('click', function() {
                 let entries = [];
                 let totalDebit = 0;
@@ -326,10 +317,6 @@
                     }
                 });
             });
-
         });
     </script>
-
-
-
 @endsection

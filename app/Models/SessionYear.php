@@ -14,4 +14,13 @@ class SessionYear extends Model
     {
         return self::where('is_current', true)->first();
     }
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class , 'session_year');
+    }
+    public function entryJournals()
+    {
+        return $this->hasMany(JournalEntry::class , 'session_year');
+    }
+
 }

@@ -31,8 +31,7 @@ class JournalEntryController extends Controller
     public function create()
     {
         $accounts = Account::where('company_id', Auth::user()->model_id)
-            ->whereDoesntHave('children')
-            ->where('parent_id'  ,'!=' , 0)
+            ->where('islast'  , 1)
             ->get();
         $costcenters = CostCenter::where('company_id', Auth::user()->model_id)->get();
         $branches = Branch::where('company_id', Auth::user()->model_id)->get();
@@ -41,7 +40,6 @@ class JournalEntryController extends Controller
         return view('financialaccounting.journalEntries.create'  , compact('accounts' ,'branches', 'costcenters' , 'journals' , 'entry_number'));
     }
     public function store(Request $request){
-
         $validator = Validator::make($request->all(), [
             'branch' => 'required',
             'journal_id' => 'required',
@@ -52,7 +50,8 @@ class JournalEntryController extends Controller
             'entries.*.credit' => 'nullable|numeric|required_without:entries.*.debit',
             'entries.*.cost_center' => 'required',
             'entries.*.notes' => 'nullable|string',
-        ], [
+        ],
+            [
             'entries.*.cost_center.required' => 'يجب اختيار مركز التكلفة.',
             'branch.required' => 'يجب اختيار الفرع.',
             'journal_id.required' => 'يجب اختيار الدفتر.',
@@ -68,8 +67,6 @@ class JournalEntryController extends Controller
             'entries.*.credit.required_without' => 'يرجى ملء حقل الدائن أو الخصم.',
             'entries.*.notes.string' => 'يجب أن تكون الملاحظات نصية فقط.',
         ]);
-
-// ✅ تحقق إضافي بعد التحقق الأساسي
         $validator->after(function ($validator) use ($request) {
             $entries = $request->input('entries', []);
             foreach ($entries as $index => $entry) {
@@ -81,9 +78,6 @@ class JournalEntryController extends Controller
                 }
             }
         });
-
-
-
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
@@ -93,16 +87,14 @@ class JournalEntryController extends Controller
         try {
             DB::beginTransaction();
             $journal = \App\Models\Journal::find($request->journal_id);
-
             $journalCode = $journal->code;
-
             $journalEntry = JournalEntry::create([
                 'entry_number' =>JournalEntry::generateEntryNumber( $journalCode,Auth::user()->model_id),
                 'entry_date' => $request->date,
                 'branch_id' => $request->branch,
                 'company_id' => Auth::user()->model_id,
                 'created_by'=>Auth::user()->name,
-                'session_year' => date('Y'),
+                'session_year' => getCurrentYear(),
             ]);
             foreach ($request->entries as $entry) {
                 JournalEntryDetail::create([
@@ -116,7 +108,6 @@ class JournalEntryController extends Controller
             }
             AccountTransactionHelper::updateAccountTransactions($journalEntry);
             DB::commit();
-
             return response()->json(['message' => 'تم الحفظ بنجاح ✅'], 200);
         }catch (Exception $e){
             return response()->json([
@@ -124,7 +115,6 @@ class JournalEntryController extends Controller
                 'errors' => $e->getMessage()
             ], 500);
         }
-
     }
 
     public function fetchEntries(Request $request)
@@ -139,13 +129,9 @@ class JournalEntryController extends Controller
                 'details.costcenter',
             ])
             ->select('id', 'entry_number', 'entry_date', 'branch_id', 'company_id', 'session_year');
-
-        // Apply branch filter if provided
         if ($request->filled('branch_id')) {
             $query->where('branch_id', $request->branch_id);
         }
-
-        // Apply date range filter if provided
         if ($request->filled('from_date') && $request->filled('to_date')) {
             $query->whereBetween('entry_date', [$request->from_date, $request->to_date]);
         } elseif ($request->filled('from_date')) {
@@ -153,13 +139,10 @@ class JournalEntryController extends Controller
         } elseif ($request->filled('to_date')) {
             $query->where('entry_date', '<=', $request->to_date);
         }
-        // Apply entry number search
         if ($request->filled('entry_number')) {
             $query->where('entry_number', 'like', '%' . $request->entry_number . '%');
         }
-
         $entries = $query->get();
-
         return response()->json([
             'status' => 'success',
             'data' => $entries
@@ -196,8 +179,10 @@ class JournalEntryController extends Controller
         $accounts = Account::where('company_id', Auth::user()->model_id)->get();
         $costcenters = CostCenter::where('company_id', Auth::user()->model_id)->get();
         $branches = Branch::where('company_id', Auth::user()->model_id)->get();
+        $journals = Journal::where('company_id' , Auth::user()->model_id)->get();
+
         $entry = JournalEntry::findOrFail($id);
-        return view('financialaccounting.journalEntries.edit' , compact('entry','accounts' ,'branches', 'costcenters'));
+        return view('financialaccounting.journalEntries.edit' , compact('entry','accounts' ,'branches', 'costcenters' , 'journals'));
     }
     public  function update(Request $request)
     {
@@ -242,6 +227,7 @@ class JournalEntryController extends Controller
             $journalEntry->branch_id = $request->branch;
             $journalEntry->entry_date = $request->date;
             $journalEntry->entry_number = $request->entry_id;
+            $journalEntry->session_year = getCurrentYear();
             $journalEntry->created_by = Auth::user()->name;
             $journalEntry->save();
             $journalEntry->details()->delete();
@@ -272,11 +258,24 @@ class JournalEntryController extends Controller
         // Export to PDF
     public function exportPdf(Request $request)
     {
-            $entries = $this->getFilteredEntries($request);
-            $html = view('financialaccounting.journalEntries.exports.pdf', compact('entries'))->render();
-            $mpdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4']);
-            $mpdf->WriteHTML($html);
-            return $mpdf->Output('journal_entries.pdf', 'D');
+        $entries = $this->getFilteredEntries($request);
+        $html = view('financialaccounting.journalEntries.exports.pdf', compact('entries'))->render();
+        $mpdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4']);
+        $mpdf->WriteHTML($html);
+        return $mpdf->Output('journal_entries.pdf', 'D');
+    }
+
+    public function singleexportPdf($id)
+    {
+        $journalEntry = JournalEntry::with([
+            'details.account:id,name,account_number',
+            'branch:id,name',
+            'details.costcenter',
+        ])->findOrFail($id);
+        $html = view('financialaccounting.journalEntries.exports.single-pdf', compact('journalEntry'))->render();
+        $mpdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4']);
+        $mpdf->WriteHTML($html);
+        return $mpdf->Output('single_journal_entries.pdf', 'D');
     }
         // Helper method to get filtered entries
     private function getFilteredEntries(Request $request)
@@ -300,6 +299,7 @@ class JournalEntryController extends Controller
         if ($request->filled('entry_number')) {
             $query->where('entry_number', 'like', '%' . $request->entry_number . '%');
         }
+        $query= $query->where('session_year',getCurrentYear());
         return $query->get();
     }
 

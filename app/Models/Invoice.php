@@ -18,7 +18,7 @@ class Invoice extends Model
 
 
     protected $fillable = [
-        'invoice_number', 'invoice_date', 'customer_id', 'branch_id', 'company_id',
+        'invoice_number', 'invoice_date', 'customer_id', 'branch_id', 'company_id','session_year',
         'employee_id', 'invoice_type', 'parent_invoice_id', 'subtotal', 'discount','supplier_id',
         'tax', 'total', 'status'
     ];
@@ -36,6 +36,11 @@ class Invoice extends Model
     public function branch()
     {
         return $this->belongsTo(Branch::class);
+    }
+
+    public function sessionYear()
+    {
+        return $this->belongsTo(SessionYear::class , 'session_year');
     }
 
 

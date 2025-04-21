@@ -15,8 +15,12 @@ class JournalEntry extends Model
         'company_id',
         'created_by',
         'session_year',
+        'session_year',
     ];
-
+    public function sessionYear()
+    {
+        return $this->belongsTo(SessionYear::class , 'session_year');
+    }
 
 
     public static function generateEntryNumber($journalCode, $companyId)

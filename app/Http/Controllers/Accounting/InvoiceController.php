@@ -66,7 +66,7 @@ class InvoiceController extends Controller
         }
 
 
-        $invoices = $query->where('company_id',Auth::user()->model_id)->with(['branch','customer' , 'Supplier'])->get();
+        $invoices = $query->where('company_id',Auth::user()->model_id)->where('session_year',getCurrentYear())->with(['branch','customer' , 'Supplier'])->get();
         return response()->json($invoices);
     }
     public function destroy($id)

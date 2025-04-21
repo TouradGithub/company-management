@@ -39,7 +39,7 @@ class Account extends Model
 
     public function transactions()
     {
-        return $this->hasMany(AccountTransaction::class, 'account_id');
+        return $this->hasMany(AccountTransaction::class, 'account_id')->where('session_year' , getCurrentYear());
     }
 
     public function balance()
@@ -78,22 +78,22 @@ class Account extends Model
     public function updateParentBalanceFromChildren($sessionYearId)
     {
         $parentAccount = $this->parentAccount;
-
         if ($parentAccount) {
-            // نحصل على أبناء الحساب الأب (أي إخوة هذا الحساب)
-            $children = $parentAccount->children;
-
+            $children  = $parentAccount->children;
             $totalBalance = 0;
-
+            $totalCredit = 0;
+            $totalDebit = 0;
             foreach ($children as $child) {
-                $childBalance = AccountYear::where('account_id', $child->id)
+                $accountYear = AccountYear::where('account_id', $child->id)
                     ->where('company_id', $child->company_id)
                     ->where('session_year_id', $sessionYearId)
-                    ->value('balance');
-
-                $totalBalance += $childBalance ?? 0;
+                    ->first();
+                if ($accountYear) {
+                    $totalBalance += $accountYear->balance ?? 0;
+                    $totalCredit  += $accountYear->credit ?? 0;
+                    $totalDebit   += $accountYear->debit ?? 0;
+                }
             }
-
             AccountYear::updateOrCreate(
                 [
                     'account_id' => $parentAccount->id,
@@ -101,29 +101,25 @@ class Account extends Model
                     'session_year_id' => $sessionYearId
                 ],
                 [
-                    'balance' => $totalBalance
+                    'balance' => $totalBalance,
+                    'credit'=>$totalCredit,
+                    'debit'=>$totalDebit
                 ]
             );
-
-            // ثم نتابع للأعلى (لأب الأب)
             $parentAccount->updateParentBalanceFromChildren($sessionYearId);
         }
     }
     public function updateOwnBalance($sessionYearId)
     {
-        $debit = $this->transactions()->sum('debit');
-        $credit = $this->transactions()->sum('credit');
-        $balance =   $debit - $credit;
         if($this->islast){
+            $debit = $this->transactions()->sum('debit');
+            $credit = $this->transactions()->sum('credit');
+            $balance =   $debit - $credit;
             $balance += $this->opening_balance ;
         }
-        AccountYear::updateOrCreate(
-            [
-                'account_id' => $this->id,
-                'company_id' => $this->company_id,
-                'session_year_id' => $sessionYearId
-            ],
-            [ 'balance' => $balance ]
+        $account_year =  AccountYear::updateOrCreate(
+            ['account_id' => $this->id, 'company_id' => $this->company_id,'session_year_id' => $sessionYearId],
+            ['balance' => $balance ,'credit'=>$credit,'debit'=>$debit]
         );
         return $balance;
     }

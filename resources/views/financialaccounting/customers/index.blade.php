@@ -75,9 +75,16 @@
                             <span id="error-credit_limit" class="error"></span>
                         </div>
                         <div class="form-group-model">
-                            <!-- حقل فارغ للحفاظ على التنسيق -->
+                            <div class="form-group-model">
+                                <label> الرقم الضريبي</label>
+                                <input type="number" id="tax_number" name="tax_number" value="" required>
+                                @error('tax_number')
+                                <span class="error">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
                     </div>
+
                 </div>
                 <div class="modal-buttons">
                     <button type="button" class="cancel-btn">إلغاء</button>
@@ -156,6 +163,7 @@
                                             <p><span><i class="fas fa-code-branch"></i> الفرع</span><strong>${branch}</strong></p>
                                             <p><span><i class="fas fa-wallet"></i> الحساب</span><strong>${account}</strong></p>
                                             <p><span><i class="fas fa-credit-card"></i> الحد الائتماني</span><strong>${item.credit_limit} ريال</strong></p>
+                                            <p><span><i class="fas fa-credit-card"></i>  الرقم الضريبي</span><strong>${item.tax_number??''} </strong></p>
                                             <p><span><i class="fas fa-credit-card"></i>  لرصيد</span><strong>${item.balance} ريال</strong></p>
                                         </div>
                                         <div class="card-actions">
@@ -191,6 +199,7 @@
                         branch_id: $('#branch_id').val(),
                         account_id: $('#account_id').val(),
                         credit_limit: $('#credit_limit').val(),
+                        tax_number: $('#tax_number').val(),
                         _token: '{{ csrf_token() }}'
                     },
                     success: function (response) {
@@ -228,8 +237,9 @@
                             $('#name').val(response.customer.name);
                             $('#contact_info').val(response.customer.contact_info);
                             $('#branch_id').val(response.customer.branch_id);
-                            $('#account_id').val(response.customer.account_id);
+                            $('#account_id').val(response.customer.account_id).trigger('change');
                             $('#credit_limit').val(response.customer.credit_limit);
+                            $('#tax_number').val(response.customer.tax_number);
                             $('#customer_id').val(response.customer.id);
                             openModal('تعديل عميل', 'تحديث');
                         } else {

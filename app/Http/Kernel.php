@@ -66,5 +66,7 @@ class Kernel extends HttpKernel
         'verify.admin' => \App\Http\Middleware\VerifyAdmin::class,
         'verify.company' => \App\Http\Middleware\VerifyCompany::class,
         'verify.branch' => \App\Http\Middleware\VerifyBranch::class,
+        'verify.company.info' => \App\Http\Middleware\VerifyCompanyInformation::class,
+
     ];
 }

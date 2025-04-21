@@ -44,19 +44,30 @@
 
                 <div class="form-row">
                     <div class="form-group-model">
-                        <label> لعنوان</label>
-                        <input type="text" id="address" name="address" value="{{ old('address', $company->address ?? '') }}" required>
+                        <label> العنوان</label>
+                        <input type="text" id="address" name="address" value="{{ old('address', $company->address ?? '') }}" >
                         @error('address')
                         <span class="error">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="form-group-model">
                         <label> الرقم الضريبي</label>
-                        <input type="number" id="tax_number" name="tax_number" value="{{ old('tax_number', $company->tax_number ?? '') }}" required>
+                        <input type="number" id="tax_number" name="tax_number" value="{{ old('tax_number', $company->tax_number ?? '') }}" >
                         @error('tax_number')
                         <span class="error">{{ $message }}</span>
                         @enderror
                     </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group-model">
+                        <label>  رقم الهاتف</label>
+                        <input type="number" id="phone_number" name="phone_number" value="{{ old('phone_number', $company->phone_number ?? '') }}" >
+                        @error('phone_number')
+                        <span class="error">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="form-group-model"></div>
                 </div>
 
                 <div class="form-row">
