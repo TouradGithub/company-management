@@ -60,12 +60,12 @@
                     </thead>
                     <tbody>
                     <tr class="entry-row">
-                        <td>
+                        <td style="width: 27%;">
                             <select class="account-select select2"></select>
                         </td>
-                        <td><input type="number" class="debit"></td>
-                        <td><input type="number" class="credit"></td>
-                        <td>
+                        <td style="width: 13%;padding: 2px"><input type="number" class="debit"></td>
+                        <td style="width: 13%;padding: 2px"> <input type="number" class="credit"></td>
+                        <td style="width: 23%;">
                             <select class="cost-center-select select-cost-center"></select>
                         </td>
                         <td><input type="text" class="notes"></td>
@@ -149,7 +149,6 @@
 
             const accountsData = @json($accounts);
             const costCentersData = @json($costcenters);
-
             function populateSelect(select, data) {
                 const option = document.createElement('option');
                 option.value = '';
@@ -163,7 +162,6 @@
                     select.appendChild(option);
                 });
             }
-
             function populateAccountSelect(select, data) {
                 const option = document.createElement('option');
                 option.value = '';
@@ -182,15 +180,14 @@
                 $('.select-cost-center').on('select2:select', function () {
                     moveToNextField(this);
                 });
-
             function addNewRow() {
                 const table = document.getElementById('entriesTable').getElementsByTagName('tbody')[0];
                 const newRow = document.createElement('tr');
                 newRow.className = 'entry-row';
                 newRow.innerHTML = `
                     <td style="width: 16%;height: 100%"><select style=" height: 100% !important;width:100%  !important" class="account-select select2"></select></td>
-                    <td style="width: 16%;"><input type="number" class="debit"></td>
-                    <td style="width: 16%;"><input type="number" class="credit"></td>
+                    <td style="width: 13%;padding: 2px"><input type="number" class="debit"></td>
+                    <td style="width: 13%;padding: 2px"><input type="number" class="credit"></td>
                     <td style="width: 16%;"><select style=" height: 100% !important;" class="cost-center-select select-cost-center"></select></td>
                     <td style="width: 16%;"><input type="text" class="notes"></td>
                     <td style="width: 16%;"><button class="action-btn delete-row"><i class="fas fa-trash"></i></button></td>
@@ -219,15 +216,12 @@
             $('#addNewLine').on('click',function (){
                 const $tbody = $(`#entriesTable tbody`);
                 const existingRows = $tbody.find('tr');
-
-                // التحقق من السطر الأخير إذا كان موجودًا
                 if (existingRows.length > 0) {
                     const lastRow = existingRows.last();
                     const itemSelect = lastRow.find('.account-select').val();
                     const itemcredit = lastRow.find('.debit').val();
                     const itemdebit= lastRow.find('.credit').val();
                     const itemcostCenter= lastRow.find('.select-cost-center').val();
-
                     if (!itemSelect || !itemcostCenter || (!itemcredit && !itemdebit)  ) {
                         Swal.fire({
                             icon: 'warning',

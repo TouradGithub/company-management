@@ -54,7 +54,8 @@ Route::post('/company/login', [CompanyAuthController::class, 'login'])->name('co
 
 
 
-Route::middleware(['auth', 'verify.company'])->group(function () {
+Route::middleware(['auth', 'verify.company' ])->group(function () {
+    Route::middleware(['verify.company.info'])->group(function () {
     Route::post('/company/logout', [CompanyAuthController::class, 'logout'])->name('company.logout');
     Route::get('/company/dashboard', [CompanyAuthController::class, 'dashboard'])->name('company.dashboard');
     Route::get('/company/dashboard', [CompanyAuthController::class, 'dashboard'])->name('company.dashboard');
@@ -115,6 +116,7 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::delete('/journal-entry-details/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'destroyEntryDetails'])->name('journal-entry.destroy-entry-details');
     Route::get('/journal-entry/edit/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'edit'])->name('journal-entry.edit');
     Route::get('/journal-entry/export/pdf', [App\Http\Controllers\Accounting\JournalEntryController::class, 'exportPdf'])->name('journal-entry.export.pdf');
+    Route::get('/journal-entry/single/export/pdf/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'singleexportPdf'])->name('journal-entry.export.singleexportPdf');
     Route::get('/journal-entry/export/excel', [App\Http\Controllers\Accounting\JournalEntryController::class, 'exportExcel'])->name('journal-entry.export.excel');
 
     Route::get('CostCenter/index' , [App\Http\Controllers\Accounting\CostCenterController::class , 'index'])->name('cost-center.index');
@@ -211,13 +213,9 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::post('/link-to-supplier', [App\Http\Controllers\Accounting\SupplierController::class, 'linkToSupplier']);
 
     Route::get('/settings/index', [App\Http\Controllers\Accounting\SettingsController::class, 'index'])->name('settings.index');
-    Route::get('/update-company-information', [App\Http\Controllers\Accounting\ProfileCompanyController::class, 'index'])->name('update.company.info.index');
-    Route::put('/companies/update-company-information/{id}', [App\Http\Controllers\Accounting\ProfileCompanyController::class, 'update'])->name('update.company.info.update');
-
 
 
     Route::post('/backup/create', [App\Http\Controllers\Accounting\BackupController::class, 'createBackup'])->name('backup.create');
-
     Route::get('/suppliers/index', [App\Http\Controllers\Accounting\SupplierController::class, 'index'])->name('suppliers.index');
     Route::get('/suppliers/customers', [App\Http\Controllers\Accounting\SupplierController::class, 'customers'])->name('suppliers.customers');
     Route::post('/suppliers/storeSupplier', [App\Http\Controllers\Accounting\SupplierController::class, 'store'])->name('suppliers.storeSupplier');
@@ -238,7 +236,9 @@ Route::middleware(['auth', 'verify.company'])->group(function () {
     Route::get('/session-years/edit/{id}', [App\Http\Controllers\Accounting\SessionYearController::class, 'edit']);
     Route::put('/session-years/update/{id}', [App\Http\Controllers\Accounting\SessionYearController::class, 'update']);
     Route::delete('/session-years/delete/{id}', [App\Http\Controllers\Accounting\SessionYearController::class, 'destroy']);
-
+});
+    Route::get('/update-company-information', [App\Http\Controllers\Accounting\ProfileCompanyController::class, 'index'])->name('update.company.info.index');
+    Route::put('/companies/update-company-information/{id}', [App\Http\Controllers\Accounting\ProfileCompanyController::class, 'update'])->name('update.company.info.update');
 
 });
 

@@ -228,6 +228,8 @@
             contact_info: $('#contact_customer_supplier').val(),
             branch_id: $('#branch_id_customer_supplier').val(),
             account_id: $('#account_id_customer_supplier').val(),
+            credit_limit: $('#credit_limit').val(),
+            tax_number: $('#tax_number').val(),
         };
 
         const url = currentSection.includes('purchase') ? '/suppliers/storeSupplier' : '/customers/storeCustomer';

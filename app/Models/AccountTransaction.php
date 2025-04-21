@@ -23,6 +23,7 @@ class AccountTransaction extends Model
         'credit',
         'balance',
         'company_id',
+        'session_year',
         'branch_id',
         'description',
         'journal_entry_id',

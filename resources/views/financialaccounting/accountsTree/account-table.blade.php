@@ -199,6 +199,15 @@
                         </select>
                     </div>
                 </div>
+
+                <div class="form-row">
+                    <div class="form-group-model">
+                        <label>
+                            هل هو حساب فرعي (نهائي)؟ </label>
+                        <input type="checkbox"  id="isLastCheckboxEdit" name="islast" value="1">
+
+                    </div>
+                </div>
                 <input type="hidden" id="accountId">
                 <div class="modal-buttons">
                     <button type="button" class="cancel-btn">إلغاء</button>
@@ -336,16 +345,15 @@
                     if (level === 'all') {
                         // عرض الشجرة عند اختيار "الكل"
                         accounts.forEach(function(account) {
-                            console.log(account);
-                            let balance = account.balance || 0;
-                            let debit = balance < 0 ? Math.abs(balance) : 0;
-                            let credit = balance >= 0 ? balance : 0;
-
+                            let balance = parseFloat(account.balance) || 0;
+                            let debit = parseFloat(account.debit) || 0;
+                            let credit = parseFloat(account.credit) || 0;
                             totalDebit += debit;
                             totalCredit += credit;
                             totalBalance += balance;
-                            let balanceDisplay = account.islast == "1" ? balance : '';
-                                console.log(account.islast);
+                            let balanceDisplay = balance < 0 ? `-${Math.abs(balance)}` : Math.abs(balance); // تأكد من أن الرقم السالب يظهر بالشكل الصحيح
+                            balanceDisplay = parseFloat(balanceDisplay).toFixed(2); // تنسيق الرقم إلى خانتين عشريتين
+
                             let row = `
                                 <tr>
                                     <td>${account.account_number}</td>
@@ -370,14 +378,14 @@
                         });
                     } else {
                         accounts.forEach(function(account) {
-                            let balance = account.balance || 0;
-                            let debit = balance < 0 ? Math.abs(balance) : 0;
-                            let credit = balance >= 0 ? balance : 0;
+                            let balance = parseFloat(account.balance) || 0;
+                            let debit = parseFloat(account.debit) || 0;
+                            let credit = parseFloat(account.credit) || 0;
 
                             totalDebit += debit;
                             totalCredit += credit;
                             totalBalance += balance;
-                            let balanceDisplay = account.islast == "1" ? balance : '';
+                            let balanceDisplay =  balance ;
 
                             let row = `
                                 <tr>
@@ -416,7 +424,9 @@
             }
 
             // Edit button click handler
+            let fistValue = 0;
             function bindEditEvents() {
+
                 $('.edit-account-btn').on('click', function() {
                     let accountId = $(this).attr('id');
                     showLoadingOverlay();
@@ -424,6 +434,7 @@
                         url: `/Acounting/edit/${accountId}`,
                         method: 'GET',
                         success: function(response) {
+                            fistValue = response.opening_balance;
                             $('#accountId').val(response.id);
                             $('.account-form-modal h2').text(`تعديل حساب ${response.name}`);
                             $('#accountNumber').val(response.account_number);
@@ -431,6 +442,12 @@
                             $('#accountType').val(response.account_type_id);
                             $('#parentAccount').val(response.parent_id);
                             $('#openingBalance').val(response.opening_balance);
+                            if(response.islast == 1){
+                                $('#openingBalance').show();
+                            } else {
+                                $('#openingBalance').hide();
+                            }
+                            $('#isLastCheckboxEdit').prop('checked', response.islast == 1);
                             $('#closingListType').val(response.closing_list_type);
                             $('.account-form-modal').show();
                             hideLoadingOverlay();
@@ -446,6 +463,7 @@
                     });
                 });
             }
+
             function bindShowEvents() {
                 $('.show-account-btn').on('click', function() {
                     let accountId = $(this).attr('id');
@@ -487,6 +505,17 @@
                 });
             }
 
+            $('#isLastCheckboxEdit').on('change', function() {
+                if (this.checked) {
+                    $('#openingBalance').val(fistValue);
+                    $('#openingBalance').show();
+                } else {
+                    $('#openingBalance').val(0);
+                    $('#openingBalance').hide();
+                }
+            });
+
+
             // Save button handler
             $('.save-btn').on('click', function() {
                 let data = {
@@ -494,6 +523,7 @@
                     account_number: $('#accountNumber').val(),
                     name: $('#accountName').val(),
                     account_type_id: $('#accountType').val(),
+                    islast: $('#isLastCheckboxEdit').is(':checked') ? 1 : 0,
                     parent_id: $('#parentAccount').val(),
                     opening_balance: $('#openingBalance').val(),
                     closing_list_type: $('#closingListType').val(),

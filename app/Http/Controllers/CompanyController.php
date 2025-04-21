@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
+use App\Models\AccountYear;
+use App\Models\SessionYear;
 use Illuminate\Http\Request;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 class CompanyController extends Controller
 {
@@ -25,15 +29,14 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        // return $request;
-        // Validate the incoming data
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:companies,email',
             'password' => 'required|string|max:500',
             'start_date' => 'required|string|max:500',
             'end_date' => 'required|string|max:500',
-        ], [
+        ],
+            [
             'name.required' => 'اسم الشركة مطلوب.',
             'name.string' => 'يجب أن يكون اسم الشركة نصًا.',
             'name.max' => 'يجب ألا يزيد اسم الشركة عن 255 حرفًا.',
@@ -53,13 +56,8 @@ class CompanyController extends Controller
             'end_date.string' => 'يجب أن يكون تاريخ الانتهاء نصًا صالحًا.',
         ]);
         $validated['password'] = Hash::make($request->password);
-
         DB::beginTransaction();
-
-
-        // Create a new company record
         $company = Company::create($validated);
-
         User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -68,12 +66,24 @@ class CompanyController extends Controller
             'model_id' =>$company->id,
             'is_admin' =>1,
         ]);
-
         Company::createDefaultAccounts($company->id);
-
+        SessionYear::where('company_id', $company->id)
+            ->update(['is_current' => 0]);
+        $sessionYear = SessionYear::create([
+            'company_id' => $company->id,
+            'name'       => Carbon::now()->format('Y'),
+            'is_current'   => 1,
+        ]);
+        $accounts = Account::where('company_id', $company->id)->get();
+        foreach ($accounts as $acct) {
+            AccountYear::create([
+                'company_id'      => $company->id,
+                'account_id'      => $acct->id,
+                'balance'         => 0,
+                'session_year_id' => $sessionYear->id,
+            ]);
+        }
         DB::commit();
-
-        // Redirect with a success message
         return redirect()->route('company.create')->with('success', 'Company created successfully!');
     }
 

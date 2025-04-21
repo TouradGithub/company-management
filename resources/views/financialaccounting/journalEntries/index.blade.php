@@ -190,6 +190,11 @@
                                     <button class="btn edit-btn" style="margin-right: 15px; background: red" onclick="deleteEntry(${entry.id})">
                                         <i class="fas fa-trash"></i> حذف
                                     </button>
+                                     <a href="/journal-entry/single/export/pdf/${entry.id}" style="text-decoration:none; color:white; margin-right: 3px;">
+                                        <button class="btn edit-btn" id="export-pdf-btn-account">
+                                            <i class="fas fa-file-pdf"></i> تصدير PDF
+                                        </button>
+                                    </a>
                                 </div>
                             </div><br>
                         `;

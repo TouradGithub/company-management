@@ -2,8 +2,9 @@
     <div class="header-content">
         <div class="digital-clock"></div>
         <div class="search-bar">
-            <input type="search" placeholder="بحث...">
-            <i class="fas fa-search"></i>
+             <span class="badge badge-success">
+            السنة الماليه : {{ getCurentYearName()??'' }}
+            </span>
         </div>
         <div class="user-info">
             <i class="fas fa-bell"></i>

@@ -16,6 +16,7 @@ class AccountsTreeController extends Controller
         $addAccounts = Account::where('company_id', Auth::user()->model_id)
             ->where('islast','!=' ,1)->get();
         $accountsTree = $this->buildTree($accounts);
+
         return view('financialaccounting.accountsTree.index', compact('addAccounts' ,'accounttypes', 'accountsTree','accounts'));
     }
     public function accountTable(){
@@ -32,7 +33,6 @@ class AccountsTreeController extends Controller
     }
     public  function update(Request $request)
     {
-
         $validated = $request->validate([
             'account_number' => 'required',
             'id' => 'required',
@@ -41,6 +41,7 @@ class AccountsTreeController extends Controller
             'parent_id' => 'required',
             'opening_balance' => 'nullable|numeric',
             'closing_list_type' => 'required|in:1,2',
+            'islast' => 'nullable|boolean',
 
         ],
             [
@@ -56,28 +57,30 @@ class AccountsTreeController extends Controller
             'closing_list_type.in' => 'نوع القائمة الختامية يجب أن يكون إما "قائمة الدخل" أو "الميزانيه العموميه".',
             'closing_list_type.required' => ' القائمة الختامية  مطلوبه".',
         ]);
-
         $account = Account::where('company_id',Auth::user()->model_id)->where('id' ,$request->id)->first();
-
         if(!$account){
             return response()->json([
                 'message'=>'هذا الحساب غير موجود'
             ],201);
         }
-
         if($account && $request->parent_id != $account->parent_id && $account->children()->count() > 0){
             return response()->json([
                 'message'=>'هذا الحساب يحتوي على حسابات فرعيه'
             ],201);
         }
-
+        if($account && $account->islast ==0 && $request->islast == 1 &&  $account->parent_id && $account->children()->count() > 0){
+            return response()->json([
+                'message'=>' هذا الحساب يحتوي على حسابات فرعيه لايمكن ان يكون حساب نهائي'
+            ],201);
+        }
 
         $account->account_number = $validated['account_number'];
         $account->name = $validated['name'];
         $account->account_type_id = $validated['account_type_id'];
         $account->parent_id = $validated['parent_id'] ?? null;
         $account->company_id = auth()->user()->model_id;
-        $account->opening_balance = $validated['opening_balance']  ?? 0;
+        $account->opening_balance = $validated['opening_balance'] && $validated['islast'] ? $validated['opening_balance'] : 0;
+        $account->islast = $validated['islast']  ?? 0;
         $account->closing_list_type = $validated['closing_list_type'];
         $account->save();
         $curent_year = getCurrentYear();
@@ -136,7 +139,6 @@ class AccountsTreeController extends Controller
     private function buildTree($accounts, $parentId = 0)
     {
         $tree = [];
-
         foreach ($accounts as $account) {
             if ($account->parent_id == $parentId) {
                 $children = $this->buildTree($accounts, $account->id);
@@ -146,9 +148,7 @@ class AccountsTreeController extends Controller
                 $tree[] = $account;
             }
         }
-
         return $tree;
-
     }
     public function delete($id)
     {
@@ -169,26 +169,26 @@ class AccountsTreeController extends Controller
     {
         $level = $request->query('level');
         $accounts = collect();
-
         if ($level == 'all') {
-            $accounts = Account::where('company_id', Auth::user()->model_id)
-                ->with(['children','sessionBalance','accountType'])
+            $accountsall = Account::where('company_id', Auth::user()->model_id)
                 ->get();
+            $flatList = collect();
+            $this->flattenAccounts($accountsall, $flatList);
+            $accounts = $flatList;
+            return response()->json(['accounts' => $accounts]);
         } else {
             $level = (int)$level;
             $accounts = $this->getAccountsByLevel($level);
         }
-
-        $formattedAccounts = $accounts->map(function ($account) {
-            return $this->formatAccount($account);
+        $formattedAccounts = $accounts->map(function ($account) use ($level) {
+            return $this->formatAccount($account ,$level);
         });
-
         return response()->json(['accounts' => $formattedAccounts]);
     }
     private function getAccountsByLevel($targetLevel)
     {
         $allAccounts = Account::where('company_id' ,Auth::user()->model_id)
-                            ->with(['children','sessionBalance','accountType'])->get();
+                            ->with(['children','accountType'])->get();
         $filteredAccounts = collect();
         foreach ($allAccounts as $account) {
             $level = $this->calculateLevel($account);
@@ -198,7 +198,24 @@ class AccountsTreeController extends Controller
         }
         return $filteredAccounts;
     }
-    private function formatAccount($account)
+    private function flattenAccounts($allAccounts, &$flatList, $parentId = 0)
+    {
+        foreach ($allAccounts->where('parent_id', $parentId) as $account) {
+            $flatList->push([
+                'id' => $account->id,
+                'account_number' => $account->account_number,
+                'name' => $account->name,
+                'account_type_name' => $account->accountType->name ?? '',
+                'islast' => $account->islast,
+                'balance' => $account->sessionBalance->balance ?? 0,
+                'credit' => $account->sessionBalance->credit ?? 0,
+                'debit' => $account->sessionBalance->debit ?? 0,
+            ]);
+            $this->flattenAccounts($allAccounts, $flatList, $account->id);
+        }
+    }
+
+    private function formatAccount($account ,$level)
     {
         return [
             'id' => $account->id,
@@ -209,7 +226,9 @@ class AccountsTreeController extends Controller
             'balance' => $account->sessionBalance->balance??0 ,
             'credit' => $account->sessionBalance->credit??0 ,
             'debit' => $account->sessionBalance->debit??0,
-            'children' => $account->children->map(function ($child) { return $this->formatAccount($child);})->toArray(),
+            'children' => $level=='all'?null:$account->children->map(function ($child) use ($level) {
+                return $this->formatAccount($child ,$level);
+            })->toArray(),
         ];
     }
     private function calculateLevel($account, $currentLevel = 1)
@@ -283,8 +302,6 @@ class AccountsTreeController extends Controller
 
         return response()->json(['accounts' => $formattedAccounts]);
     }
-
-    // AccountController.php
     public function getNextAccountNumber($parentId)
     {
         $lastSubAccount = Account::where('parent_id', $parentId)->where('company_id', getCompanyId())

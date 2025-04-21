@@ -33,13 +33,21 @@ use App\Models\Company;
     }
 
 // get the curect year
-    function getCurrentYear(){
-        $currentYear = \App\Models\SessionYear::where('is_current', true)->where('company_id', getCompanyId())->first();
-        if ($currentYear) {
-            return $currentYear->id;
-        }
-        return null;
+function getCurrentYear(){
+    $currentYear = \App\Models\SessionYear::where('is_current', true)->where('company_id', getCompanyId())->first();
+    if ($currentYear) {
+        return $currentYear->id;
     }
+    return null;
+}
+
+function getCurentYearName(){
+    $currentYear = \App\Models\SessionYear::where('is_current', true)->where('company_id', getCompanyId())->first();
+    if ($currentYear) {
+        return $currentYear->name;
+    }
+    return null;
+}
 
      function getAccountTreeIds($accounts, &$accountIds = [])
     {

@@ -12,4 +12,8 @@ class AccountYear extends Model
     protected $table= 'session_years_company_balance';
     protected $fillable = ['session_year_id', 'company_id','balance', 'account_id'];
 
+    public function sessionYear()
+    {
+        return $this->belongsTo(SessionYear::class , 'session_year_id');
+    }
 }

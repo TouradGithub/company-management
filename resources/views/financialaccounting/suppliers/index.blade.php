@@ -35,12 +35,13 @@
                 @if($supplier)
                     <p class="balance">{{$supplier->name . ' - ' . $supplier->account_number}}</p>
                 @endif
+                </a>
                 <div class="card-actions">
                     @if(!$supplier)
                         <button class="action-btn link-account" id="link-to-supplier" title="ربط حساب"><i class="fas fa-link"></i></button>
                     @endif
                 </div>
-                </a>
+
             </div>
             <div class="addition-card">
                 <i class="fas fa-cash-register"></i>

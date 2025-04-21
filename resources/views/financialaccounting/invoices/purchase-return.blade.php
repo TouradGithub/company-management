@@ -57,10 +57,9 @@
                     <select name="supplier_id" class="suppliers purchase-return-supplier-id" id="purchaseReturnSupplierSelect" style="width: 100%; padding: 10px; font-size: 16px;"></select>
                 </div>
                 <div class="company-info">
-                    <h3>شركة بوادي المتحده {{ getCompany()->name }}</h3>
-                    <p>شركة التجارة</p>
-                    <p>الرياض، المملكة العربية السعودية</p>
-                    <p>الرقم الضريبي 102031141121</p>
+                    <h3>   {{ getCompany()->name }}</h3>
+                    <p>{{getCompany()->address}}</p>
+                    <p>الرقم الضريبي {{getCompany()->tax_number}}</p>
                 </div>
             </div>
 

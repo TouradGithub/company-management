@@ -156,10 +156,10 @@
 <div class="invoice-container">
     <div class="header">
         <div class="company-info">
-            <h2>مؤسسة إيلاف الجوف التجارية</h2>
-            <p>بلاستيك، منظفات، ورق</p>
-            <p>القريات - هاتف: 0146410300</p>
-            <p>الرقم الضريبي: 30107609930003</p>
+            <h3>   {{ getCompany()->name }}</h3>
+            <p>{{getCompany()->address}}</p>
+            <p>هاتف: {{getCompany()->phone_number??''}}</p>
+            <p>الرقم الضريبي: {{getCompany()->tax_number}}</p>
         </div>
         <div class="qr-code">
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=INV-2023-001" alt="QR Code">

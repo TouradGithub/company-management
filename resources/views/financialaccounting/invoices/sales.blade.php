@@ -53,10 +53,9 @@
                     <div class="limit-credit" style="display: none"></div>
                 </div>
                 <div class="company-info">
-                    <h3>شركة بوادي المتحده {{ getCompany()->name }}</h3>
-                    <p>شركة التجارة</p>
-                    <p>الرياض، المملكة العربية السعودية</p>
-                    <p>الرقم الضريبي 102031141121</p>
+                    <h3>   {{ getCompany()->name }}</h3>
+                    <p>{{getCompany()->address}}</p>
+                    <p>الرقم الضريبي {{getCompany()->tax_number}}</p>
                 </div>
             </div>
 
