@@ -10,7 +10,7 @@ class AccountYear extends Model
 {
     use HasFactory;
     protected $table= 'session_years_company_balance';
-    protected $fillable = ['session_year_id', 'company_id','balance', 'account_id'];
+    protected $fillable = ['session_year_id', 'company_id','balance','credit','debit', 'account_id'];
 
     public function sessionYear()
     {

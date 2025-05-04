@@ -6,23 +6,22 @@
             <div class="addition-card">
                 <i class="fas fa-building"></i>
                 <h3>مراكز التكلفة</h3>
-                <p class="balance">150,000 ريال</p>
-                <div class="card-actions">
-                    <button class="action-btn add" title="إضافة"><i class="fas fa-plus-circle"></i></button>
-                    <button class="action-btn view" title="عرض"><i class="fas fa-eye"></i></button>
-                </div>
+                <p class="balance">{{App\Models\CostCenter::where('company_id' , getCompanyId())->count()}}</p>
+
             </div>
             <div class="addition-card">
                 <a href="{{ route('customers.index') }}" style="text-decoration: none">
                     <i class="fas fa-users"></i>
                     <h3>العملاء</h3>
-                    <p class="balance">485,750 ريال</p>
-                    @if($account)
-                        <p class="balance">{{$account->name}} - {{$account->account_number}} </p>
+                    @if(customers_register())
+
+                    <p class="balance">{{customers_register()->sessionBalance->balance}} ريال</p>
+
+                        <p class="balance">{{customers_register()->name}} - {{customers_register()->account_number}} </p>
                     @endif
                 </a>
                 <div class="card-actions">
-                    @if(!$account)
+                    @if(!customers_register())
                         <button class="action-btn link-account" id="linkAccountBtn" title="ربط حساب"><i class="fas fa-link"></i></button>
                     @endif
                 </div>
@@ -31,13 +30,13 @@
                 <a href="{{ route('suppliers-company.index') }}" style="text-decoration: none">
                 <i class="fas fa-truck"></i>
                 <h3>الموردين</h3>
-                <p class="balance">326,900 ريال</p>
-                @if($supplier)
-                    <p class="balance">{{$supplier->name . ' - ' . $supplier->account_number}}</p>
+                @if(suppliers_register() != null)
+                <p class="balance">{{suppliers_register()->sessionBalance->balance}} ريال</p>
+                    <p class="balance">{{suppliers_register()->name . ' - ' . suppliers_register()->account_number}}</p>
                 @endif
                 </a>
                 <div class="card-actions">
-                    @if(!$supplier)
+                    @if(!suppliers_register())
                         <button class="action-btn link-account" id="link-to-supplier" title="ربط حساب"><i class="fas fa-link"></i></button>
                     @endif
                 </div>
@@ -46,13 +45,14 @@
             <div class="addition-card">
                 <i class="fas fa-cash-register"></i>
                 <h3>الصناديق</h3>
-                <p class="balance">75,200 ريال</p>
-                @if($cach_register)
-                    <p class="balance">{{$cach_register->name}} - {{$cach_register->account_number}} </p>
+                @if(cach_register()!= null)
+                <p class="balance">{{ cach_register()->sessionBalance->balance}} ريال </p>
+
+                    <p class="balance">{{cach_register()->name}} - {{cach_register()->account_number}} </p>
                 @endif
 
                 <div class="card-actions">
-                    @if(!$cach_register)
+                    @if(!cach_register())
                         <button class="action-btn link-account" id="link-cash-register" title="ربط حساب"><i class="fas fa-link"></i></button>
                     @endif
                 </div>
@@ -67,7 +67,7 @@
             <div class="addition-card">
                 <i class="fas fa-code-branch"></i>
                 <h3>الفروع</h3>
-                <p class="balance">245,600 ريال</p>
+                <p class="balance">{{getCompany()->branches()->count()}}</p>
                 <div class="card-actions">
                 </div>
             </div>
@@ -148,7 +148,6 @@
         $(document).ready(function () {
             // تحويل الحسابات إلى تنسيق يمكن استخدامه في SweetAlert2
             const accounts = @json($accounts);
-            const account = @json($account);
 
             // عند الضغط على زر "ربط حساب"
             // if(!account){
@@ -180,11 +179,20 @@
                             _token: '{{ csrf_token() }}' // للتحقق من CSRF في Laravel
                         },
                         success: function (response) {
-                            Swal.fire({
-                                title: 'تم الربط',
-                                text: response.message,
-                                icon: 'success',
-                            });
+                            if(response.success){
+                                Swal.fire({
+                                    title: 'تم الربط',
+                                    text: response.message,
+                                    icon: 'success',
+                                });
+                            }else{
+                                Swal.fire({
+                                    title: ' خطأ ',
+                                    text: response.message,
+                                    icon: 'error',
+                                });
+                            }
+
                         },
                         error: function (xhr) {
                             Swal.fire({

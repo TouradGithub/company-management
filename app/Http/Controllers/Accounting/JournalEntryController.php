@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Accounting;
 use App\Exports\JournalEntriesExport;
 use App\Helpers\AccountTransactionHelper;
 use App\Http\Controllers\Controller;
+use App\Imports\JournalEntriesImport;
+use App\Imports\ProductsImport;
 use App\Models\Account;
 use App\Models\AccountType;
 use App\Models\Branch;
@@ -27,7 +29,6 @@ class JournalEntryController extends Controller
         $branches = Branch::where('company_id', Auth::user()->model_id)->get();
         return view('financialaccounting.journalEntries.index' , compact('branches'));
     }
-
     public function create()
     {
         $accounts = Account::where('company_id', Auth::user()->model_id)
@@ -116,7 +117,29 @@ class JournalEntryController extends Controller
             ], 500);
         }
     }
-
+    public function import(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|file',
+        ]);
+        if (!$request->hasFile('import_file')) {
+            return back()->with('error', 'No file uploaded.');
+        }
+        try {
+            $file = $request->file('import_file');
+            $destinationPath = storage_path('app/imports');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move($destinationPath, $fileName);
+            $fullPath = $destinationPath . '/' . $fileName;
+            if (!file_exists($fullPath)) {
+                return response()->json(['success' => false, 'msg' => 'File could not be found.']);
+            }
+            Excel::import(new JournalEntriesImport(),  $fullPath);
+            return back()->with('success', 'تم الاستيراد بنجاح ✅');
+        } catch (\Exception $e) {
+            return back()->with('error', 'حدث خطأ أثناء الاستيراد: ' . $e->getMessage());
+        }
+    }
     public function fetchEntries(Request $request)
     {
         $query = JournalEntry::where('company_id' , Auth::user()->model_id)->with([
@@ -163,7 +186,6 @@ class JournalEntryController extends Controller
 
         return response()->json(['status' => 'error', 'message' => 'هناك مشكله حاول مرة أخرى  ']);
     }
-
     public function destroyEntryDetails($id)
     {
         $entry = JournalEntryDetail::findOrFail($id);
@@ -173,7 +195,6 @@ class JournalEntryController extends Controller
         }
         return response()->json(['status' => 'error', 'message' => 'هناك مشكله حاول مرة أخرى  ']);
     }
-
     public function edit($id)
     {
         $accounts = Account::where('company_id', Auth::user()->model_id)->get();
@@ -183,6 +204,16 @@ class JournalEntryController extends Controller
 
         $entry = JournalEntry::findOrFail($id);
         return view('financialaccounting.journalEntries.edit' , compact('entry','accounts' ,'branches', 'costcenters' , 'journals'));
+    }
+    public function clone($id)
+    {
+        $accounts = Account::where('company_id', Auth::user()->model_id)->get();
+        $costcenters = CostCenter::where('company_id', Auth::user()->model_id)->get();
+        $branches = Branch::where('company_id', Auth::user()->model_id)->get();
+        $journals = Journal::where('company_id' , Auth::user()->model_id)->get();
+
+        $entry = JournalEntry::findOrFail($id);
+        return view('financialaccounting.journalEntries.clone' , compact('entry','accounts' ,'branches', 'costcenters' , 'journals'));
     }
     public  function update(Request $request)
     {
@@ -254,8 +285,6 @@ class JournalEntryController extends Controller
             ], 500);
         }
     }
-
-        // Export to PDF
     public function exportPdf(Request $request)
     {
         $entries = $this->getFilteredEntries($request);
@@ -264,7 +293,6 @@ class JournalEntryController extends Controller
         $mpdf->WriteHTML($html);
         return $mpdf->Output('journal_entries.pdf', 'D');
     }
-
     public function singleexportPdf($id)
     {
         $journalEntry = JournalEntry::with([
@@ -277,7 +305,18 @@ class JournalEntryController extends Controller
         $mpdf->WriteHTML($html);
         return $mpdf->Output('single_journal_entries.pdf', 'D');
     }
-        // Helper method to get filtered entries
+    public function singlePrint($id)
+    {
+        $journalEntry = JournalEntry::with([
+            'details.account:id,name,account_number',
+            'branch:id,name',
+            'details.costcenter',
+        ])->findOrFail($id);
+        $html = view('financialaccounting.journalEntries.exports.single-pdf', compact('journalEntry'))->render();
+        $mpdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4']);
+        $mpdf->WriteHTML($html);
+        return $mpdf->Output('single_journal_entries.pdf', 'I');
+    }
     private function getFilteredEntries(Request $request)
     {
         $query = JournalEntry::with([
@@ -302,11 +341,8 @@ class JournalEntryController extends Controller
         $query= $query->where('session_year',getCurrentYear());
         return $query->get();
     }
-
-        // Export to Excel
     public function exportExcel(Request $request)
     {
         return Excel::download(new JournalEntriesExport($request->all()), 'journal_entries.xlsx');
     }
-
 }

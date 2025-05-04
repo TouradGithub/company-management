@@ -21,6 +21,16 @@ class Account extends Model
     {
         return $this->belongsTo(Account::class, 'parent_id');
     }
+    public function updateTreeTypeRegister($type)
+    {
+        $this->type_account_register = $type;
+        $this->save();
+
+        foreach ($this->children as $child) {
+            $child->updateTreeTypeRegister($type);
+        }
+    }
+
 
     public function children()
     {

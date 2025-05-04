@@ -15,7 +15,7 @@
             width: 100%;
             background-color: #ffffff;
             padding: 20px;
-            border: 1px solid #cccccc;
+            /*border: 1px solid #cccccc;*/
         }
 
         .header {
@@ -71,10 +71,21 @@
             float: right;
             vertical-align: top;
         }
+        .invoice-details-container .det_invoice{
+            width: 30%;
+            float: left;
+            text-align: right;
+        }
+
 
         .invoice-details-container .left {
             float: left;
             text-align: left;
+        }
+
+        .invoice-details-container .center {
+            float: left;
+            text-align: right;
         }
 
         .invoice-details-container h3 {
@@ -162,23 +173,47 @@
             <p>الرقم الضريبي: {{getCompany()->tax_number}}</p>
         </div>
         <div class="qr-code">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=INV-2023-001" alt="QR Code">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data={{ route('invoices.show.scan-code-qr', $invoice->id) }}" alt="QR Code">
         </div>
     </div>
-
     <div class="invoice-details-container">
         <div>
-            <h3>العميل</h3>
+            @if($invoice->customer)
+                <h3>العميل</h3>
+            @endif
+            @if($invoice->supplier)
+                    <h3>المورد</h3>
+            @endif
             <p><strong>الاسم:</strong> {{ $invoice->customer ? $invoice->customer->name : ($invoice->supplier->name ?? 'غير متوفر') }}</p>
             <p><strong>الهاتف:</strong>  {{ $invoice->customer ? $invoice->customer->contact_info : ($invoice->supplier->contact_info ?? 'غير متوفر') }}</p>
+            @if($invoice->customer)
+                <p><strong>الرقم الضريبي:</strong>  {{ $invoice->customer->tax_number ?? 'غير متوفر' }}</p>
+            @endif
         </div>
-        <div class="left">
+        <div class="center det_invoice">
             <h3>تفاصيل الفاتورة</h3>
+            <p><strong>نوع الفاتورة:</strong>
+                @switch($invoice->invoice_type)
+                    @case('Sales')
+                        فاتورة مبيعات
+                        @break
+                    @case('SalesReturn')
+                        مرتجع مبيعات
+                        @break
+                    @case('Purchases')
+                        فاتورة مشتريات
+                        @break
+                    @case('PurchasesReturn')
+                        مرتجع مشتريات
+                        @break
+                    @default
+                        غير معروف
+                @endswitch
+            </p>
             <p><strong>رقم:</strong> {{ $invoice->invoice_number ?? 'INV-2023-001' }}</p>
             <p><strong>التاريخ:</strong> {{ $invoice->invoice_date ? date('d/m/Y', strtotime($invoice->invoice_date)) : 'غير متوفر' }}</p>
         </div>
     </div>
-
     <div class="table-container">
         <table>
             <thead>
@@ -209,17 +244,17 @@
             </tbody>
         </table>
     </div>
-
     <div class="total">
-        <p>المجموع الفرعي: {{ number_format($invoice->subtotal ?? 0, 2) }} ر.س</p>
-        <p>الخصم: {{ number_format($invoice->discount ?? 0, 2) }} ر.س</p>
-        <p>الضريبة : %{{ number_format($invoice->tax ?? 0, 0) }} </p>
-        <p>الإجمالي: {{ number_format($invoice->total ?? 0, 2) }} ر.س</p>
+       <div style="width: 35%;float: left;text-align: right">
+           <p>المجموع الفرعي: {{ number_format($invoice->subtotal ?? 0, 2) }} ريال</p>
+           <p>الخصم: {{ number_format($invoice->discount ?? 0, 2) }} ريال</p>
+           <p>الضريبة : %{{ number_format($invoice->tax ?? 0, 0) }} </p>
+           <p>الإجمالي: {{ number_format($invoice->total ?? 0, 2) }}ريال</p>
+       </div>
     </div>
-
     <div class="footer">
         <p>شكراً لتعاملكم معنا</p>
-        <p>للاستفسارات: 0146410300 | info@example.com</p>
+        <p>للاستفسارات: {{getCompany()->phone_number}} | {{getCompany()->email}}</p>
     </div>
 </div>
 </body>

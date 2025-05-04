@@ -12,7 +12,6 @@
             </div>
         @endif
         <div id="responseMessage" style="text-align: center; color: red;"></div>
-
         <div class="accounts-summary">
             <div class="table-actions" >
                 <button class="export-excel-btn" id="export-excel-btn-account">
@@ -20,6 +19,9 @@
                 </button>
                 <button class="export-pdf-btn" id="export-pdf-btn-account">
                     <i class="fas fa-file-pdf"></i> تصدير PDF
+                </button>
+                <button class="add-account-btn" id="openImportModal">
+                    <i class="fas fa-file-import"></i> استيراد قيود
                 </button>
             </div>
             <div class="accounts-header">
@@ -67,6 +69,28 @@
             </div>
         </div>
     </div>
+
+    <div id="importModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:999;">
+        <div style="background:#fff; padding:20px; margin:10% auto; width:400px; border-radius:10px; position:relative;">
+            <h3>استيراد ملف Excel</h3>
+            <form id="importForm" enctype="multipart/form-data" method="POST" action="{{ route('journal.import') }}">
+                @csrf
+                <input type="file" name="import_file" class="" accept=".xlsx,.xls" required style="    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #444;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border 0.3s ease, box-shadow 0.3s ease;"/>                <div class="modal-buttons">
+                    <button type="button" class="cancel-btn" id="closeImportModal">إلغاء</button>
+                    <button type="submit" class="save-btn" id="save-btn">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 @endsection
 
 @section('js')
@@ -74,6 +98,42 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
+        function printObject(url) {
+            showLoadingOverlay();
+            let iframe = document.createElement("iframe");
+            iframe.src = url;
+            iframe.style.display = "none";
+            document.body.appendChild(iframe);
+            iframe.onload = function () {
+                iframe.contentWindow.print();
+                hideLoadingOverlay();
+            };
+        }
+        function deleteEntry(entryId) {
+            Swal.fire({
+                title: "هل أنت متأكد؟",
+                text: "لن تتمكن من استعادة هذا القيد بعد الحذف!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "نعم، احذف!",
+                cancelButtonText: "إلغاء"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/journal-entry/${entryId}`,
+                        type: "DELETE",
+                        data: { _token: $('meta[name="csrf-token"]').attr("content") },
+                        success: function(response) {
+                            fetchEntries();
+                            Swal.fire("تم الحذف!", "تم حذف القيد بنجاح.", "success");
+                        },
+                        error: function(xhr) {
+                            Swal.fire("خطأ!", "حدث خطأ أثناء الحذف.", "error");
+                        }
+                    });
+                }
+            });
+        }
         $(document).ready(function() {
             let currentFilters = {
                 branch_id: '',
@@ -83,6 +143,7 @@
             };
 
             fetchEntries();
+
 
             // Trigger fetch when filters change
             // Trigger fetch when branch or date filters change
@@ -101,6 +162,15 @@
                     fetchEntries();
                 }
             });
+
+            $('#openImportModal').on('click', function() {
+                $('#importModal').fadeIn();
+            });
+
+            $('#closeImportModal').on('click', function() {
+                $('#importModal').fadeOut();
+            });
+
 
             // Fetch entries
             function fetchEntries() {
@@ -151,7 +221,7 @@
                                 </tr>
                             `;
                         });
-
+                        const printUrl = `/journal-entry/single/print/pdf/${entry.id}`;
                         let entryHtml = `
                             <div class="entry-card">
                                 <div class="entry-header">
@@ -195,6 +265,16 @@
                                             <i class="fas fa-file-pdf"></i> تصدير PDF
                                         </button>
                                     </a>
+                                     <a  style="text-decoration:none; color:white; margin-right: 3px;">
+                                        <button class="btn edit-btn" onclick="printObject('${printUrl}')">
+                                            <i class="fas fa-file-pdf"></i> معاينة
+                                        </button>
+                                    </a>
+                                    <a href="/journal-entry/clone/${entry.id}" style="text-decoration:none; color:white; margin-right: 3px;">
+                                        <button class="btn edit-btn" id="export-pdf-btn-account">
+                                            <i class="fas fa-file-pdf"></i>نسخ
+                                        </button>
+                                    </a>
                                 </div>
                             </div><br>
                         `;
@@ -203,47 +283,13 @@
                 }
             }
 
-            // Delete entry
-            function deleteEntry(entryId) {
-                Swal.fire({
-                    title: "هل أنت متأكد؟",
-                    text: "لن تتمكن من استعادة هذا القيد بعد الحذف!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonText: "نعم، احذف!",
-                    cancelButtonText: "إلغاء"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: `/journal-entry/${entryId}`,
-                            type: "DELETE",
-                            data: { _token: $('meta[name="csrf-token"]').attr("content") },
-                            success: function(response) {
-                                fetchEntries();
-                                Swal.fire("تم الحذف!", "تم حذف القيد بنجاح.", "success");
-                            },
-                            error: function(xhr) {
-                                Swal.fire("خطأ!", "حدث خطأ أثناء الحذف.", "error");
-                            }
-                        });
-                    }
-                });
-            }
-
-            // Calculate totals
             function getTotal(details, type) {
                 return details.reduce((sum, item) => sum + (parseFloat(item[type]) || 0), 0);
             }
-
-            // Export to Excel
             $('#export-excel-btn-account').on('click', function() {
-
                 window.location.href = '{{ route("journal-entry.export.excel") }}?' + $.param(currentFilters);
             });
-
-            // Export to PDF
             $('#export-pdf-btn-account').on('click', function() {
-
                 window.location.href = '{{ route("journal-entry.export.pdf") }}?' + $.param(currentFilters);
             });
 

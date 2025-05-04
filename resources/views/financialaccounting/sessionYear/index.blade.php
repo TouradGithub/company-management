@@ -18,10 +18,7 @@
             </tr>
             </thead>
             <tbody id="accountsTableBody">
-
             </tbody>
-
-
         </table>
     </div>
 

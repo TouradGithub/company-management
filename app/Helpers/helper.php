@@ -7,7 +7,9 @@ use App\Models\Deduction;
 use App\Models\Overtime;
 use App\Models\Employee;
 use App\Models\Company;
-    function branchId()
+use Illuminate\Support\Facades\Auth;
+
+function branchId()
     {
         $branches = Branch::where('company_id', auth()->user()->model_id)->get();
         return $branches->pluck('id');
@@ -32,24 +34,67 @@ use App\Models\Company;
 
     }
 
-// get the curect year
-function getCurrentYear(){
-    $currentYear = \App\Models\SessionYear::where('is_current', true)->where('company_id', getCompanyId())->first();
-    if ($currentYear) {
-        return $currentYear->id;
+    // get the curect year
+    function getCurrentYear(){
+        $currentYear = \App\Models\SessionYear::where('is_current', true)->where('company_id', getCompanyId())->first();
+        if ($currentYear) {
+            return $currentYear->id;
+        }
+        return null;
     }
-    return null;
-}
 
-function getCurentYearName(){
-    $currentYear = \App\Models\SessionYear::where('is_current', true)->where('company_id', getCompanyId())->first();
-    if ($currentYear) {
-        return $currentYear->name;
+    function getCurentYearName(){
+        $currentYear = \App\Models\SessionYear::where('is_current', true)->where('company_id', getCompanyId())->first();
+        if ($currentYear) {
+            return $currentYear->name;
+        }
+        return null;
     }
-    return null;
-}
 
-     function getAccountTreeIds($accounts, &$accountIds = [])
+    function  cach_register()
+    {
+        return Account::where('company_id', getCompanyId())
+            ->where('type_account_register', 2)
+            ->where('linked_root_id', 1)
+            ->first()??null;
+    }
+    function credit_and_debit()
+    {
+        return \App\Models\AccountYear::where('company_id', getCompanyId())
+            ->where('session_year_id', getCurrentYear())
+            ->whereIn('account_id', Account::where('company_id' , getCompanyId())
+                ->where('opening_balance', '!=', 0)
+                ->pluck('id'))
+            ->selectRaw('SUM(debit) as total_debit, SUM(credit) as total_credit')
+            ->first();
+    }
+    function openiing_balance_of_all_company()
+    {
+        return Account::where('company_id', getCompanyId())
+            ->where('opening_balance', '!=', 0)
+            ->sum('opening_balance');
+    }
+    function ousoul()
+    {
+        return Account::where('company_id', getCompanyId())
+            ->where('name', 'like', '%الأصول%')
+            ->first()->sessionBalance->balance??0;
+    }
+    function  suppliers_register()
+        {
+            return Account::where('company_id', Auth::user()->model_id)
+                ->where('type_account_register', 3)
+                ->where('linked_root_id', 1)
+                ->first()??null;
+        }
+    function  customers_register()
+    {
+        return Account::where('company_id', Auth::user()->model_id)
+            ->where('type_account_register', 1)
+            ->where('linked_root_id', 1)
+            ->first()??null;
+    }
+    function getAccountTreeIds($accounts, &$accountIds = [])
     {
         foreach ($accounts as $account) {
             $accountIds[] = $account->id;
@@ -63,8 +108,6 @@ function getCurentYearName(){
 
         return $accountIds;
     }
-
-
 
     function processOvertimePayment(int $employeeId, float $OvertimeAmount)
     {
@@ -271,3 +314,57 @@ function getCurentYearName(){
         $employee->overtime_total = $total;
         $employee->save();
     }
+
+
+ function calculateRevenues()
+{
+    $invoices = \App\Models\Invoice::where('company_id', Auth::user()->model_id)
+        ->where('invoice_type', 'Sales')
+        ->with('items')
+        ->get();
+
+    $grossSales = 0;
+    $totalCost = 0;
+
+    foreach ($invoices as $invoice) {
+        $grossSales += $invoice->total;
+
+        foreach ($invoice->items as $item) {
+            $product = \App\Models\Product::find($item->product_id);
+            $totalCost += $product ? ($product->cost * $item->quantity) : 0;
+        }
+    }
+
+    $netRevenue = $grossSales - $totalCost;
+
+    return $netRevenue;
+}
+
+
+ function calculateExpenses()
+{
+    $company = \App\Models\Company::find(getCompanyId());
+    $branchIds = $company->branches()->pluck('id')->toArray();
+
+    // الرواتب
+    $totalPayroll = \App\Models\Payroll::whereIn('branch_id', $branchIds)->sum('net_salary');
+
+    // تكلفة المبيعات (نحسبها بنفس طريقة الإيرادات)
+    $invoices = \App\Models\Invoice::where('company_id', Auth::user()->model_id)
+        ->where('invoice_type', 'Sales')
+        ->with('items')
+        ->get();
+
+    $totalCost = 0;
+
+    foreach ($invoices as $invoice) {
+        foreach ($invoice->items as $item) {
+            $product = \App\Models\Product::find($item->product_id);
+            $totalCost += $product ? ($product->cost * $item->quantity) : 0;
+        }
+    }
+
+    $totalExpenses = $totalPayroll + $totalCost;
+
+    return $totalExpenses;
+}

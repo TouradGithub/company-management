@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Accounting;
 
 use App\Http\Controllers\Controller;
+use App\Imports\ProductsImport;
 use App\Models\Branch;
 use App\Models\CategoryInvoice;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -113,4 +115,29 @@ class ProductController extends Controller
         $product->delete();
         return response()->json(['success' => true, 'message' => 'Product deleted successfully']);
     }
+
+    public function importProducts(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|file',
+        ]);
+        if (!$request->hasFile('import_file')) {
+            return back()->with('error', 'No file uploaded.');
+        }
+        try {
+            $file = $request->file('import_file');
+            $destinationPath = storage_path('app/imports');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move($destinationPath, $fileName);
+            $fullPath = $destinationPath . '/' . $fileName;
+            if (!file_exists($fullPath)) {
+                return response()->json(['success' => false, 'msg' => 'File could not be found.']);
+            }
+            Excel::import(new ProductsImport(),  $fullPath);
+            return back()->with('success', 'تم استيراد المنتجات بنجاح ✅');
+        } catch (\Exception $e) {
+            return back()->with('error', 'حدث خطأ أثناء الاستيراد: ' . $e->getMessage());
+        }
+    }
+
 }

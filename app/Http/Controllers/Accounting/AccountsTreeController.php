@@ -2,11 +2,12 @@
 namespace App\Http\Controllers\Accounting;
 use App\Exports\AccountsExport;
 use App\Http\Controllers\Controller;
+use App\Imports\AccountsImport;
 use App\Models\Account;
 use App\Models\AccountType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Facades\Excel;
 use Mpdf\Mpdf;
 class AccountsTreeController extends Controller
 {
@@ -16,13 +17,11 @@ class AccountsTreeController extends Controller
         $addAccounts = Account::where('company_id', Auth::user()->model_id)
             ->where('islast','!=' ,1)->get();
         $accountsTree = $this->buildTree($accounts);
-
         return view('financialaccounting.accountsTree.index', compact('addAccounts' ,'accounttypes', 'accountsTree','accounts'));
     }
     public function accountTable(){
         $accounttypes =  AccountType::all();
         $accounts = Account::where('company_id', Auth::user()->model_id)->get();
-
         $accountsTree = $this->buildTree($accounts);
         return view('financialaccounting.accountsTree.account-table', compact('accounttypes', 'accountsTree','accounts'));
     }
@@ -73,7 +72,6 @@ class AccountsTreeController extends Controller
                 'message'=>' هذا الحساب يحتوي على حسابات فرعيه لايمكن ان يكون حساب نهائي'
             ],201);
         }
-
         $account->account_number = $validated['account_number'];
         $account->name = $validated['name'];
         $account->account_type_id = $validated['account_type_id'];
@@ -86,7 +84,6 @@ class AccountsTreeController extends Controller
         $curent_year = getCurrentYear();
         $account->updateOwnBalance($curent_year);
         $account->updateParentBalanceFromChildren($curent_year);
-
         return response()->json([
             'message'=>'تم تعديل الحساب بنجاح'
         ],200);
@@ -136,6 +133,34 @@ class AccountsTreeController extends Controller
         return redirect()->back()->with('success', 'تم إنشاء الحساب بنجاح!');
 
     }
+    public function importAccounts(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|file',
+        ]);
+
+        if (!$request->hasFile('import_file')) {
+            return back()->with('error', 'No file uploaded.');
+        }
+        try {
+            $file = $request->file('import_file');
+            $destinationPath = storage_path('app/imports');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move($destinationPath, $fileName);
+
+            $fullPath = $destinationPath . '/' . $fileName;
+
+            if (!file_exists($fullPath)) {
+                return response()->json(['success' => false, 'msg' => 'File could not be found.']);
+            }
+
+            Excel::import(new AccountsImport(), $fullPath);
+
+            return back()->with('success', 'تم الاستيراد بنجاح ✅');
+        } catch (\Exception $e) {
+            return back()->with('error', 'حدث خطأ أثناء الاستيراد: ' . $e->getMessage());
+        }
+    }
     private function buildTree($accounts, $parentId = 0)
     {
         $tree = [];
@@ -152,6 +177,7 @@ class AccountsTreeController extends Controller
     }
     public function delete($id)
     {
+
         $account = Account::find($id);
         if ($account) {
             $curent_year = getCurrentYear();
@@ -214,7 +240,6 @@ class AccountsTreeController extends Controller
             $this->flattenAccounts($allAccounts, $flatList, $account->id);
         }
     }
-
     private function formatAccount($account ,$level)
     {
         return [
@@ -319,5 +344,4 @@ class AccountsTreeController extends Controller
         }
         return response()->json(['account_number' => $nextNumber]);
     }
-
 }

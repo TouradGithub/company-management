@@ -72,7 +72,7 @@ class CompanyController extends Controller
         $sessionYear = SessionYear::create([
             'company_id' => $company->id,
             'name'       => Carbon::now()->format('Y'),
-            'is_current'   => 1,
+            'is_current'   => true,
         ]);
         $accounts = Account::where('company_id', $company->id)->get();
         foreach ($accounts as $acct) {
