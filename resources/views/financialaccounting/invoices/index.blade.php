@@ -123,6 +123,17 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script >
+        function printObject(url) {
+            showLoadingOverlay();
+            let iframe = document.createElement("iframe");
+            iframe.src = url;
+            iframe.style.display = "none";
+            document.body.appendChild(iframe);
+            iframe.onload = function () {
+                hideLoadingOverlay();
+                iframe.contentWindow.print();
+            };
+        }
         $(document).ready(function () {
 
             getSelInvoices('all','');
@@ -174,6 +185,7 @@
                             let entityName = invoice.customer
                                 ? (invoice.customer.name || 'غير محدد')
                                 : (invoice.supplier ? invoice.supplier.name : 'غير محدد');
+                            let  printUrl= `/invoices/print/${invoice.id}`;
 
                             var row = `
                                 <div class="invoice-card">
@@ -189,7 +201,7 @@
                             <div class="invoice-total">${invoice.total} ريال</div>
                             <div class="card-actions">
                              <a href="" target="_blank" style="text-decoration: none">
-                             <a href="/invoices/print/${invoice.id}" style="text-decoration: none;" target="_blank">
+                             <a  onclick="printObject('${printUrl}')" style="text-decoration: none;" target="_blank">
                                 <button class="action-btn view" title="عرض">
                                     <i class="fas fa-eye"></i>
                                 </button>

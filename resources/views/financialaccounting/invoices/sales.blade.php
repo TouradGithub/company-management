@@ -2,9 +2,6 @@
 @extends('financialaccounting.layouts.master')
 
 @section('content')
-
-
-
     <div class="invoice-container active" style="width: 100%"  id="sales-invoice">
         <form id="salesInvoiceForm">
             <div>

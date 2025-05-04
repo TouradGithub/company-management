@@ -9,104 +9,118 @@ use App\Models\Customer;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 class SupplierController extends Controller
 {
 
 
     public function index(){
-        $accounts = Account::where('company_id', Auth::user()->model_id)->get();
-        $account = Account::where('company_id', Auth::user()->model_id)
-            ->where('type_account_register', 3)
-            ->first();
-        $cach_register = Account::where('company_id', Auth::user()->model_id)
-            ->where('type_account_register', 2)
-            ->first();
-        $supplier = Account::where('company_id', Auth::user()->model_id)
-            ->where('type_account_register', 3)
-            ->first();
-        return view('financialaccounting.suppliers.index' , compact('accounts' , 'supplier', 'account','cach_register'));
+        $accounts = Account::where('company_id', getCompanyId())
+            ->where('type_account_register', null)->get();
+
+        return view('financialaccounting.suppliers.index' , compact('accounts' ));
     }
 
     public function customers(){
-        $customers = Customer::where('company_id', Auth::user()->model_id)->get();
+        $customers = Customer::where('company_id', getCompanyId())->get();
         return view('financialaccounting.suppliers.customer' , compact('customers'));
+    }
+//    public function linkAccountToCustomers(Request $request)
+//    {
+//        $accountId = $request->input('account_id');
+//        $account = Account::findOrFail($accountId);
+//
+//        if ($this->treeHasOtherTypes($account, [2, 3])) {
+//            return response()->json(['success' => false, 'message' => 'لا يمكن ربط هذا الحساب لأنه أو أحد أبناءه/آبائه مرتبط بنوع آخر']);
+//        }
+//
+//        $oldCustomerAccount = Account::where('type_account_register', 1)->first();
+//        if ($oldCustomerAccount) {
+//            $oldCustomerAccount->updateTreeTypeRegister(null);
+//        }
+//
+//        $account->updateTreeTypeRegister(1);
+//
+//        return response()->json(['success' => true, 'message' => 'تم ربط هذا الحساب وشجرته بالعملاء بنجاح']);
+//    }
+    private function treeHasOtherTypes(Account $account, array $notAllowedTypes)
+    {
+        if (in_array($account->type_account_register, $notAllowedTypes)) {
+            return true;
+        }
+        foreach ($account->children as $child) {
+            if ($this->treeHasOtherTypes($child, $notAllowedTypes)) {
+                return true;
+            }
+        }
+        if ($account->parent && in_array($account->parent->type_account_register, $notAllowedTypes)) {
+            return true;
+        }
+
+        return false;
     }
     public function linkAccountToCustomers(Request $request)
     {
-        $accountId = $request->input('account_id');
-        $account = Account::where('type_account_register' , 1)->first();
-        if($account){
-            $account->type_account_register = null;
-            $account->save();
-        }
-
-        $account = Account::findOrFail($accountId);
-        $account->type_account_register = 1;
-        $account->save();
-        return response()->json(['message' => 'تم ربط هذا الحساب  بالعملاء بنجاح']);
+        return $this->linkAccountWithType($request, 1, 'العملاء');
     }
-
     public function linkCashRegister(Request $request)
     {
-        $accountId = $request->input('account_id');
-        $haveOtherLink = Account::findOrFail($accountId);
-        if($haveOtherLink){
-            $message = '';
-            if($haveOtherLink->type_account_register == 1){
-                $message = 'هذا الحساب مربوط بالعملاء';
-                return response()->json(['success' =>false , 'message' => $message]);
-            }
-
-
-        }
-
-        $account = Account::where('type_account_register' , 2)->first();
-        if($account){
-            $account->type_account_register = null;
-            $account->save();
-        }
-
-        $account = Account::findOrFail($accountId);
-        $account->type_account_register = 2;
-        $account->save();
-        return response()->json(['success' =>true , 'message' => 'تم ربط هذا الحساب  بالصاديق بنجاح']);
+        return $this->linkAccountWithType($request, 2, 'الصندوق');
     }
+
     public function linkToSupplier(Request $request)
     {
+        return $this->linkAccountWithType($request, 3, 'الموردين');
+    }
+
+    private function linkAccountWithType(Request $request, int $type, string $typeName)
+    {
         $accountId = $request->input('account_id');
-        $haveOtherLink = Account::findOrFail($accountId);
-        if($haveOtherLink){
-            $message = '';
-            if($haveOtherLink->type_account_register == 1){
-                $message = 'هذا الحساب مربوط بالعملاء';
-                return response()->json(['success' =>false , 'message' => $message]);
-            }
 
-            if($haveOtherLink->type_account_register == 2){
-                $message = 'هذا الحساب مربوط الموردين';
-                return response()->json(['success' =>false , 'message' => $message]);
-            }
-
-
+        $targetAccount = Account::findOrFail($accountId);
+        if ($targetAccount->type_account_register && $targetAccount->type_account_register != $type) {
+            return response()->json([
+                'success' => false,
+                'message' => 'هذا الحساب مرتبط بنوع آخر بالفعل.',
+            ]);
+        }
+        $existing = Account::where('type_account_register', $type)->first();
+        if ($existing) {
+            $existing->type_account_register = null;
+            $existing->linked_root_id = null;
+            $existing->save();
+            Account::where('linked_root_id', 1)->update(['linked_root_id' => null]);
         }
 
-        $account = Account::where('type_account_register' , 3)->first();
-        if($account){
-            $account->type_account_register = null;
-            $account->save();
-        }
+        DB::transaction(function () use ($targetAccount, $type) {
+            $targetAccount->type_account_register = $type;
+            $targetAccount->linked_root_id = 1;
+            $targetAccount->save();
+            $this->updateChildrenWithRoot($targetAccount->id, $targetAccount->id , $type);
+        });
 
-        $account = Account::findOrFail($accountId);
-        $account->type_account_register = 3;
-        $account->save();
-        return response()->json(['success' =>true , 'message' => 'تم ربط هذا الحساب  بالصاديق بنجاح']);
+        return response()->json([
+            'success' => true,
+            'message' => "تم ربط هذا الحساب بـ{$typeName} بنجاح.",
+        ]);
+    }
+
+    private function updateChildrenWithRoot($parentId, $rootId, $type)
+    {
+        $children = Account::where('parent_id', $parentId)->get();
+        foreach ($children as $child) {
+            $child->type_account_register = $type;
+            $child->save();
+
+            $this->updateChildrenWithRoot($child->id, $rootId ,$type);
+        }
     }
 
 
     public function getCustomers()
     {
-        $suppliers = Supplier::where('company_id' , Auth::user()->model_id)->with('branch')->get();
+        $suppliers = Supplier::where('company_id' , getCompanyId())->with('branch')->get();
         return response()->json(['suppliers' => $suppliers]);
     }
     private function getAccountTreeIds($accounts, &$accountIds = [])
@@ -140,7 +154,7 @@ class SupplierController extends Controller
         $supplier->contact_info = $request->contact_info;
         $supplier->account_id = $request->account_id;
         $supplier->branch_id = $request->branch_id??'all';
-        $supplier->company_id = Auth::user()->model_id;
+        $supplier->company_id = getCompanyId();
         $supplier->save();
         return response()->json([
             'status' => 'تم',
@@ -153,7 +167,7 @@ class SupplierController extends Controller
     public function delete($id)
     {
         $supplier = Supplier::where('id', $id)
-            ->where('company_id', Auth::user()->model_id)
+            ->where('company_id', getCompanyId())
             ->first();
 
         if (!$supplier) {

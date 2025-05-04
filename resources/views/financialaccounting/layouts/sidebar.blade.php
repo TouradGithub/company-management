@@ -148,7 +148,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#balance-sheet">
+                        <a href="{{route('balance.sheet.index')}}">
                             <i class="fas fa-file-contract"></i>
                             <span>الميزانية العمومية</span>
                         </a>

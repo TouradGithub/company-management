@@ -48,12 +48,9 @@ Route::middleware(['auth', 'verify.admin'])->group(function () {
     Route::post('/company/store', [CompanyController::class, 'store'])->name('company.store');
     Route::patch('/companies/{id}/update-status', [CompanyController::class, 'updateStatus'])->name('companies.updateStatus');
 });
-
-// Route::get('/company/login', [CompanyAuthController::class, 'showLoginForm'])->name('company.login');
 Route::post('/company/login', [CompanyAuthController::class, 'login'])->name('company.login');
 
-
-
+Route::get('/invoices/scan-code-qr/{id}', [InvoiceController::class, 'scanCodeQr'])->name('invoices.show.scan-code-qr');
 Route::middleware(['auth', 'verify.company' ])->group(function () {
     Route::middleware(['verify.company.info'])->group(function () {
     Route::post('/company/logout', [CompanyAuthController::class, 'logout'])->name('company.logout');
@@ -86,6 +83,9 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
     Route::get('/branches/{branch}/employees', [EmployeeController::class, 'getEmployeesByBranch'])->name('branches.employees');
     Route::get('/employees-by-branch', [EmployeeController::class, 'getEmployeesByBranchWithRelationShip'])->name('branches.employees.getEmployeesByBranchWithRelationShip');
     // Edit leave form
+    Route::get('/balance-sheet', [\App\Http\Controllers\Accounting\BalanceSheetController::class, 'index'])->name('balance.sheet.index');
+
+
     Route::get('/leaves/{leave}/edit', [LeaveController::class, 'edit'])->name('company.leaves.edit');
     // Update leave
     Route::put('/leaves/{leave}', [LeaveController::class, 'update'])->name('company.leaves.update');
@@ -109,6 +109,7 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
 
     Route::get('journal-entry/index' , [App\Http\Controllers\Accounting\JournalEntryController::class , 'index'])->name('journal-entry.index');
     Route::get('journal-entry/create' , [App\Http\Controllers\Accounting\JournalEntryController::class , 'create'])->name('journal-entry.create');
+    Route::get('journal-entry/clone/{id}' , [App\Http\Controllers\Accounting\JournalEntryController::class , 'clone'])->name('journal-entry.clone');
     Route::post('journal-entry/store' , [App\Http\Controllers\Accounting\JournalEntryController::class , 'store'])->name('journal-entry.store');
     Route::post('journal-entry/update' , [App\Http\Controllers\Accounting\JournalEntryController::class , 'update'])->name('journal-entry.update');
     Route::get('/journal-entries/ajax', [App\Http\Controllers\Accounting\JournalEntryController::class, 'fetchEntries'])->name('journal-entry.fetchEntries');
@@ -116,8 +117,10 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
     Route::delete('/journal-entry-details/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'destroyEntryDetails'])->name('journal-entry.destroy-entry-details');
     Route::get('/journal-entry/edit/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'edit'])->name('journal-entry.edit');
     Route::get('/journal-entry/export/pdf', [App\Http\Controllers\Accounting\JournalEntryController::class, 'exportPdf'])->name('journal-entry.export.pdf');
-    Route::get('/journal-entry/single/export/pdf/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'singleexportPdf'])->name('journal-entry.export.singleexportPdf');
+        Route::get('/journal-entry/single/export/pdf/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'singleexportPdf'])->name('journal-entry.export.singleexportPdf');
+        Route::get('/journal-entry/single/print/pdf/{id}', [App\Http\Controllers\Accounting\JournalEntryController::class, 'singlePrint'])->name('journal-entry.export.singlePrint');
     Route::get('/journal-entry/export/excel', [App\Http\Controllers\Accounting\JournalEntryController::class, 'exportExcel'])->name('journal-entry.export.excel');
+    Route::post('/journal/import', [App\Http\Controllers\Accounting\JournalEntryController::class, 'import'])->name('journal.import');
 
     Route::get('CostCenter/index' , [App\Http\Controllers\Accounting\CostCenterController::class , 'index'])->name('cost-center.index');
     Route::post('CostCenter/store' , [App\Http\Controllers\Accounting\CostCenterController::class , 'store'])->name('cost-center.store');
@@ -130,6 +133,8 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
     Route::get('/account-statement', [App\Http\Controllers\Accounting\AccountStatementController::class, 'getStatement'])->name('account.statement.getStatement-by-ajax');
     Route::get('account-statement/export/excel', [App\Http\Controllers\Accounting\AccountStatementController::class, 'exportExcel'])->name('account.statement.export.excel');
     Route::get('account-statement/export/pdf', [App\Http\Controllers\Accounting\AccountStatementController::class, 'exportPDF'])->name('account.statement.export.pdf');
+    Route::get('account-statement/print/pdf', [App\Http\Controllers\Accounting\AccountStatementController::class, 'printPDF'])->name('account.statement.print.pdf');
+
 
 
     Route::get('Acounting/index' , [App\Http\Controllers\Accounting\HomeController::class , 'index'])->name('accounting.index');
@@ -141,6 +146,8 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
     Route::post('Acounting/accountsTree' , [App\Http\Controllers\Accounting\AccountsTreeController::class , 'store'])->name('accounting.accountsTree.store');
     Route::get('/accounting/accounts-tree/filter', [App\Http\Controllers\Accounting\AccountsTreeController::class, 'filterAccounts'])->name('accounting.accountsTree.filter');
     Route::get('/accounting/accountsTree/search', [App\Http\Controllers\Accounting\AccountsTreeController::class, 'search'])->name('accounting.accountsTree.search');
+
+    Route::post('/accounts/import', [App\Http\Controllers\Accounting\AccountsTreeController::class, 'importAccounts'])->name('accounts.import');
 
     Route::get('/accounting/export/pdf', [App\Http\Controllers\Accounting\AccountsTreeController::class, 'exportPdf'])->name('accounting.export.pdf');
     Route::get('/accounting/export/excel', [App\Http\Controllers\Accounting\AccountsTreeController::class, 'exportExcel'])->name('accounting.export.excel');
@@ -169,6 +176,8 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
     Route::get('/products/edit/{id}', [App\Http\Controllers\Accounting\ProductController::class, 'edit']);
     Route::post('/products/update/{id}', [App\Http\Controllers\Accounting\ProductController::class, 'update']); // Use POST with _method=PUT
     Route::delete('/products/delete/{id}', [App\Http\Controllers\Accounting\ProductController::class, 'destroy']);
+    Route::post('/products/import', [App\Http\Controllers\Accounting\ProductController::class, 'importProducts'])->name('products.import');
+
 
     Route::get('/customers/index', [App\Http\Controllers\Accounting\CustomerController::class, 'index'])->name('customers.index');
     Route::post('/customers/store', [App\Http\Controllers\Accounting\CustomerController::class, 'store'])->name('customers.store');
@@ -193,6 +202,7 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
     Route::get('/invoices/purchase-returns', [InvoiceController::class, 'purchaseReturns'])->name('invoices.purchase-returns');
     Route::get('/invoices/print/{id}', [InvoiceController::class, 'printInvoice'])->name('invoices.print');
     Route::get('/invoices/edit/{id}', [InvoiceController::class, 'editInvoice'])->name('invoices.edit');
+
 
     Route::get('/invoices/index', [App\Http\Controllers\Accounting\InvoiceController::class, 'index'])->name('invoices.index');
     Route::get('/invoices/create', [App\Http\Controllers\Accounting\InvoiceController::class, 'create'])->name('invoices.create');
@@ -241,42 +251,29 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
     Route::put('/companies/update-company-information/{id}', [App\Http\Controllers\Accounting\ProfileCompanyController::class, 'update'])->name('update.company.info.update');
 
 });
-
-
-
 Route::post('/branch/login', [AuthBranchController::class, 'login'])->name('branch.login');
-
 Route::prefix('branch')->middleware(['auth', 'verify.branch'])->group(function () {
-
-
     Route::get('/dashboard', [AuthBranchController::class, 'dashboard'])->name('branch.dashboard');
-
     Route::get('overtimes/edit/{id}', [App\Http\Controllers\Branch\OvertimeController::class, 'edit'])->name('branch.overtimes.edit');
     Route::delete('overtimes/destroy/{id}', [App\Http\Controllers\Branch\OvertimeController::class, 'destroy'])->name('branch.overtimes.destroy');
     Route::post('overtimes/update/{id}', [App\Http\Controllers\Branch\OvertimeController::class, 'update'])->name('branch.overtimes.update');
     Route::get('overtimes/index', [App\Http\Controllers\Branch\OvertimeController::class, 'index'])->name('branch.overtimes.index');
     Route::get('overtimes/create', [App\Http\Controllers\Branch\OvertimeController::class, 'create'])->name('branch.overtimes.create');
     Route::post('overtimes', [App\Http\Controllers\Branch\OvertimeController::class, 'store'])->name('branch.overtimes.store');
-
     Route::post('/leaves', [App\Http\Controllers\Branch\LeaveController::class, 'store'])->name('branch.leaves.store');
     Route::get('/leaves/index', [App\Http\Controllers\Branch\LeaveController::class, 'index'])->name('branch.leaves.index');
     Route::get('/leaves/create', [App\Http\Controllers\Branch\LeaveController::class, 'create'])->name('branch.leaves.create');
     Route::get('/leaves/{leave}/edit', [App\Http\Controllers\Branch\LeaveController::class, 'edit'])->name('branch.leaves.edit');
     Route::put('/leaves/{leave}', [App\Http\Controllers\Branch\LeaveController::class, 'update'])->name('branch.leaves.update');
     Route::delete('/leaves/{leave}', [App\Http\Controllers\Branch\LeaveController::class, 'destroy'])->name('branch.leaves.destroy');
-
     Route::get('/branches/{branch}/employees', [App\Http\Controllers\Branch\EmployeeController::class, 'getEmployeesByBranch'])->name('branches.employees');
     Route::get('/employees-by-branch', [App\Http\Controllers\Branch\EmployeeController::class, 'getEmployeesByBranchWithRelationShip'])->name('branches.employees.getEmployeesByBranchWithRelationShip');
-
-
-
     Route::get('employees/index', [App\Http\Controllers\Branch\EmployeeController::class, 'index'])->name('branch.employees.index');
     Route::get('employees/create', [App\Http\Controllers\Branch\EmployeeController::class, 'create'])->name('branch.employees.create');
     Route::get('employees/edit/{id}', [App\Http\Controllers\Branch\EmployeeController::class, 'edit'])->name('branch.employees.edit');
     Route::post('employees/store', [App\Http\Controllers\Branch\EmployeeController::class, 'store'])->name('branch.employees.store');
     Route::post('employees/update/{id}', [App\Http\Controllers\Branch\EmployeeController::class, 'update'])->name('branch.employees.update');
     Route::delete('employees/delete/{id}', [App\Http\Controllers\Branch\EmployeeController::class, 'delete'])->name('branch.employees.delete');
-
     Route::get('payrolls/create', [App\Http\Controllers\Branch\PayrollController::class, 'create'])->name('branch.payrolls.create');
     Route::get('payrolls/index', [App\Http\Controllers\Branch\PayrollController::class, 'index'])->name('branch.payrolls.index');
     Route::post('payrolls/store', [App\Http\Controllers\Branch\PayrollController::class, 'store'])->name('branch.payrolls.store');
@@ -284,7 +281,6 @@ Route::prefix('branch')->middleware(['auth', 'verify.branch'])->group(function (
     Route::get('/payrolls/delete/{date}', [App\Http\Controllers\Branch\PayrollController::class, 'deleteByDate'])->name('branch.payrolls.deleteByDate');
     Route::get('payrolls/data', [App\Http\Controllers\Branch\PayrollController::class, 'getPayrollData'])->name('branch.payrolls.data');
     Route::post('payrolls/export/pdf', [App\Http\Controllers\Branch\PayrollController::class, 'exportPdf'])->name('branch.payrolls.export.pdf');
-
 
     Route::name('branch.')->group(function () {
         Route::post('loans/store', [App\Http\Controllers\Branch\LoanController::class, 'store'])->name('loans.branch.store');

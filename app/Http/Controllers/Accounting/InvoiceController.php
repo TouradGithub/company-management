@@ -57,13 +57,14 @@ class InvoiceController extends Controller
 
     public function getInvoices(Request $request) {
         $query = Invoice::query();
-
+        $query->latest()->limit(10);
         if ($request->has('status') && $request->status != 'all') {
             $query->where('invoice_type', $request->status);
         }
         if ($request->has('search') && $request->search != '') {
             $query->where('invoice_number', 'like', "%$request->search%");
         }
+
 
 
         $invoices = $query->where('company_id',Auth::user()->model_id)->where('session_year',getCurrentYear())->with(['branch','customer' , 'Supplier'])->get();
@@ -113,7 +114,7 @@ class InvoiceController extends Controller
 
     public function store(Request $request)
     {
-
+//dd("OK");
         $validated = $request->validate([
             'invoice_date' => 'required|date',
             'customer_id' => 'required',
@@ -164,13 +165,14 @@ class InvoiceController extends Controller
             return response()->json(['errors' => $errors], 422);
         }
         $invoice = Invoice::create([
-            'invoice_number' => Invoice::generateEntryNumber(Auth::user()->model_id),
+            'invoice_number' => Invoice::generateEntryNumber(getCompanyId()),
             'invoice_date' => $validated['invoice_date'],
             'customer_id' => $validated['customer_id'],
             'branch_id' =>$validated['branch_id'],
             'company_id' => Auth::user()->model_id,
             'employee_id' => Auth::user()->name,
             'subtotal' => $validated['subtotal'],
+            'session_year'=>getCurrentYear(),
             'discount' => $validated['discount'] ?? 0,
             'tax' => $validated['tax']??0,
             'total' => $validated['total'],
@@ -257,6 +259,7 @@ class InvoiceController extends Controller
             'company_id' => Auth::user()->model_id,
             'employee_id' => Auth::user()->name,
             'subtotal' => $validated['subtotal'],
+            'session_year'=>getCurrentYear(),
             'discount' => $validated['discount'] ?? 0,
             'tax' => $validated['tax']??0,
             'total' => $validated['total'],
@@ -355,6 +358,7 @@ class InvoiceController extends Controller
             'customer_id' => $validated['customer_id'],
             'branch_id' =>$validated['branch_id'],
             'company_id' => Auth::user()->model_id,
+            'session_year'=>getCurrentYear(),
             'employee_id' => Auth::user()->name,
             'subtotal' => $validated['subtotal'],
             'discount' => $validated['discount'] ?? 0,
@@ -400,7 +404,8 @@ class InvoiceController extends Controller
             'discount' => 'required|numeric',
             'tax' => 'required|numeric',
             'total' => 'required|numeric',
-        ], [
+        ],
+            [
             'invoice_date.required' => 'تاريخ الفاتورة مطلوب.',
             'original_invoice_number.required' => 'قم الفاتورة المرتجعه مطلوب.',
             'invoice_date.date' => 'تاريخ الفاتورة يجب أن يكون تاريخًا صالحًا.',
@@ -453,6 +458,7 @@ class InvoiceController extends Controller
             'branch_id' =>$validated['branch_id'],
             'company_id' => Auth::user()->model_id,
             'employee_id' => Auth::user()->name,
+            'session_year'=>getCurrentYear(),
             'subtotal' => $validated['subtotal'],
             'discount' => $validated['discount'] ?? 0,
             'tax' => $validated['tax']??0,
@@ -738,6 +744,12 @@ class InvoiceController extends Controller
             'message' => 'تم إضافة الفاتورة بنجاح',
             'invoice_id' => $invoice->id, // Return invoice ID for printing
         ], 201);
+    }
+
+    public function scanCodeQr($id)
+    {
+        $invoice = Invoice::with(['items.product', 'customer', 'supplier'])->findOrFail($id);
+        return view('financialaccounting.invoices.exports.print', compact('invoice'));
     }
 
 

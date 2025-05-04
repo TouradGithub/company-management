@@ -20,13 +20,15 @@
                     <button class="export-pdf-btn" id="export-pdf-btn-account">
                         <i class="fas fa-file-pdf"></i> تصدير PDF
                     </button>
+                    <button class="export-pdf-btn" onclick="printObject('{{ route('account.statement.print.pdf') }}')">
+                        <i class="fas fa-file-pdf"></i>  معاينة
+                    </button>
                 </div>
-
             </div>
                 <div class="table-actions">
                     <div class="form-group" style="width: 20%;height: 100%">
                         <label>الحساب:</label>
-                        <select id="accountSelect" class="select2"  >
+                        <select id="accountSelect" class=""  >
                             <option value="">اختر الحساب</option>
                             @foreach($accounts as $item)
                                 <option value="{{$item->id}}"> {{$item->name}}</option>
@@ -37,7 +39,7 @@
 
                     <div class="form-group" style="width: 20%;height: 100%">
                         <label>الفرع:</label>
-                        <select id="branchSelect" class="select2 branchSelect"  >
+                        <select id="branchSelect" class=" "  >
                             <option value="">اختر الفرع</option>
                             @foreach($branches as $item)
                                 <option value="{{$item->id}}"> {{$item->name}}</option>
@@ -59,10 +61,7 @@
 
                         <input type="button" id="searchBtn" value="بحث" style="margin-top: 39px">
                     </div>
-
-
                 </div>
-
                 <div class="accounts-table-container" style="display: none;">
                     <table class="accounts-table">
                         <thead>
@@ -104,6 +103,40 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 
     <script>
+
+
+        function printObject(url) {
+
+            if(!$('#accountSelect').val() || !$('#entryDateDebut').val() || !$('#entryDateFin').val() || !$('#branchSelect').val()){
+                alert("يرجى اختيار الحقول لبدأ المعاينة!");
+                return;
+
+            }
+            showLoadingOverlay();
+
+            let accountId = $('#accountSelect').val();
+            let startDate = $('#entryDateDebut').val();
+            let endDate = $('#entryDateFin').val();
+            let branchId = $('#branchSelect').val();
+            const params={
+                account_id: accountId,
+                from_date: startDate,
+                to_date: endDate,
+                branch_id: branchId
+            };
+            const queryString = new URLSearchParams(params).toString();
+            const fullUrl = `${url}?${queryString}`;
+
+            let iframe = document.createElement("iframe");
+            iframe.src = fullUrl;
+            iframe.style.display = "none";
+            document.body.appendChild(iframe);
+            iframe.onload = function () {
+                hideLoadingOverlay();
+                iframe.contentWindow.print();
+
+            };
+        }
         $(document).ready(function () {
 
             $('.select2').select2({

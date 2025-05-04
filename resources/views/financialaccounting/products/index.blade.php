@@ -2,13 +2,21 @@
 @section('content')
     <div class="products-container">
         <div class="products-header">
+            <div class="table-actions">
+                <button class="add-account-btn" id="openImportModal">
+                    <i class="fas fa-file-import"></i> استيراد الحسابات
+                </button>
+            </div>
             <h1>المنتجات</h1>
             <button class="add-product-btn">
                 <i class="fas fa-plus"></i>
                 إضافة منتج جديد
             </button>
+
+
         </div>
         <div class="products-grid"></div>
+
     </div>
 
     <div class="product-form-modal">
@@ -101,12 +109,39 @@
             </form>
         </div>
     </div>
+    <div id="importModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:999;">
+        <div style="background:#fff; padding:20px; margin:10% auto; width:400px; border-radius:10px; position:relative;">
+            <h3>استيراد ملف Excel</h3>
+            <form id="importForm" action="{{ route('products.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="file" name="import_file" class="" accept=".xlsx,.xls" required style="    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #444;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border 0.3s ease, box-shadow 0.3s ease;"/>                <div class="modal-buttons">
+                    <button type="button" class="cancel-btn" id="closeImportModal">إلغاء</button>
+                    <button type="submit" class="save-btn" id="save-btn">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 @endsection
 
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        $('#openImportModal').on('click', function() {
+            $('#importModal').fadeIn();
+        });
+        $('#closeImportModal').on('click', function() {
+            $('#importModal').fadeOut();
+        });
         $(document).ready(function () {
             fetchProducts();
 
@@ -133,7 +168,7 @@
                                     </div>
                                     <div class="product-info">
                                         <h3>${product.name}</h3>
-                                        <p class="product-category"><i class="fas fa-tag"></i> ${product.category.name}</p>
+                                        <p class="product-category"><i class="fas fa-tag"></i> ${product.category?.name}</p>
                                         <p class="product-price"><i class="fas fa-money-bill-wave"></i> ${product.price} ريال</p>
                                     </div>
                                     <div class="product-actions">

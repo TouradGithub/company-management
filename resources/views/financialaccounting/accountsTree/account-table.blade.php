@@ -88,8 +88,10 @@
         <button class="export-pdf-btn" id="export-pdf-btn-account">
             <i class="fas fa-file-pdf"></i> تصدير PDF
         </button>
+        <button class="add-account-btn" id="openImportModal">
+            <i class="fas fa-file-import"></i> استيراد الحسابات
+        </button>
     </div>
-
     <div class="container-tabs">
         <div class="row">
             <div>
@@ -121,7 +123,6 @@
         </div>
 
     </div>
-
     <div class="accounts-table-container">
         <table class="accounts-table" id="accountsTable">
             <thead>
@@ -148,8 +149,6 @@
             </tfoot>
         </table>
     </div>
-
-
     <div class="account-form-modal" style="display: none;">
         <div class="modal-content">
             <h2></h2>
@@ -216,7 +215,6 @@
             </form>
         </div>
     </div>
-
     <div class="account-form-modal-show">
         <div class="modal-content">
             <h2>  </h2>
@@ -282,15 +280,48 @@
             </form>
         </div>
     </div>
-
-
+    <div id="importModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:999;">
+        <div style="background:#fff; padding:20px; margin:10% auto; width:400px; border-radius:10px; position:relative;">
+            <h3>استيراد ملف Excel</h3>
+            <form id="importForm" action="{{ route('accounts.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="form-group-model">
+                    <input type="file" name="import_file" class="" accept=".xlsx,.xls" required style="    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #444;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border 0.3s ease, box-shadow 0.3s ease;"/>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="cancel-btn" id="closeImportModal">إلغاء</button>
+                    <button type="submit" class="save-btn" id="save-btn">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
-
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <script>
+        function confirmDelete(element) {
+            const id = element.getAttribute('data-id');
+            const confirmed = confirm('هل أنت متأكد أنك تريد حذف هذا الحساب؟');
+            if (confirmed) {
+                window.location.href = `{{ route('accounting.delete', ':id') }}`.replace(':id', id);
+            }
+            return false;
+        }
+        $('#openImportModal').on('click', function() {
+            $('#importModal').fadeIn();
+        });
+        $('#closeImportModal').on('click', function() {
+            $('#importModal').fadeOut();
+        });
         $(document).ready(function() {
             // Load all accounts by default
             let currentLevel = 'all';
@@ -366,11 +397,14 @@
                                         <div>
                                             <a href="#" style="margin: 10px; font-size: 20px;" ><i class="fas fa-edit edit-account-btn" id="${account.id}" style="color: green;"></i></a>
                                              <a href="#" style="margin: 10px; font-size: 20px;" class="view-account"><i class="fas fa-eye show-account-btn" id="${account.id}" style="color: green;"></i></a>
-                                            <a href="{{ route('accounting.delete', ':id') }}".replace(':id', account.id)"
+                                          <a href="#"
+                                               class="delete-account"
+                                               data-id="${account.id}"
                                                style="margin: 10px; font-size: 20px;"
-                                               onclick="return confirm('هل أنت متأكد أنك تريد حذف هذا الحساب؟');">
+                                               onclick="return confirmDelete(this);">
                                                 <i class="fas fa-trash" style="color: red;"></i>
                                             </a>
+
                                         </div>
                                     </td>
                                 </tr>`;
@@ -422,7 +456,6 @@
                 bindEditEvents();
                 bindShowEvents();
             }
-
             // Edit button click handler
             let fistValue = 0;
             function bindEditEvents() {
@@ -463,7 +496,6 @@
                     });
                 });
             }
-
             function bindShowEvents() {
                 $('.show-account-btn').on('click', function() {
                     let accountId = $(this).attr('id');
@@ -504,7 +536,6 @@
                     });
                 });
             }
-
             $('#isLastCheckboxEdit').on('change', function() {
                 if (this.checked) {
                     $('#openingBalance').val(fistValue);
@@ -514,8 +545,6 @@
                     $('#openingBalance').hide();
                 }
             });
-
-
             // Save button handler
             $('.save-btn').on('click', function() {
                 let data = {

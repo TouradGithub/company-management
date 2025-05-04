@@ -25,13 +25,21 @@ class Invoice extends Model
 
     public static function generateEntryNumber($companyId)
     {
-
-        $invoice = self::where('company_id', $companyId)
+        $lastInvoice = self::where('company_id', $companyId)
             ->orderBy('id', 'desc')
             ->first();
-        $nextinvoice= $invoice ? intval($invoice->invoice_number) + 1 : 1;
-        return str_pad($nextinvoice, 7, '0', STR_PAD_LEFT);
+
+        $nextNumber = $lastInvoice ? intval($lastInvoice->invoice_number) + 1 : 1;
+
+        while (self::where('company_id', $companyId)
+            ->where('invoice_number', str_pad($nextNumber, 7, '0', STR_PAD_LEFT))
+            ->exists()) {
+            $nextNumber++;
+        }
+
+        return str_pad($nextNumber, 7, '0', STR_PAD_LEFT);
     }
+
 
     public function branch()
     {

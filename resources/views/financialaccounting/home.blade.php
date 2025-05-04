@@ -9,12 +9,12 @@
         <div class="card">
             <i class="fas fa-chart-line"></i>
             <h3>الإيرادات</h3>
-            <p>234,567 ريال</p>
+            <p>{{calculateExpenses()}} ريال</p>
         </div>
         <div class="card">
             <i class="fas fa-chart-pie"></i>
             <h3>المصروفات</h3>
-            <p>123,456 ريال</p>
+            <p>{{calculateExpenses()}} ريال</p>
         </div>
     </div>
     <div class="quick-actions">

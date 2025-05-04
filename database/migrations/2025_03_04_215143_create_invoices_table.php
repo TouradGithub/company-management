@@ -27,7 +27,7 @@ return new class extends Migration
             $table->decimal('tax', 10, 2);
             $table->decimal('total', 10, 2);
             $table->string('status', );
-            $table->softDeletes(); // Add this line for soft deletes
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -1,5 +1,30 @@
 @extends('financialaccounting.layouts.master')
 
+@section('css')
+    <style>
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+
+            #printContent, #printContent * {
+                visibility: visible !important;
+            }
+
+            #printContent {
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 100%;
+                padding: 20px;
+                background: white;
+                direction: rtl;
+                font-family: Arial, sans-serif;
+            }
+        }
+    </style>
+
+@endsection
 @section('content')
     <div id="accountsTreeSection" >
         @if($errors->any())
@@ -74,6 +99,18 @@
                     </tbody>
                 </table>
             </div>
+            <!-- زر الطباعة -->
+
+            <!-- محتوى الطباعة فقط -->
+            <div id="printContent" style="display: none;">
+                <h2 style="text-align: center;">ملخص القيد المحاسبي</h2>
+                <p><strong>رقم القيد:</strong> <span id="entry_number_print"></span></p>
+                <p><strong>التاريخ:</strong> <span id="entry_date_print"></span></p>
+                <p><strong>الوصف:</strong> <span id="entry_description_print"></span></p>
+                <p><strong>الإجمالي:</strong> <span id="entry_total_print"></span> أوقية</p>
+            </div>
+
+
             <div class="totals" style="display: flex; margin: 10px; justify-content: space-between; padding: 10px; background-color: #f7f7f7; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
                 <div style="text-align: center; font-size: 16px; font-weight: 600;">
                     <span style="color: #4CAF50;">إجمالي المدين: </span><span id="totalDebit">0</span>
@@ -86,11 +123,12 @@
                 </div>
             </div>
             <button  id="saveEntry" type="submit" style="  padding: 0.8rem 1.5rem;background: rgb(30,144,255);
-                 width: 20%; color: white; border: none;border-radius: 8px; cursor: pointer;font-weight: 600;
+                 width: 10%; color: white; border: none;border-radius: 8px; cursor: pointer;font-weight: 600;
                   transition: all 0.3s ease;">حفظ</button>
             <button  id="addNewLine" type="button" style="  padding: 0.8rem 1.5rem;background: rgb(30,144,255);
                  width: 10%; color: white; border: none;border-radius: 8px; cursor: pointer;font-weight: 600;
                   transition: all 0.3s ease;">أضف سطر</button>
+
         </div>
     </div>
 @endsection
@@ -120,6 +158,32 @@
 
 
             });
+
+            $('#printPreview').on('click', function () {
+                // تعبئة البيانات في نسخة الطباعة
+                $('#entry_number_print').text($('#entry_number').val());
+                $('#entry_date_print').text($('#entry_date').val());
+                $('#entry_description_print').text($('#description').val());
+
+                let total = 0;
+                $('.debit, .credit').each(function () {
+                    let val = parseFloat($(this).val()) || 0;
+                    total += val;
+                });
+                $('#entry_total_print').text(total.toFixed(2));
+
+                // إظهار div الطباعة مؤقتاً حتى يتمكن المتصفح من طباعته
+                $('#printContent').show();
+
+                // طباعة الصفحة
+                window.print();
+
+                // إعادة إخفاء المحتوى بعد الطباعة
+                setTimeout(() => {
+                    $('#printContent').hide();
+                }, 1000);
+            });
+
 
             function updateTotals() {
                 let totalDebit = 0;
