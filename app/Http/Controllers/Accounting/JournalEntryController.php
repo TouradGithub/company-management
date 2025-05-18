@@ -26,18 +26,18 @@ use Mpdf\Mpdf;
 class JournalEntryController extends Controller
 {
     public function index(){
-        $branches = Branch::where('company_id', Auth::user()->model_id)->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
         return view('financialaccounting.journalEntries.index' , compact('branches'));
     }
     public function create()
     {
-        $accounts = Account::where('company_id', Auth::user()->model_id)
+        $accounts = Account::where('company_id', getCompanyId())
             ->where('islast'  , 1)
             ->get();
-        $costcenters = CostCenter::where('company_id', Auth::user()->model_id)->get();
-        $branches = Branch::where('company_id', Auth::user()->model_id)->get();
-        $journals = Journal::where('company_id' , Auth::user()->model_id)->get();
-        $entry_number = JournalEntry::generateEntryNumber('JR0' ,Auth::user()->model_id);
+        $costcenters = CostCenter::where('company_id', getCompanyId())->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
+        $journals = Journal::where('company_id' , getCompanyId())->get();
+        $entry_number = JournalEntry::generateEntryNumber('JR0' ,getCompanyId());
         return view('financialaccounting.journalEntries.create'  , compact('accounts' ,'branches', 'costcenters' , 'journals' , 'entry_number'));
     }
     public function store(Request $request){
@@ -90,10 +90,10 @@ class JournalEntryController extends Controller
             $journal = \App\Models\Journal::find($request->journal_id);
             $journalCode = $journal->code;
             $journalEntry = JournalEntry::create([
-                'entry_number' =>JournalEntry::generateEntryNumber( $journalCode,Auth::user()->model_id),
+                'entry_number' =>JournalEntry::generateEntryNumber( $journalCode,getCompanyId()),
                 'entry_date' => $request->date,
                 'branch_id' => $request->branch,
-                'company_id' => Auth::user()->model_id,
+                'company_id' => getCompanyId(),
                 'created_by'=>Auth::user()->name,
                 'session_year' => getCurrentYear(),
             ]);
@@ -142,7 +142,7 @@ class JournalEntryController extends Controller
     }
     public function fetchEntries(Request $request)
     {
-        $query = JournalEntry::where('company_id' , Auth::user()->model_id)->with([
+        $query = JournalEntry::where('company_id' , getCompanyId())->with([
                 'details' => function ($query) {
                     $query->select('id', 'journal_entry_id', 'account_id', 'debit', 'credit', 'cost_center_id', 'comment');
                 },
@@ -197,20 +197,20 @@ class JournalEntryController extends Controller
     }
     public function edit($id)
     {
-        $accounts = Account::where('company_id', Auth::user()->model_id)->get();
-        $costcenters = CostCenter::where('company_id', Auth::user()->model_id)->get();
-        $branches = Branch::where('company_id', Auth::user()->model_id)->get();
-        $journals = Journal::where('company_id' , Auth::user()->model_id)->get();
+        $accounts = Account::where('company_id', getCompanyId())->get();
+        $costcenters = CostCenter::where('company_id', getCompanyId())->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
+        $journals = Journal::where('company_id' , getCompanyId())->get();
 
         $entry = JournalEntry::findOrFail($id);
         return view('financialaccounting.journalEntries.edit' , compact('entry','accounts' ,'branches', 'costcenters' , 'journals'));
     }
     public function clone($id)
     {
-        $accounts = Account::where('company_id', Auth::user()->model_id)->get();
-        $costcenters = CostCenter::where('company_id', Auth::user()->model_id)->get();
-        $branches = Branch::where('company_id', Auth::user()->model_id)->get();
-        $journals = Journal::where('company_id' , Auth::user()->model_id)->get();
+        $accounts = Account::where('company_id', getCompanyId())->get();
+        $costcenters = CostCenter::where('company_id', getCompanyId())->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
+        $journals = Journal::where('company_id' , getCompanyId())->get();
 
         $entry = JournalEntry::findOrFail($id);
         return view('financialaccounting.journalEntries.clone' , compact('entry','accounts' ,'branches', 'costcenters' , 'journals'));

@@ -13,21 +13,21 @@ class AccountsTreeController extends Controller
 {
     public function index(){
         $accounttypes =  AccountType::all();
-        $accounts = Account::where('company_id', Auth::user()->model_id)->get();
-        $addAccounts = Account::where('company_id', Auth::user()->model_id)
+        $accounts = Account::where('company_id', getCompanyId())->get();
+        $addAccounts = Account::where('company_id', getCompanyId())
             ->where('islast','!=' ,1)->get();
         $accountsTree = $this->buildTree($accounts);
         return view('financialaccounting.accountsTree.index', compact('addAccounts' ,'accounttypes', 'accountsTree','accounts'));
     }
     public function accountTable(){
         $accounttypes =  AccountType::all();
-        $accounts = Account::where('company_id', Auth::user()->model_id)->get();
+        $accounts = Account::where('company_id', getCompanyId())->get();
         $accountsTree = $this->buildTree($accounts);
         return view('financialaccounting.accountsTree.account-table', compact('accounttypes', 'accountsTree','accounts'));
     }
     public  function edit($id)
     {
-        $account = Account::where('company_id',Auth::user()->model_id)->where('id' ,$id)->first();
+        $account = Account::where('company_id',getCompanyId())->where('id' ,$id)->first();
         return response()->json($account,200);
     }
     public  function update(Request $request)
@@ -56,7 +56,7 @@ class AccountsTreeController extends Controller
             'closing_list_type.in' => 'نوع القائمة الختامية يجب أن يكون إما "قائمة الدخل" أو "الميزانيه العموميه".',
             'closing_list_type.required' => ' القائمة الختامية  مطلوبه".',
         ]);
-        $account = Account::where('company_id',Auth::user()->model_id)->where('id' ,$request->id)->first();
+        $account = Account::where('company_id',getCompanyId())->where('id' ,$request->id)->first();
         if(!$account){
             return response()->json([
                 'message'=>'هذا الحساب غير موجود'
@@ -196,7 +196,7 @@ class AccountsTreeController extends Controller
         $level = $request->query('level');
         $accounts = collect();
         if ($level == 'all') {
-            $accountsall = Account::where('company_id', Auth::user()->model_id)
+            $accountsall = Account::where('company_id', getCompanyId())
                 ->get();
             $flatList = collect();
             $this->flattenAccounts($accountsall, $flatList);
@@ -213,7 +213,7 @@ class AccountsTreeController extends Controller
     }
     private function getAccountsByLevel($targetLevel)
     {
-        $allAccounts = Account::where('company_id' ,Auth::user()->model_id)
+        $allAccounts = Account::where('company_id' ,getCompanyId())
                             ->with(['children','accountType'])->get();
         $filteredAccounts = collect();
         foreach ($allAccounts as $account) {
@@ -287,7 +287,7 @@ class AccountsTreeController extends Controller
     private function getAccountsForExport($level)
     {
         if ($level === 'all') {
-            return Account::where('company_id' , Auth::user()->model_id)->with(['children', 'accountType'])
+            return Account::where('company_id' , getCompanyId())->with(['children', 'accountType'])
                 ->where('parent_id',0)
                 ->get();
         } else {
@@ -298,7 +298,7 @@ class AccountsTreeController extends Controller
     {
         $query = $request->input('query');
 
-        $accounts = Account::where('company_id', Auth::user()->model_id)
+        $accounts = Account::where('company_id', getCompanyId())
             ->where(function ($q) use ($query) {
                 $q->where('name', 'LIKE', "%{$query}%")
                     ->orWhere('account_number', 'LIKE', "%{$query}%");

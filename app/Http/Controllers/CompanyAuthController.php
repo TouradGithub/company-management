@@ -24,6 +24,15 @@ class CompanyAuthController extends Controller
 
         if (Auth::attempt($request->only('email', 'password'))) {
 
+            if(Auth::user()->model_type == "BRANCH"){
+                return redirect()->route('branch.dashboard')->with('success', 'تم تسجيل الدخول بنجاح!');            }
+            if(Auth::user()->model_type == "COMPANY"){
+                return redirect()->route('company.dashboard')->with('success', 'تم تسجيل الدخول بنجاح!');
+            }
+            if(Auth::user()->model_type == "USERADMIN"){
+                return redirect()->route('company.create')->with('success', 'تم تسجيل الدخول بنجاح!');
+            }
+
             return redirect()->route('company.dashboard')->with('success', 'تم تسجيل الدخول بنجاح!');
 
         }

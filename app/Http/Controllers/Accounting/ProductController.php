@@ -15,8 +15,8 @@ use Maatwebsite\Excel\Facades\Excel;
 class ProductController extends Controller
 {
     public function index(){
-        $categories = CategoryInvoice::where('company_id' , Auth::user()->model_id)->get();
-        $branches = Branch::where('company_id' , Auth::user()->model_id)->get();
+        $categories = CategoryInvoice::where('company_id' , getCompanyId())->get();
+        $branches = Branch::where('company_id' , getCompanyId())->get();
         return view('financialaccounting.products.index' ,compact('categories' , 'branches'));
     }
     public function store(Request $request)
@@ -50,7 +50,7 @@ class ProductController extends Controller
             'min_price' => $request->productMinPrice,
             'tax' => $request->productTax,
             'image' => $imagePath,
-            'company_id' => Auth::user()->model_id,
+            'company_id' => getCompanyId(),
             'created_by' => Auth::user()->name,
         ]);
 
@@ -58,7 +58,7 @@ class ProductController extends Controller
     }
     public function getProducts()
     {
-        $products = Product::with('category')->where('company_id' , Auth::user()->model_id)->latest()->get();
+        $products = Product::with('category')->where('company_id' , getCompanyId())->latest()->get();
 
         return response()->json($products);
     }

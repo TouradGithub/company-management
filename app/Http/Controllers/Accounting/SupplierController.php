@@ -85,12 +85,12 @@ class SupplierController extends Controller
                 'message' => 'هذا الحساب مرتبط بنوع آخر بالفعل.',
             ]);
         }
-        $existing = Account::where('type_account_register', $type)->first();
+        $existing = Account::where('company_id' , getCompanyId())->where('type_account_register', $type)->first();
         if ($existing) {
             $existing->type_account_register = null;
             $existing->linked_root_id = null;
             $existing->save();
-            Account::where('linked_root_id', 1)->update(['linked_root_id' => null]);
+            Account::where('company_id' , getCompanyId())->where('linked_root_id', 1)->update(['linked_root_id' => null]);
         }
 
         DB::transaction(function () use ($targetAccount, $type) {
@@ -108,7 +108,7 @@ class SupplierController extends Controller
 
     private function updateChildrenWithRoot($parentId, $rootId, $type)
     {
-        $children = Account::where('parent_id', $parentId)->get();
+        $children = Account::where('company_id' ,getCompanyId())->where('parent_id', $parentId)->get();
         foreach ($children as $child) {
             $child->type_account_register = $type;
             $child->save();
@@ -129,7 +129,7 @@ class SupplierController extends Controller
             $accountIds[] = $account->id;
 
             // Get child accounts recursively
-            $childAccounts = Account::where('parent_id', $account->id)->get();
+            $childAccounts = Account::where('company_id' ,getCompanyId())->where('parent_id', $account->id)->get();
             if ($childAccounts->isNotEmpty()) {
                 $this->getAccountTreeIds($childAccounts, $accountIds);
             }

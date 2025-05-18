@@ -14,15 +14,15 @@ class SupplierCompanyController extends Controller
 {
     public function index()
     {
-        $branches = Branch::where('company_id', Auth::user()->model_id)->get();
-        $suppliers = Supplier::where('company_id', Auth::user()->model_id)->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
+        $suppliers = Supplier::where('company_id', getCompanyId())->get();
 
-        $mainCustomerAccount = Account::where('company_id', Auth::user()->model_id)
+        $mainCustomerAccount = Account::where('company_id', getCompanyId())
             ->where('account_type_id', 1)
             ->first();
         if ($mainCustomerAccount) {
             $accountIds = $this->getAccountTreeIds(collect([$mainCustomerAccount]));
-            $accounts = Account::where('company_id', Auth::user()->model_id)
+            $accounts = Account::where('company_id', getCompanyId())
                 ->whereIn('id', $accountIds)
                 ->get();
         } else {
@@ -32,7 +32,7 @@ class SupplierCompanyController extends Controller
     }
     public function getSuppliers(Request $request)
     {
-        $suppliers = Supplier::where('company_id', Auth::user()->model_id)
+        $suppliers = Supplier::where('company_id', getCompanyId())
             ->with(['branch', 'account']);
         if ($request->branch_id && $request->branch_id != "all") {
             $suppliers->where('branch_id', $request->branch_id);
@@ -74,7 +74,7 @@ class SupplierCompanyController extends Controller
         $supplier->contact_info = $request->contact_info;
         $supplier->account_id = $request->account_id;
         $supplier->branch_id = $request->branch_id??'all';
-        $supplier->company_id = Auth::user()->model_id;
+        $supplier->company_id = getCompanyId();
         $supplier->save();
         return response()->json([
             'status' => 'تم',
@@ -97,7 +97,7 @@ class SupplierCompanyController extends Controller
         $supplier->contact_info = $request->contact_info;
         $supplier->account_id = $request->account_id;
         $supplier->branch_id = $request->branch_id??'all';
-        $supplier->company_id = Auth::user()->model_id;
+        $supplier->company_id = getCompanyId();
         $supplier->save();
         return response()->json([
             'status' => 'تم',
@@ -110,7 +110,7 @@ class SupplierCompanyController extends Controller
     public function delete($id)
     {
         $supplier = Supplier::where('id', $id)
-            ->where('company_id', Auth::user()->model_id)
+            ->where('company_id', getCompanyId())
             ->first();
         if (!$supplier) {
             return response()->json(['success' => false, 'message' => 'العميل غير موجود أو لا يمكنك حذفه'], 404);

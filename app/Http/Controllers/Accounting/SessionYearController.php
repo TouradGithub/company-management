@@ -25,7 +25,7 @@ class SessionYearController extends Controller
 
     public function index()
     {
-        $session_years = SessionYear::where('company_id', Auth::user()->model_id)->get();
+        $session_years = SessionYear::where('company_id', getCompanyId())->get();
         return response()->json(['session_years' => $session_years]);
     }
 
@@ -36,7 +36,7 @@ class SessionYearController extends Controller
             if ($request->is_current) {
                 SessionYear::where('is_current', true)->update(['is_current' => false]);
             }
-            $companyId = Auth::user()->model_id;
+            $companyId = getCompanyId();
             $year = new SessionYear();
             $year->name = $request->name;
             $year->company_id  = $companyId;
@@ -83,7 +83,7 @@ class SessionYearController extends Controller
     public function update(Request $request, $id)
     {
         if ($request->is_current) {
-            SessionYear::where('company_id' , Auth::user()->model_id)->where('is_current', true)->update(['is_current' => false]);
+            SessionYear::where('company_id' , getCompanyId())->where('is_current', true)->update(['is_current' => false]);
         }
 
         $session = SessionYear::findOrFail($id);

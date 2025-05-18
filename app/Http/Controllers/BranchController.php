@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Branch;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
+
 class BranchController extends Controller
 {
     public function create()
@@ -16,39 +19,52 @@ class BranchController extends Controller
 
     public function store(Request $request)
     {
-        // Validate incoming data
+        // التحقق من صحة البيانات
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name'               => 'required|string|max:255',
             'name_admin_company' => 'required|string|max:255',
-            'email' => 'required|email|unique:companies,email',
-            'password' => 'required|string|min:6',
+            'email'              => 'required|email|unique:companies,email|unique:branches,email|unique:users,email',
+            'password'           => 'required|string|min:6|max:255',
+        ], [
+            'name.required' => 'اسم الفرع مطلوب.',
+            'name_admin_company.required' => 'اسم المسؤول مطلوب.',
+            'email.required' => 'البريد الإلكتروني مطلوب.',
+            'email.email' => 'يجب إدخال بريد إلكتروني صالح.',
+            'email.unique' => 'هذا البريد الإلكتروني مستخدم بالفعل.',
+            'password.required' => 'كلمة المرور مطلوبة.',
+            'password.min' => 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.',
         ]);
-        // dd(auth()->user());
 
         try {
-            // Create a new company
-            $branch =  Branch::create([
-                'name' => $validated['name'],
-                'name_admin_company' => $validated['name_admin_company'],
-                'email' => $validated['email'],
-                'company_id'=>auth()->user()->model_id,
-                'password' => Hash::make($validated['password']),
-            ]);
+            DB::transaction(function () use ($validated) {
+                $hashedPassword = Hash::make($validated['password']);
+                $branch = Branch::create([
+                    'name'               => $validated['name'],
+                    'name_admin_company' => $validated['name_admin_company'],
+                    'email'              => $validated['email'],
+                    'company_id'         => auth()->user()->model_id,
+                    'password'           => $hashedPassword,
+                ]);
 
-            User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
-                'model_type' =>"BRANCH",
-                'model_id' =>$branch->id,
-                'is_admin' =>1,
-            ]);
+                $user = User::create([
+                    'name'        => $validated['name'],
+                    'email'       => $validated['email'],
+                    'password'    => $hashedPassword,
+                    'model_type'  => 'BRANCH',
+                    'model_id'    => $branch->id,
+                    'is_admin'    => 1,
+                ]);
+                $permissions = Permission::pluck('name')->toArray();
+                $user->givePermissionTo($permissions);
+            });
+
+            return redirect()->back()->with('success', 'تم إضافة الفرع بنجاح!');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Some this wrong');
+            \Log::error('خطأ أثناء إنشاء الفرع: ' . $th->getMessage());
+            return redirect()->back()->with('error', 'حدث خطأ أثناء إضافة الفرع. يرجى المحاولة لاحقًا.');
         }
-
-        return redirect()->back()->with('success', 'Branch added successfully!');
     }
+
 
     public function index()
     {

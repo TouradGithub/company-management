@@ -232,7 +232,7 @@
             tax_number: $('#tax_number').val(),
         };
 
-        const url = currentSection.includes('purchase') ? '/suppliers/storeSupplier' : '/customers/storeCustomer';
+        const url = currentSection.includes('purchase') ? '/branch/suppliers/storeSupplier' : '/branch/customers/storeCustomer';
         const targetArray = currentSection.includes('purchase') ? suppliers : customers;
         const targetSelector = currentSection.includes('purchase') ?
             `.${currentSection}-supplier-id` : `.${currentSection}-customer-id`;
@@ -303,7 +303,6 @@
             customer_id: section.includes('sales') ? $(`#${sectionIds}CustomerSelect`).val() : null,
             supplier_id: section.includes('purchase') ? $(`#${sectionIds}SupplierSelect`).val() : null, // تصحيح هنا
             invoice_date: $(`#${sectionIds}InvoiceDate`).val(),
-            branch_id: $(`#${sectionIds}BranchSelect`).val(),
             original_invoice_number: section.includes('return') ? $(`#original${section.includes('sales') ? 'Sales' : 'Purchase'}InvoiceNumber`).val() : null,
             subtotal: parseFloat($(`${tableId} #${section}Subtotal`).text()) || 0,
             discount: parseFloat($(`${tableId} #${section}DiscountPercent`).val()) || 0,
@@ -315,10 +314,10 @@
         };
         console.log(section);
 
-        const url = section === 'sales' ? '/invoices/store' :
-            section === 'purchase' ? '/invoices/purchases/store' :
-                section === 'sales-return' ? '/invoices/sales-returns/store' :
-                    '/invoices/purchase-returns/store';
+        const url = section === 'sales' ? '/branch/invoices/store' :
+            section === 'purchase' ? '/branch/invoices/purchases/store' :
+                section === 'sales-return' ? '/branch/invoices/sales-returns/store' :
+                    '/branch/invoices/purchase-returns/store';
 
         $.ajax({
             url: url,
@@ -336,7 +335,7 @@
                     text: 'تم حفظ الفاتورة بنجاح!',
                 }).then(() => {
                     const invoiceId = response.invoice_id;
-                    window.location.href = `/invoices/index`;
+                    window.location.href = `/branch/invoices/index`;
                 });
             },
             error: function(xhr) {
@@ -359,7 +358,7 @@
     }
 
     function fetchInvoiceData(section, invoiceNumber) {
-        const url = section === 'sales-return' ? `/invoices/${invoiceNumber}` : `/invoices/purchases/${invoiceNumber}`;
+        const url = section === 'sales-return' ? `/branch/invoices/${invoiceNumber}` : `/branch/invoices/purchases/${invoiceNumber}`;
         const tableId = section === 'sales-return' ?  `#salesReturnItemsTable` : `#purchaseReturnItemsTable`;
         console.log(tableId);
 

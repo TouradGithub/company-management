@@ -50,7 +50,7 @@ class AccountTransactionHelper
                 'source_id' => $journalEntry->id,
             ]);
             $account = Account::find($detail->account_id);
-            if($account){
+            if($account && getCurrentYear()){
                 $account->updateOwnBalance(getCurrentYear());
                 $account->updateParentBalanceFromChildren(getCurrentYear());
             }

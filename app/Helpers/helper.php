@@ -16,7 +16,13 @@ function branchId()
     }
     function getCompany()
     {
-        return  Company::find(auth()->user()->model_id);
+        if(auth()->user()->model_type == "BRANCH"){
+            $branch = Branch::find(auth()->user()->model_id);
+            return  Company::find($branch->company_id);
+        }else{
+            return  Company::find(auth()->user()->model_id);
+        }
+
     }
 
     function getBranch()
@@ -25,7 +31,7 @@ function branchId()
         return $branch;
     }
     function getCompanyId(){
-        if(auth()->user()->model == "BRANCH"){
+        if(auth()->user()->model_type == "BRANCH"){
             $branch = Branch::find(auth()->user()->model_id);
             return $branch->company_id;
         }else{
@@ -82,14 +88,14 @@ function branchId()
     }
     function  suppliers_register()
         {
-            return Account::where('company_id', Auth::user()->model_id)
+            return Account::where('company_id', getCompanyId())
                 ->where('type_account_register', 3)
                 ->where('linked_root_id', 1)
                 ->first()??null;
         }
     function  customers_register()
     {
-        return Account::where('company_id', Auth::user()->model_id)
+        return Account::where('company_id', getCompanyId())
             ->where('type_account_register', 1)
             ->where('linked_root_id', 1)
             ->first()??null;
@@ -318,7 +324,7 @@ function branchId()
 
  function calculateRevenues()
 {
-    $invoices = \App\Models\Invoice::where('company_id', Auth::user()->model_id)
+    $invoices = \App\Models\Invoice::where('company_id', getCompanyId())
         ->where('invoice_type', 'Sales')
         ->with('items')
         ->get();
@@ -350,7 +356,7 @@ function branchId()
     $totalPayroll = \App\Models\Payroll::whereIn('branch_id', $branchIds)->sum('net_salary');
 
     // تكلفة المبيعات (نحسبها بنفس طريقة الإيرادات)
-    $invoices = \App\Models\Invoice::where('company_id', Auth::user()->model_id)
+    $invoices = \App\Models\Invoice::where('company_id', getCompanyId())
         ->where('invoice_type', 'Sales')
         ->with('items')
         ->get();

@@ -18,7 +18,7 @@ class AccountsExport implements FromCollection, WithHeadings
     public function collection()
     {
         $accounts = $this->level === 'all'
-            ? Account::where('company_id' , Auth::user()->model_id)->with('children')->where('parent_id' , 0)->get()
+            ? Account::where('company_id' , getCompanyId())->with('children')->where('parent_id' , 0)->get()
             : $this->getAccountsByLevel((int)$this->level);
 
         $data = collect();
@@ -70,7 +70,7 @@ class AccountsExport implements FromCollection, WithHeadings
 
     private function getAccountsByLevel($targetLevel)
     {
-        $allAccounts = Account::where('company_id' , Auth::user()->model_id)->with(['children', 'accountType'])->get();
+        $allAccounts = Account::where('company_id' , getCompanyId())->with(['children', 'accountType'])->get();
         $filteredAccounts = collect();
 
         foreach ($allAccounts as $account) {

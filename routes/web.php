@@ -37,6 +37,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
+include "branchRoutes.php";
+
 
 use App\Http\Controllers\CompanyController;
 Route::middleware(['auth', 'verify.admin'])->group(function () {

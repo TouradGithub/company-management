@@ -17,7 +17,7 @@ class ProfileCompanyController extends Controller
 
     public function index(){
 
-        $company = Company::find(Auth::user()->model_id);
+        $company = Company::find(getCompanyId());
         return view('financialaccounting.company-information' , compact('company'));
     }
     public function update(Request $request, $id)
