@@ -53,7 +53,7 @@ class JournalEntriesImport implements ToCollection
         if (count($validDetails) > 0) {
             DB::transaction(function () use ($journalCode, $journal, $companyId, $validDetails) {
                 $journalEntry = JournalEntry::create([
-                    'entry_number' => JournalEntry::generateEntryNumber($journalCode, Auth::user()->model_id),
+                    'entry_number' => JournalEntry::generateEntryNumber($journalCode, getCompanyId()),
                     'entry_date' => now(),
                     'branch_id' => 1,
                     'company_id' => $companyId,

@@ -16,11 +16,11 @@ class CustomerController extends Controller
 
     public function index()
     {
-        $branches = Branch::where('company_id', Auth::user()->model_id)->get();
-        $customers = Customer::where('company_id', Auth::user()->model_id)->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
+        $customers = Customer::where('company_id', getCompanyId())->get();
 
         // Get the first main customer account (account_type_id = 1)
-        $mainCustomerAccount = Account::where('company_id', Auth::user()->model_id)
+        $mainCustomerAccount = Account::where('company_id', getCompanyId())
             ->where('account_type_id', 1)
             ->first();
 
@@ -30,7 +30,7 @@ class CustomerController extends Controller
             $accountIds = $this->getAccountTreeIds(collect([$mainCustomerAccount]));
 
             // Get all accounts that belong to this tree
-            $accounts = Account::where('company_id', Auth::user()->model_id)
+            $accounts = Account::where('company_id', getCompanyId())
                 ->whereIn('id', $accountIds)
                 ->get();
         } else {
@@ -41,7 +41,7 @@ class CustomerController extends Controller
     }
     public function getCustomers(Request $request)
     {
-        $customers = Customer::where('company_id', Auth::user()->model_id)
+        $customers = Customer::where('company_id', getCompanyId())
             ->with(['branch', 'account']);
 
         if ($request->branch_id && $request->branch_id != "all") {
@@ -96,7 +96,7 @@ class CustomerController extends Controller
         $customer->tax_number = $request->tax_number;
         $customer->account_id = $request->account_id;
         $customer->branch_id = $request->branch_id??'all';
-        $customer->company_id = Auth::user()->model_id;
+        $customer->company_id = getCompanyId();
         $customer->save();
         return response()->json([
             'status' => 'تم',
@@ -122,7 +122,7 @@ class CustomerController extends Controller
         $customer->credit_limit = $request->credit_limit;
         $customer->account_id = $request->account_id;
         $customer->branch_id = $request->branch_id??'all';
-        $customer->company_id = Auth::user()->model_id;
+        $customer->company_id = getCompanyId();
         $customer->save();
         return response()->json([
             'status' => 'تم',
@@ -135,7 +135,7 @@ class CustomerController extends Controller
     public function delete($id)
     {
         $customer = Customer::where('id', $id)
-            ->where('company_id', Auth::user()->model_id)
+            ->where('company_id', getCompanyId())
             ->first();
 
         if (!$customer) {

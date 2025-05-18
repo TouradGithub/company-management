@@ -21,22 +21,22 @@ class InvoiceController extends Controller
 {
     public function index(Request $request)
     {
-        $branches = Branch::where('company_id' , Auth::user()->model_id)->get();
+        $branches = Branch::where('company_id' , getCompanyId())->get();
 
-        $products = Product::where('company_id' , Auth::user()->model_id)->get();
+        $products = Product::where('company_id' , getCompanyId())->get();
 
-        $customers = Customer::where('company_id', Auth::user()->model_id)->get();
+        $customers = Customer::where('company_id', getCompanyId())->get();
         return view('financialaccounting.invoices.index', compact('products','branches' , 'customers'));
     }
 
     public function create(Request $request)
     {
-        $branches = Branch::where('company_id' , Auth::user()->model_id)->get();
+        $branches = Branch::where('company_id' , getCompanyId())->get();
 
-        $products = Product::where('company_id' , Auth::user()->model_id)->get();
-        $customers = Customer::where('company_id', Auth::user()->model_id)->get();
+        $products = Product::where('company_id' , getCompanyId())->get();
+        $customers = Customer::where('company_id', getCompanyId())->get();
 
-        $mainCustomerAccount = Account::where('company_id', Auth::user()->model_id)
+        $mainCustomerAccount = Account::where('company_id', getCompanyId())
             ->where('account_type_id', 1)
             ->first();
 
@@ -46,7 +46,7 @@ class InvoiceController extends Controller
             $accountIds =getAccountTreeIds(collect([$mainCustomerAccount]));
 
             // Get all accounts that belong to this tree
-            $accounts = Account::where('company_id', Auth::user()->model_id)
+            $accounts = Account::where('company_id', getCompanyId())
                 ->whereIn('id', $accountIds)
                 ->get();
         } else {
@@ -67,7 +67,7 @@ class InvoiceController extends Controller
 
 
 
-        $invoices = $query->where('company_id',Auth::user()->model_id)->where('session_year',getCurrentYear())->with(['branch','customer' , 'Supplier'])->get();
+        $invoices = $query->where('company_id',getCompanyId())->where('session_year',getCurrentYear())->with(['branch','customer' , 'Supplier'])->get();
         return response()->json($invoices);
     }
     public function destroy($id)
@@ -169,7 +169,7 @@ class InvoiceController extends Controller
             'invoice_date' => $validated['invoice_date'],
             'customer_id' => $validated['customer_id'],
             'branch_id' =>$validated['branch_id'],
-            'company_id' => Auth::user()->model_id,
+            'company_id' => getCompanyId(),
             'employee_id' => Auth::user()->name,
             'subtotal' => $validated['subtotal'],
             'session_year'=>getCurrentYear(),
@@ -252,11 +252,11 @@ class InvoiceController extends Controller
             return response()->json(['errors' => $errors], 422);
         }
         $invoice = Invoice::create([
-            'invoice_number' => Invoice::generateEntryNumber(Auth::user()->model_id),
+            'invoice_number' => Invoice::generateEntryNumber(getCompanyId()),
             'invoice_date' => $validated['invoice_date'],
             'supplier_id' => $validated['supplier_id'],
             'branch_id' =>$validated['branch_id'],
-            'company_id' => Auth::user()->model_id,
+            'company_id' => getCompanyId(),
             'employee_id' => Auth::user()->name,
             'subtotal' => $validated['subtotal'],
             'session_year'=>getCurrentYear(),
@@ -352,12 +352,12 @@ class InvoiceController extends Controller
         }
 
         $invoice = Invoice::create([
-            'invoice_number' => Invoice::generateEntryNumber(Auth::user()->model_id),
+            'invoice_number' => Invoice::generateEntryNumber(getCompanyId()),
             'parent_invoice_id' => $parentInvoice->id,
             'invoice_date' => $validated['invoice_date'],
             'customer_id' => $validated['customer_id'],
             'branch_id' =>$validated['branch_id'],
-            'company_id' => Auth::user()->model_id,
+            'company_id' => getCompanyId(),
             'session_year'=>getCurrentYear(),
             'employee_id' => Auth::user()->name,
             'subtotal' => $validated['subtotal'],
@@ -451,12 +451,12 @@ class InvoiceController extends Controller
             return response()->json(['errors' => $errors], 422);
         }
         $invoice = Invoice::create([
-            'invoice_number' => Invoice::generateEntryNumber(Auth::user()->model_id),
+            'invoice_number' => Invoice::generateEntryNumber(getCompanyId()),
             'parent_invoice_id' => $parentInvoice->id,
             'invoice_date' => $validated['invoice_date'],
             'supplier_id' => $validated['supplier_id'],
             'branch_id' =>$validated['branch_id'],
-            'company_id' => Auth::user()->model_id,
+            'company_id' => getCompanyId(),
             'employee_id' => Auth::user()->name,
             'session_year'=>getCurrentYear(),
             'subtotal' => $validated['subtotal'],
@@ -537,43 +537,43 @@ class InvoiceController extends Controller
 
     public function sales()
     {
-        $branches = Branch::where('company_id' , Auth::user()->model_id)->get();
-        $accounts = Account::where('company_id' , Auth::user()->model_id)->get();
-        $products = Product::where('company_id' , Auth::user()->model_id)->get();
-        $customers = Customer::where('company_id' , Auth::user()->model_id)->get();
+        $branches = Branch::where('company_id' , getCompanyId())->get();
+        $accounts = Account::where('company_id' , getCompanyId())->get();
+        $products = Product::where('company_id' , getCompanyId())->get();
+        $customers = Customer::where('company_id' , getCompanyId())->get();
 
         return view('financialaccounting.invoices.sales', compact('branches', 'accounts', 'products', 'customers'));
     }
 
     public function purchasePage()
     {
-        $branches = Branch::where('company_id' , Auth::user()->model_id)->get();
-        $accounts = Account::where('company_id' , Auth::user()->model_id)->get();
-        $products = Product::where('company_id' , Auth::user()->model_id)->get();
-        $customers = Customer::where('company_id' , Auth::user()->model_id)->get();
-        $suppliers = Supplier::where('company_id' , Auth::user()->model_id)->get();
+        $branches = Branch::where('company_id' , getCompanyId())->get();
+        $accounts = Account::where('company_id' , getCompanyId())->get();
+        $products = Product::where('company_id' , getCompanyId())->get();
+        $customers = Customer::where('company_id' , getCompanyId())->get();
+        $suppliers = Supplier::where('company_id' , getCompanyId())->get();
 
         return view('financialaccounting.invoices.purchase', compact('branches', 'accounts', 'products', 'customers', 'suppliers'));
     }
 
     public function salesReturns()
     {
-        $branches = Branch::where('company_id' , Auth::user()->model_id)->get();
-        $accounts = Account::where('company_id' , Auth::user()->model_id)->get();
-        $products = Product::where('company_id' , Auth::user()->model_id)->get();
-        $customers = Customer::where('company_id' , Auth::user()->model_id)->get();
-        $suppliers = Supplier::where('company_id' , Auth::user()->model_id)->get();
+        $branches = Branch::where('company_id' , getCompanyId())->get();
+        $accounts = Account::where('company_id' , getCompanyId())->get();
+        $products = Product::where('company_id' , getCompanyId())->get();
+        $customers = Customer::where('company_id' , getCompanyId())->get();
+        $suppliers = Supplier::where('company_id' , getCompanyId())->get();
 
         return view('financialaccounting.invoices.sales-return', compact('branches', 'accounts', 'products', 'customers', 'suppliers'));
     }
 
     public function purchaseReturns()
     {
-        $branches = Branch::where('company_id' , Auth::user()->model_id)->get();
-        $accounts = Account::where('company_id' , Auth::user()->model_id)->get();
-        $products = Product::where('company_id' , Auth::user()->model_id)->get();
-        $customers = Customer::where('company_id' , Auth::user()->model_id)->get();
-        $suppliers = Supplier::where('company_id' , Auth::user()->model_id)->get();
+        $branches = Branch::where('company_id' , getCompanyId())->get();
+        $accounts = Account::where('company_id' , getCompanyId())->get();
+        $products = Product::where('company_id' , getCompanyId())->get();
+        $customers = Customer::where('company_id' , getCompanyId())->get();
+        $suppliers = Supplier::where('company_id' , getCompanyId())->get();
 
         return view('financialaccounting.invoices.purchase-return', compact('branches', 'accounts', 'products', 'customers', 'suppliers'));
     }
@@ -620,7 +620,7 @@ class InvoiceController extends Controller
             return redirect()->back()->with('error', 'Invoice Not Found');
         }
 
-        $companyId = Auth::user()->model_id;
+        $companyId = getCompanyId();
         $branches = Branch::where('company_id', $companyId)->get();
         $accounts = Account::where('company_id', $companyId)->get();
         $products = Product::where('company_id', $companyId)->get();
@@ -705,12 +705,12 @@ class InvoiceController extends Controller
 
         $invoice = Invoice::find($validated['id']);
 
-//        $invoice->invoice_number = Invoice::generateEntryNumber(Auth::user()->model_id);
+//        $invoice->invoice_number = Invoice::generateEntryNumber(getCompanyId());
         $invoice->invoice_date = $validated['invoice_date'];
         $invoice->supplier_id = $validated['supplier_id'];
         $invoice->customer_id = $validated['customer_id'];
         $invoice->branch_id =$validated['branch_id'];
-        $invoice->company_id = Auth::user()->model_id;
+        $invoice->company_id = getCompanyId();
         $invoice->employee_id = Auth::user()->name;
         $invoice->subtotal = $validated['subtotal'];
         $invoice->discount = $validated['discount'] ?? 0;
@@ -749,7 +749,7 @@ class InvoiceController extends Controller
     public function scanCodeQr($id)
     {
         $invoice = Invoice::with(['items.product', 'customer', 'supplier'])->findOrFail($id);
-        return view('financialaccounting.invoices.exports.print', compact('invoice'));
+        return view('financialaccounting.invoices.exports.print-scan', compact('invoice'));
     }
 
 

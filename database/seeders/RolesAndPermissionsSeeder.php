@@ -18,36 +18,21 @@ class RolesAndPermissionsSeeder extends Seeder
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
         $companyAdminPermissions = [
-//            لحسابات
             'company_view_accounts_tree', 'company_manage_accounts',
             'company_create_accounts','company_cmanage_edit_account','company_cmanage_delete_account',
 
-//            لحسابات العامه
             'company_create_journal_entry', 'company_view_journal_entries', 'company_edit_journal_entries', 'company_delete_journal_entries',
             'company_manage_cost_centers', 'company_view_journals', 'company_view_account_statement',
 
-
-//            الفواتير والمنتجات
             'company_view_invoices', 'company_create_sales_invoice', 'company_create_sales_return', 'company_create_purchase_invoice', 'company_create_purchase_return',
             'company_manage_products', 'company_manage_categories', 'company_manage_customers',
 
-
-//لحسابات الختاميه
             'company_view_trial_balance', 'company_view_income_statement', 'company_view_balance_sheet',
 
-
-//الموارد البشريه
             'company_manage_employees', 'company_manage_leaves', 'company_manage_overtimes', 'company_manage_deductions', 'company_manage_payrolls', 'company_manage_hr_categories', 'company_manage_loans',
             'company_manage_suppliers', 'company_manage_settings',
-
-//            لاعدادات
             'company_manage_company_information','company_manage_backup','company_manage_years','comapny_manage_users',
-
-
-
-//        الاضافات
             'company_link_account_customers','company_link_account_suppliers','company_link_account_cach_register',
-
 
         ];
 

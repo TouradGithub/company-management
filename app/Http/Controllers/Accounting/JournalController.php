@@ -13,7 +13,7 @@ class JournalController extends Controller
 
     public function get()
     {
-        $journals = Journal::where('company_id' , Auth::user()->model_id)->get();
+        $journals = Journal::where('company_id' , getCompanyId())->get();
         return response()->json(['journals' => $journals]);
     }
 
@@ -25,7 +25,7 @@ class JournalController extends Controller
 
     public function store(Request $request)
     {
-        $companyId = Auth::user()->model_id;
+        $companyId = getCompanyId();
 
         $validated = $request->validate([
             'code' => "required|unique:journals,code,NULL,id,company_id,{$companyId}",
@@ -53,7 +53,7 @@ class JournalController extends Controller
 
     public function update(Request $request, $id)
     {
-        $companyId = Auth::user()->model_id;
+        $companyId = getCompanyId();
 
         $validated = $request->validate([
             'code' => "required|unique:journals,code,{$id},id,company_id,{$companyId}",

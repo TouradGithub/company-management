@@ -18,8 +18,8 @@ class AccountStatementController extends Controller
 {
     public function index(Request $request)
     {
-        $accounts = Account::where('company_id', Auth::user()->model_id)->get();
-        $branches = Branch::where('company_id', Auth::user()->model_id)->get();
+        $accounts = Account::where('company_id', getCompanyId())->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
         return view('financialaccounting.account-statement.index' , compact('accounts' , 'branches'));
     }
 
@@ -139,7 +139,7 @@ class AccountStatementController extends Controller
     }
     public function getStatementData(Request $request)
     {
-        $transactions = AccountTransaction::where('company_id', Auth::user()->model_id)
+        $transactions = AccountTransaction::where('company_id', getCompanyId())
             ->where('account_id', $request->account_id)
             ->whereBetween('transaction_date', [$request->from_date, $request->to_date]);
 

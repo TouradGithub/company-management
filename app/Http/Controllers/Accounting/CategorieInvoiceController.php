@@ -10,13 +10,13 @@ use Illuminate\Support\Facades\Auth;
 class CategorieInvoiceController extends Controller
 {
     public function index(){
-        $categorie_invoices = CategoryInvoice::where('company_id', Auth::user()->model_id)->get();
+        $categorie_invoices = CategoryInvoice::where('company_id', getCompanyId())->get();
         return view('financialaccounting.categorieInvoices.index', compact('categorie_invoices'));
     }
 
     public function getCategories()
     {
-        $categories  = CategoryInvoice::where('company_id', Auth::user()->model_id)->get();
+        $categories  = CategoryInvoice::where('company_id', getCompanyId())->get();
 
         return response()->json($categories);
     }
@@ -35,7 +35,7 @@ class CategorieInvoiceController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'parent_id' => $request->parent_id,
-            'company_id'=>Auth::user()->model_id
+            'company_id'=>getCompanyId()
         ]);
 
         return response()->json([

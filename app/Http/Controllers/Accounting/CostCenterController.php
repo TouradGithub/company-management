@@ -13,7 +13,7 @@ class CostCenterController extends Controller
 {
     public function index(){
 
-        $costcenters = CostCenter::where('company_id', Auth::user()->model_id)->get();
+        $costcenters = CostCenter::where('company_id', getCompanyId())->get();
 
         return view('financialaccounting.costCenter.index', compact('costcenters'));
     }

@@ -13,7 +13,7 @@ class TrialBalanceController extends Controller
 {
     public function index()
     {
-        $branches = Branch::where('company_id', Auth::user()->model_id)->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
         return view('financialaccounting.trial-balance.trial-balance' , compact('branches'));
     }
     public function getTrialBalance(Request $request)
@@ -27,7 +27,7 @@ class TrialBalanceController extends Controller
             return response()->json(['error' => 'يجب تحديد تاريخ البداية والنهاية'], 400);
         }
 
-        $accounts = Account::where('company_id', auth()->user()->model_id)
+        $accounts = Account::where('company_id', getCompanyId())
             ->with(['transactions' => function ($query) use ($fromDate, $toDate , $branchId) {
                 $query->where('branch_id', $branchId)
                     ->whereBetween('transaction_date', [$fromDate, $toDate]);

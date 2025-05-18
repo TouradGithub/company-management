@@ -22,7 +22,7 @@ class UserCompanyController extends Controller
 
     public function index(){
         $companies = Company::all();
-        $companyId = Auth::user()->model_id;
+        $companyId = getCompanyId();
         $branches = Branch::where('company_id', $companyId)->get(); // فروع الشركة الحالية
         $branchIds = Branch::where('company_id', $companyId)->pluck('id')->toArray();
 
@@ -40,7 +40,7 @@ class UserCompanyController extends Controller
     public function edit($id)
     {
         $user = User::find($id);
-        $branches = Branch::where('company_id', Auth::user()->model_id)->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
         $companyPermissions = \Spatie\Permission\Models\Role::findByName('company_admin')->permissions;
         $branchPermissions = \Spatie\Permission\Models\Role::findByName('branch_user')->permissions;
         $userPermission = $user->getDirectPermissions()->pluck('name')->toArray();
@@ -82,11 +82,11 @@ class UserCompanyController extends Controller
             'role' => $request->user_type,
             'password' => Hash::make($request->password),
             'model_type' => $request->user_type === 'company' ? 'COMPANY' : 'BRANCH',
-            'model_id' => $request->user_type === 'company' ? Auth::user()->model_id : $request->branch_id,
+            'model_id' => $request->user_type === 'company' ? getCompanyId() : $request->branch_id,
             'is_admin' => 0,
         ]);
 
-        $role = $request->user_type === 'company' ? 'company_admin' : 'branch_user';
+        $role = $request->user_type ===  'company_admin';
         $user->assignRole($role);
         if ($request->permissions) {
             $user->syncPermissions($request->permissions);
@@ -116,7 +116,7 @@ class UserCompanyController extends Controller
         }
 
         $user->role = $request->user_type;
-        $user->model_id =$request->user_type === 'company'? Auth::user()->model_id:$request->branch_id ;
+        $user->model_id =$request->user_type === 'company'? getCompanyId():$request->branch_id ;
         $user->model_type = $request->user_type === 'company' ? "COMPANY" : "BRANCH";
 
         $user->save();

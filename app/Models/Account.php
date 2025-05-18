@@ -126,12 +126,15 @@ class Account extends Model
             $credit = $this->transactions()->sum('credit');
             $balance =   $debit - $credit;
             $balance += $this->opening_balance ;
+            $account_year =  AccountYear::updateOrCreate(
+                ['account_id' => $this->id, 'company_id' => $this->company_id,'session_year_id' => $sessionYearId],
+                ['balance' => $balance ,'credit'=>$credit,'debit'=>$debit]
+            );
+            return $balance;
         }
-        $account_year =  AccountYear::updateOrCreate(
-            ['account_id' => $this->id, 'company_id' => $this->company_id,'session_year_id' => $sessionYearId],
-            ['balance' => $balance ,'credit'=>$credit,'debit'=>$debit]
-        );
-        return $balance;
+
+        return 0;
+
     }
 
 }

@@ -17,7 +17,7 @@ class IncomeStatementController extends Controller
 {
     public function index()
     {
-        $branches = Branch::where('company_id', Auth::user()->model_id)->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
         return view('financialaccounting.income-statement.index' , compact('branches'));
     }
 
@@ -27,7 +27,7 @@ class IncomeStatementController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        $invoicesQuery = Invoice::where('company_id' , Auth::user()->model_id)->where('invoice_type', 'Sales')
+        $invoicesQuery = Invoice::where('company_id' , getCompanyId())->where('invoice_type', 'Sales')
             ->whereBetween('invoice_date', [$startDate, $endDate])
             ->with('items');
         if ($branchId) {
@@ -46,7 +46,7 @@ class IncomeStatementController extends Controller
         }
         $grossProfit = $grossSales - $totalCost;
 
-        $company = Company::find(Auth::user()->model_id);
+        $company = Company::find(getCompanyId());
         $branchIds = $company->branches()->pluck('id')->toArray();
 
         $payrollQuery = Payroll::whereIn('branch_id',$branchIds)->whereBetween('date', [$startDate, $endDate]);
