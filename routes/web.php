@@ -6,7 +6,7 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
-
+use App\Http\Controllers\Accounting\SupplierController;
 use App\Http\Controllers\CompanyAuthController;
 use App\Http\Controllers\Branch\AuthBranchController;
 
@@ -223,6 +223,8 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
     Route::post('/link-account-to-customers', [App\Http\Controllers\Accounting\SupplierController::class, 'linkAccountToCustomers']);
     Route::post('/link-cash-register', [App\Http\Controllers\Accounting\SupplierController::class, 'linkCashRegister']);
     Route::post('/link-to-supplier', [App\Http\Controllers\Accounting\SupplierController::class, 'linkToSupplier']);
+
+        Route::post('unlink-account', [SupplierController::class, 'unlinkAccountRegister'])->name('unlink.account');
 
     Route::get('/settings/index', [App\Http\Controllers\Accounting\SettingsController::class, 'index'])->name('settings.index');
 

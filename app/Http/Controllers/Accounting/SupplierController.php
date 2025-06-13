@@ -211,4 +211,42 @@ class SupplierController extends Controller
         ]);
         return response()->json(['status' => 'نجاح', 'message' => 'تم تحديث العميل بنجاح', 'success' => true]);
     }
+
+
+
+    //
+    private function removeRegisterFromTree(Account $account)
+    {
+        $account->type_account_register = null;
+        $account->linked_root_id = null;
+        $account->save();
+
+        $children = Account::where('company_id', getCompanyId())
+            ->where('parent_id', $account->id)
+            ->get();
+
+        foreach ($children as $child) {
+            $this->removeRegisterFromTree($child);
+        }
+    }
+    public function unlinkAccountRegister(Request $request)
+    {
+        $accountId = $request->input('account_id');
+        $account = Account::where('company_id', getCompanyId())->findOrFail($accountId);
+        if (!$account->type_account_register) {
+            return response()->json([
+                'success' => false,
+                'message' => 'هذا الحساب غير مرتبط بأي نوع حالياً.',
+            ]);
+        }
+        DB::transaction(function () use ($account) {
+            $this->removeRegisterFromTree($account);
+        });
+        return response()->json([
+            'success' => true,
+            'message' => 'تم فك الربط عن الحساب وشجرته بنجاح.',
+        ]);
+    }
+
+
 }
