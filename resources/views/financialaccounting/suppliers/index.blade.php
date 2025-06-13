@@ -23,7 +23,9 @@
                 <div class="card-actions">
                     @if(!customers_register())
                         <button class="action-btn link-account" id="linkAccountBtn" title="ربط حساب"><i class="fas fa-link"></i></button>
-                    @endif
+                      @else
+                            <button class="action-btn unlink-account" data-id="{{customers_register()->id}}"  title="فك الربط"><i class="fas fa-unlink"></i></button>
+                      @endif
                 </div>
             </div>
             <div class="addition-card">
@@ -34,10 +36,14 @@
                 <p class="balance">{{suppliers_register()->sessionBalance->balance}} ريال</p>
                     <p class="balance">{{suppliers_register()->name . ' - ' . suppliers_register()->account_number}}</p>
                 @endif
+
+
                 </a>
                 <div class="card-actions">
                     @if(!suppliers_register())
                         <button class="action-btn link-account" id="link-to-supplier" title="ربط حساب"><i class="fas fa-link"></i></button>
+                    @else
+                        <button class="action-btn unlink-account" data-id="{{suppliers_register()->id}}"  title="فك الربط"><i class="fas fa-unlink"></i></button>
                     @endif
                 </div>
 
@@ -54,6 +60,8 @@
                 <div class="card-actions">
                     @if(!cach_register())
                         <button class="action-btn link-account" id="link-cash-register" title="ربط حساب"><i class="fas fa-link"></i></button>
+                    @else
+                        <button class="action-btn unlink-account" data-id="{{cach_register()->id}}"  title="فك الربط"><i class="fas fa-unlink"></i></button>
                     @endif
                 </div>
             </div>
@@ -308,7 +316,46 @@
             });
 
             // }
+            $(document).on('click', '.unlink-account', function () {
+                const unlinkType = $(this).data('id');
+                const url = `/unlink-account`;
+                Swal.fire({
+                    title: 'تأكيد',
+                    text: 'هل أنت متأكد من أنك تريد فك الربط؟',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'نعم، فك الربط',
+                    cancelButtonText: 'إلغاء'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            method: 'POST',
+                            data: {
+                                account_id: unlinkType,
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    title: response.success ? 'تم' : 'خطأ',
+                                    text: response.message,
+                                    icon: response.success ? 'success' : 'error'
+                                }).then(() => {
+                                    if (response.success) {
+                                        location.reload();
+                                    }
+                                });
+                            },
+                            error: function () {
+                                Swal.fire('خطأ', 'حدث خطأ أثناء فك الربط', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
 
         });
+
     </script>
 @endsection
