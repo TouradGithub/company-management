@@ -1,0 +1,681 @@
+/* Accounting module styles */
+.accounting-modal .modal-content {
+    width: 900px;
+    max-width: 90vw;
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    padding: 2rem;
+}
+
+.accounting-dashboard {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.accounting-dashboard h2 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    text-align: right;
+    position: relative;
+    padding-right: 1rem;
+}
+
+.accounting-dashboard h2::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 24px;
+    background: var(--accent-color);
+    border-radius: 2px;
+}
+
+.header-actions {
+    margin-bottom: 1rem;
+}
+
+.back-to-home {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.2rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.back-to-home:hover {
+    background: var(--secondary-color);
+    transform: translateX(-5px);
+}
+
+.back-to-home .icon {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 2;
+}
+
+.accounting-modules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem;
+}
+
+.accounting-module {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.accounting-module::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.accounting-module:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.accounting-module:hover::before {
+    opacity: 1;
+}
+
+.accounting-module .icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1.5rem;
+    stroke: var(--secondary-color);
+    stroke-width: 1.5;
+    transition: all 0.3s ease;
+}
+
+.accounting-module:hover .icon {
+    stroke: var(--accent-color);
+    transform: scale(1.1);
+}
+
+.accounting-module h3 {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+/* Enhanced Journal Entry Form Styles */
+.journal-entry-modal .modal-content {
+    width: 1200px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.journal-entry-form {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.journal-entry-form h2 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.journal-entry-form h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: var(--accent-color);
+    border-radius: 2px;
+}
+
+.journal-header {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    color: var(--primary-color);
+    font-weight: 500;
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--secondary-color);
+    background: white;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.form-select {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232c3e50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: left 1rem center;
+    background-size: 1em;
+    padding-left: 3rem;
+}
+
+.form-select:focus {
+    border-color: var(--secondary-color);
+    background: white;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.journal-entries {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.journal-entries table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.journal-entries th {
+    background: var(--primary-color);
+    color: white;
+    padding: 1.2rem 1rem;
+    text-align: right;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.journal-entries th:first-child {
+    border-radius: 10px 0 0 10px;
+}
+
+.journal-entries th:last-child {
+    border-radius: 0 10px 10px 0;
+}
+
+.journal-entries td {
+    padding: 0.5rem;
+    vertical-align: middle;
+    background: #f8f9fa;
+    border: none;
+}
+
+.journal-entries tr:hover td {
+    background: #f0f4f8;
+}
+
+.journal-entries td:first-child {
+    border-radius: 10px 0 0 10px;
+}
+
+.journal-entries td:last-child {
+    border-radius: 0 10px 10px 0;
+}
+
+.journal-entries input,
+.journal-entries select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.journal-entries input:focus,
+.journal-entries select:focus {
+    border-color: var(--secondary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.journal-entries .account-number {
+    font-family: monospace;
+    letter-spacing: 1px;
+}
+
+.journal-entries .debit-amount,
+.journal-entries .credit-amount {
+    text-align: left;
+    direction: ltr;
+}
+
+.journal-totals {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.total-group {
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.total-group:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.total-group label {
+    display: block;
+    color: var(--primary-color);
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+}
+
+.total-group span {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+    display: block;
+}
+
+.delete-row {
+    background: #fff1f0;
+    border: none;
+    color: var(--accent-color);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.delete-row:hover {
+    background: var(--accent-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.add-row-btn {
+    margin: 1.5rem auto;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.add-row-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.add-row-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+}
+
+.add-row-btn:hover::before {
+    transform: translateX(100%);
+}
+
+.add-row-btn:active {
+    transform: translateY(-1px);
+}
+
+.add-row-btn .icon {
+    width: 24px;
+    height: 24px;
+    stroke: white;
+    stroke-width: 2;
+    transition: transform 0.3s ease;
+}
+
+.add-row-btn:hover .icon {
+    transform: rotate(180deg);
+}
+
+.add-row-btn span {
+    font-weight: 500;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+.save-btn,
+.cancel-btn {
+    padding: 1rem 2.5rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.save-btn {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+}
+
+.cancel-btn {
+    background: #f8f9fa;
+    color: var(--primary-color);
+    border: 2px solid #e9ecef;
+}
+
+.cancel-btn:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+}
+
+/* Journal Actions Styles */
+.journal-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.action-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn .icon {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+}
+
+.preview-btn {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.print-btn {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.edit-btn {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.delete-btn {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(0.95);
+}
+
+.journal-search {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.search-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: center;
+}
+
+.search-filters input {
+    padding: 0.8rem;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.search-filters input:focus {
+    border-color: var(--secondary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.search-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+}
+
+.search-btn .icon {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 2;
+}
+
+.journal-entries-list {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+}
+
+.journal-entries-list table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.journal-entries-list th {
+    background: var(--primary-color);
+    color: white;
+    padding: 1rem;
+    text-align: right;
+    font-weight: 500;
+}
+
+.journal-entries-list th:first-child {
+    border-radius: 0 8px 8px 0;
+}
+
+.journal-entries-list th:last-child {
+    border-radius: 8px 0 0 8px;
+}
+
+.journal-entries-list td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.journal-entries-list tr:hover td {
+    background: #f8f9fa;
+}
+
+.journal-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.pagination-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--secondary-color);
+    border-radius: 6px;
+    background: white;
+    color: var(--secondary-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pagination-btn:hover {
+    background: var(--secondary-color);
+    color: white;
+}
+
+#currentPage {
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.success-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #2ecc71;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+    z-index: 1000;
+}
+
+.preview-modal .modal-content {
+    width: 80vw;
+    max-width: 1200px;
+}
+
+.preview-container {
+    padding: 2rem;
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}

@@ -19,6 +19,13 @@ use App\Http\Controllers\LoanController;
 use App\Http\Controllers\DeductionController;
 use App\Http\Controllers\Accounting\JournalController;
 
+use App\Http\Controllers\Assets\DepreciationController;
+use App\Http\Controllers\BankManagment\BillsController;
+use App\Http\Controllers\BankManagment\FundsController;
+use App\Http\Controllers\BankManagment\AccountController;
+use App\Http\Controllers\BankManagment\vouchersContainer;
+use App\Http\Controllers\Property\JournalEntryController;
+
 /*
 
 |--------------------------------------------------------------------------
@@ -180,6 +187,188 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
     Route::delete('/products/delete/{id}', [App\Http\Controllers\Accounting\ProductController::class, 'destroy']);
     Route::post('/products/import', [App\Http\Controllers\Accounting\ProductController::class, 'importProducts'])->name('products.import');
 
+    //start new routes
+
+
+        Route::get('/assets/index', function () {
+            $categories = \App\Models\CategoryManagement::all();
+            return view('financialaccounting.assets.index',compact('categories'));
+        })->name('assets.index');
+
+
+
+        Route::resource('assets-categories', \App\Http\Controllers\Assets\CategoryManagementController::class);
+
+        Route::get('/assets/create', [\App\Http\Controllers\Assets\AssetController::class, 'create'])->name('assets.create');
+        Route::post('/assets/store', [\App\Http\Controllers\Assets\AssetController::class, 'store'])->name('assets.store');
+
+// web.php أو api.php
+        Route::get('/get-depreciation-details', [\App\Http\Controllers\Assets\AssetController::class, 'getDepreciationDetails']);
+// Route::get('/get-depreciation-details', [DepreciationController::class, 'getDepreciationDetails']);
+// Route::get('/get-depreciation-categories', [AssetController::class, 'getDepreciationCategories']);
+        Route::get('/get-depreciationdetails', [DepreciationController::class, 'getDepreciationCategories']);
+
+        Route::get('/get-depreciation-categories', [DepreciationController::class, 'getDepreciationCategories']);
+        Route::get('/depreciation-report', [DepreciationController::class, 'depreciationReport']);
+
+
+////
+        Route::get('/get-assets', [\App\Http\Controllers\Assets\AssetController::class, 'getAssets']);
+        Route::get('/get-assets/{id}', [\App\Http\Controllers\Assets\AssetController::class, 'getAsset']); // إضافة هذا المسار
+
+        Route::post('/sell-asset/{id}', [\App\Http\Controllers\Assets\AssetController::class, 'sellAsset']);
+
+
+        Route::get('/fetch-assets', [\App\Http\Controllers\Assets\AssetController::class, 'fetchAssets']);
+
+
+        Route::get('/assets/{id}/edit', [\App\Http\Controllers\Assets\AssetController::class, 'edit']);
+        Route::post('/assets/update', [\App\Http\Controllers\Assets\AssetController::class, 'update']);
+
+
+// properties
+        Route::get('/properties', function () {
+            return view('financialaccounting.properties.index');
+        })->name('properties');
+        Route::post('/properties/store', [\App\Http\Controllers\Property\PropertyController::class, 'store'])->name('properties.store');
+        Route::get('/properties/show', [\App\Http\Controllers\Property\PropertyController::class, 'index'])->name('properties.index');
+//
+        Route::get('/properties/{id}', [\App\Http\Controllers\Property\PropertyController::class, 'show']);
+        Route::post('/properties/{id}', [\App\Http\Controllers\Property\PropertyController::class, 'update']);
+        Route::delete('/properties/{id}', [\App\Http\Controllers\Property\PropertyController::class, 'destroy']);
+// web.php
+        Route::post('/payments', [\App\Http\Controllers\Property\PaymentController::class, 'store']);
+// Route::post('/api/create-journal-entry', 'JournalEntryController@create');
+        Route::get('/api/journal-entries', [JournalEntryController::class, 'fetchJournalEntries']);
+
+// php artisan make:controller  Property/PropertyController
+
+// bank-managment
+        Route::get('/bank-managment', function () {
+            return view('financialaccounting.bank-managment.index');
+        })->name('bank-managment');
+        Route::get('/accounts/index', [AccountController::class, 'index'])->name('accounts.index');;
+        Route::post('/accounts/store', [AccountController::class, 'store'])->name('accounts.store');
+
+        Route::get('/accounts/{id}', [AccountController::class, 'show']);
+
+        Route::put('/accounts/{id}', [AccountController::class, 'update']);
+
+        Route::post('/accounts/{id}', [AccountController::class, 'destroy']);
+
+        Route::get('/accounts/{id}/transactions', [\App\Http\Controllers\BankManagment\TransactionController::class, 'index']);
+        Route::post('/accounts/{id}/transactions', [\App\Http\Controllers\BankManagment\TransactionController::class, 'store']);
+        Route::delete('/transactions/{id}', [\App\Http\Controllers\BankManagment\TransactionController::class, 'destroy']);
+
+// Funds
+
+        Route::get('/funds/index', [FundsController::class, 'index'])->name('funds.index');;
+        Route::get('/fund/index/', [FundsController::class, 'indexview'])->name('funds.view');;
+        Route::post('/funds/store', [FundsController::class, 'store'])->name('funds.store');
+
+        Route::get('/funds/{id}', [FundsController::class, 'show']);
+// php artisan make:controller FundsController
+        Route::put('/funds/{id}', [FundsController::class, 'update']);
+
+        Route::post('/funds/{id}', [FundsController::class, 'destroy']);
+
+        Route::get('/funds/{id}/fundtransactions', [\App\Http\Controllers\BankManagment\TransactionController::class, 'indexfund']);
+        Route::post('/funds/{id}/fundtransactions', [\App\Http\Controllers\BankManagment\TransactionController::class, 'storefund']);
+// Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
+        Route::post('/transactions/income', [\App\Http\Controllers\BankManagment\TransactionFundController::class, 'storeIncome'])->name('transactions.income');
+        Route::post('/transactions/expense', [\App\Http\Controllers\BankManagment\TransactionFundController::class, 'storeExpense'])->name('transactions.expense');
+
+
+///
+
+        Route::get('/vouchers', function () {
+            return view('financialaccounting.bank-managment.vouchers');
+        })->name('vouchers');
+
+        Route::get('/vouchers/index', [vouchersContainer::class, 'index'])->name('vouchers.index');
+        Route::post('/vouchers/receipt', [vouchersContainer::class, 'storeReceipt'])->name('vouchers.storeReceipt');
+        Route::post('/vouchers/payment', [vouchersContainer::class, 'storePayment'])->name('vouchers.storePayment');
+
+//
+        Route::post('/vouchers/update/{id}', [vouchersContainer::class, 'updateVoucher'])->name('vouchers.update');
+        Route::post('/vouchers/delete/{id}', [vouchersContainer::class, 'delete'])->name('vouchers.delete');
+
+//bills
+
+        Route::get('/bills', function () {
+            return view('financialaccounting.bank-managment.bills');
+        })->name('bills');
+        Route::get('/bills/index', [BillsController::class, 'index'])->name('bills.index');
+        Route::post('/bills/store', [BillsController::class, 'store'])->name('bills.store');
+// تعديل الفاتورة
+        Route::post('/bills/{id}/update', [BillsController::class, 'update'])->name('bills.update');
+        Route::post('/bills/delete/{id}', [BillsController::class, 'delete'])->name('bills.delete');
+
+
+//products
+
+        Route::post('/products/store', [ProductController::class, 'store'])->name('products.store');
+        Route::get('/products/search', [ProductController::class, 'search']);
+
+        Route::get('/inventory', function () {
+            return view('financialaccounting.inventory.index');
+        })->name('inventory');
+        Route::get('/add/product', function () {
+            return view('financialaccounting.inventory.add');
+        })->name('add');
+
+
+        Route::get('/products/list', [ProductController::class, 'fetchProducts']);
+        Route::get('/products/cost-details', [ProductController::class, 'fetchCostDetails']);
+        Route::get('/transfer/products', [ProductController::class, 'getTransferProducts']);
+        Route::post('/transfer/store', [TransferController::class, 'storeTransfer']);
+        Route::get('/transfer/list', [TransferController::class, 'getTransfers']);
+
+
+        Route::get('branches', function () {
+            return Branch::all(); // جلب جميع الفروع
+        });
+// routes/web.php
+        Route::post('/wastes/store', [WasteController::class, 'store'])->name('wastes.store');
+
+        Route::get('/sales-data', [BillsController::class, 'getSalesData']);
+
+        Route::get('/category-data', [ProductController::class, 'getCategoryData']);
+        Route::get('/products-data', [ProductController::class, 'getProducts']);
+        Route::get('/categories-data', [ProductController::class, 'getcategories']);
+// routes/web.php أو api.php حسب ما تستخدم
+        Route::post('/inventory/update-stock', [ProductController::class, 'updateStock']);
+
+//
+
+
+        Route::get('/sales-bills', [BillsController::class, 'salesView'])->name('bills.sales.view');
+        Route::get('/purchase-bills', [BillsController::class, 'purchaseView'])->name('bills.purchase.view');
+        Route::get('/sales-report', [ReportController::class, 'getSalesData']);
+        Route::get('/purchase-report', [ReportController::class, 'getPurchaseData']);
+
+        Route::get('/bills/sales/data', [BillsController::class, 'getSalesData'])->name('bills.sales.data');
+        Route::get('/bills/purchase/data', [BillsController::class, 'getPurchaseData'])->name('bills.purchase.data');
+//
+
+
+        Route::get('/report/products', [ReportController::class, 'index'])->name('report.products');
+//
+
+        Route::get('/products/{id}', [ProductController::class, 'show']);
+        Route::get('/getselects', [ProductController::class, 'getSelects']);
+        Route::post('/products/{id}', [ProductController::class, 'update']);
+        Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+        Route::get('/reports/profit', [ReportController::class, 'profitReport'])->name('reports.profit');
+        Route::get('/profit-per-bill', [ReportController::class, 'profitPerBill']);
+        Route::get('/delivery-types', [BillsController::class, 'deliveryTypes']);
+        Route::get('/payment-methods', [BillsController::class, 'paymentMethods']);
+        Route::get('/daily-sales', [ReportController::class, 'getDailySales']);
+        Route::get('/stats', [ReportController::class, 'getStats']);
+
+
+
+        //end new routes
 
     Route::get('/customers/index', [App\Http\Controllers\Accounting\CustomerController::class, 'index'])->name('customers.index');
     Route::post('/customers/store', [App\Http\Controllers\Accounting\CustomerController::class, 'store'])->name('customers.store');
@@ -224,7 +413,7 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
     Route::post('/link-cash-register', [App\Http\Controllers\Accounting\SupplierController::class, 'linkCashRegister']);
     Route::post('/link-to-supplier', [App\Http\Controllers\Accounting\SupplierController::class, 'linkToSupplier']);
 
-        Route::post('unlink-account', [SupplierController::class, 'unlinkAccountRegister'])->name('unlink.account');
+    Route::post('unlink-account', [SupplierController::class, 'unlinkAccountRegister'])->name('unlink.account');
 
     Route::get('/settings/index', [App\Http\Controllers\Accounting\SettingsController::class, 'index'])->name('settings.index');
 

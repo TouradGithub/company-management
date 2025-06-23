@@ -1,0 +1,115 @@
+/* Quick Access Manager Styles */
+.quick-action-btn {
+    position: relative;
+}
+
+.quick-action-btn.add-new {
+    background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+    color: white;
+}
+
+.quick-action-btn.add-new .icon {
+    stroke: white;
+}
+
+.quick-access-modal .modal-content {
+    width: 600px;
+    max-width: 90vw;
+    max-height: 80vh;
+}
+
+.quick-access-items {
+    display: grid;
+    gap: 1rem;
+    margin: 2rem 0;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 1rem;
+}
+
+.quick-access-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.quick-access-item:hover {
+    background: #f0f0f0;
+}
+
+.item-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.item-content .icon {
+    width: 24px;
+    height: 24px;
+    stroke: var(--secondary-color);
+}
+
+.add-to-quick-access {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.add-to-quick-access:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.add-to-quick-access .icon {
+    width: 20px;
+    height: 20px;
+    stroke: var(--secondary-color);
+    stroke-width: 2;
+}
+
+.add-to-quick-access.active .icon {
+    stroke: var(--accent-color);
+}
+
+.quick-action-remove {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+    padding: 0;
+    z-index: 2;
+}
+
+.quick-action-btn:hover .quick-action-remove {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.quick-action-remove:hover {
+    background: #c0392b;
+    transform: scale(1.1);
+}
+
+.quick-action-remove .remove-icon {
+    width: 14px;
+    height: 14px;
+    stroke: white;
+    stroke-width: 2;
+}
