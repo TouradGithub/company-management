@@ -90,13 +90,13 @@
           <div class="hover-effect"></div>
         </a>
       </li>
-      <li class="menu-item {{ Request::routeIs('branches.create') || Request::routeIs('branches.index') ? 'active' : '' }}">
+      {{-- <li class="menu-item {{ Request::routeIs('branches.create') || Request::routeIs('branches.index') ? 'active' : '' }}">
         <a href="{{route('branches.index')}}">
           <i class="fas fa-code-branch"></i>
           <span>الفروع</span>
           <div class="hover-effect"></div>
         </a>
-      </li>
+      </li> --}}
       <li class="menu-item has-submenu">
         <a href="{{route('accounting.index')}}">
           <i class="fas fa-calculator"></i>

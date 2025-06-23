@@ -1,0 +1,54 @@
+/* Export and print button styles */
+.export-print-buttons {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+    justify-content: flex-end;
+}
+
+.excel-btn {
+    background-color: #27ae60;
+    color: white;
+}
+
+.excel-btn:hover {
+    background-color: #219653;
+}
+
+.pdf-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.pdf-btn:hover {
+    background-color: #c0392b;
+}
+
+.print-btn {
+    background-color: #3498db;
+    color: white;
+}
+
+.print-btn:hover {
+    background-color: #2980b9;
+}
+
+@media print {
+    .export-print-buttons {
+        display: none;
+    }
+    
+    .tabs, .controls, header, .back-btn {
+        display: none !important;
+    }
+    
+    .container {
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    body {
+        background-color: white;
+    }
+}

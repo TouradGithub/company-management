@@ -81,16 +81,59 @@
           <div class="hover-effect"></div>
         </a>
       </li>
-        <li class="menu-item has-submenu">
-            <a href="{{route('branch.accounting.index')}}">
-                <i class="fas fa-calculator"></i>
-                <span>المحاسبة المالية</span>
-                <i class="fas fa-chevron-down submenu-arrow"></i>
-                <div class="hover-effect"></div>
+
+      <li class="menu-item has-submenu">
+        <a href="#">
+          <i class="fas fa-calculator"></i>
+          <span>المحاسبة المالية</span>
+          <i class="fas fa-chevron-down submenu-arrow"></i>
+          <div class="hover-effect"></div>
+        </a>
+        <ul class="submenu">
+          <li>
+            <a href="#">
+              <i class="fas fa-book"></i>
+              <span>قيد يومية</span>
             </a>
-
-        </li>
-
+          </li>
+          <li>
+            <a href="#">
+              <i class="fas fa-list"></i>
+              <span>عرض قيود اليومية</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="fas fa-file-invoice"></i>
+              <span>كشف حساب</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="fas fa-balance-scale"></i>
+              <span>ميزان المراجعة</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="fas fa-chart-line"></i>
+              <span>قائمة المركز المالي</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="fas fa-chart-pie"></i>
+              <span>قائمة الدخل</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="fas fa-file-alt"></i>
+              <span>تقارير مالية</span>
+            </a>
+          </li>
+        </ul>
+      </li>
     </ul>
 
     <div class="sidebar-footer">

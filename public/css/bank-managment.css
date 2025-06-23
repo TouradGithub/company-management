@@ -1,0 +1,1459 @@
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Tajawal', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    direction: rtl;
+}
+
+/* .container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+} */
+
+h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+}
+
+.bank-accounts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.account-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.account-options {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 10;
+}
+
+.account-options button {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0.2rem;
+    font-size: 0.9rem;
+}
+
+.account-options button:hover {
+    color: #343a40;
+}
+
+.account-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.account-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.account-number {
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.account-balance {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #28a745;
+    margin-bottom: 0.5rem;
+}
+
+.account-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.action-btn {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: background-color 0.2s;
+    flex: 1;
+    justify-content: center;
+    min-width: max-content;
+}
+
+.action-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.add-deposit {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.add-deposit:hover {
+    background-color: #138496;
+}
+
+.add-account {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+#addAccountBtn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+}
+#addFundBtn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+#addAccountBtn:hover {
+    background-color: #0069d9;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.deposit-modal .modal-content {
+    max-width: 600px;
+}
+
+.transaction-modal .modal-content {
+    max-width: 600px;
+}
+
+.sales-invoice-modal .modal-content {
+    max-width: 900px;
+}
+
+.purchase-invoice-modal .modal-content {
+    max-width: 900px;
+}
+
+.close {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.close:hover {
+    color: #333;
+}
+
+/* Statement Table Styles */
+.statement-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.statement-buttons button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.statement-buttons button:hover {
+    background-color: #0069d9;
+}
+
+.statement-buttons #printStatementBtn {
+    background-color: #17a2b8;
+}
+
+.statement-buttons #printStatementBtn:hover {
+    background-color: #138496;
+}
+
+.statement-buttons #exportStatementBtn {
+    background-color: #6f42c1;
+}
+
+.statement-buttons #exportStatementBtn:hover {
+    background-color: #5e37a6;
+}
+
+.statement-table-container {
+    overflow-x: auto;
+}
+
+.statement-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.statement-table th, .statement-table td {
+    padding: 0.75rem;
+    text-align: right;
+    border-bottom: 1px solid #ddd;
+}
+
+.statement-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+.statement-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.amount-positive {
+    color: #28a745;
+}
+
+.amount-negative {
+    color: #dc3545;
+}
+
+/* جدول السندات */
+.vouchers-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.vouchers-table thead th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: bold;
+    padding: 1rem;
+    text-align: right;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.vouchers-table tbody td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.vouchers-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.vouchers-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.receipt-row {
+    background-color: rgba(40, 167, 69, 0.05);
+}
+
+.payment-row {
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.receipt-badge {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.payment-badge {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.actions-cell {
+    white-space: nowrap;
+    text-align: center;
+}
+
+.action-icon {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 50%;
+    transition: all 0.2s;
+    margin: 0 0.1rem;
+}
+
+.action-icon:hover {
+    background-color: rgba(108, 117, 125, 0.1);
+}
+
+.preview-voucher i {
+    color: #17a2b8;
+}
+
+.edit-voucher i {
+    color: #ffc107;
+}
+
+.delete-voucher i {
+    color: #dc3545;
+}
+
+.no-results {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+form button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+
+form button:hover {
+    background-color: #218838;
+}
+
+/* Deposit Receipt Styles */
+.deposit-receipt {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #eaeaea;
+}
+
+.receipt-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #17a2b8;
+}
+
+.receipt-logo {
+    background-color: #17a2b8;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 1rem;
+    font-size: 1.5rem;
+}
+
+.receipt-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: 'Tajawal', sans-serif;
+    resize: vertical;
+    min-height: 100px;
+}
+
+.save-btn {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.save-btn:hover {
+    background-color: #138496;
+}
+
+/* Transaction Voucher Styles */
+.transaction-voucher {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #eaeaea;
+}
+
+.voucher-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #007bff;
+}
+
+.voucher-logo {
+    background-color: #007bff;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 1rem;
+    font-size: 1.5rem;
+}
+
+.voucher-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Voucher Button Styles */
+.voucher-buttons, .bills-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.voucher-btn, .bill-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    gap: 0.5rem;
+    width: 180px;
+    height: 180px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.voucher-btn:hover, .bill-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.voucher-btn i, .bill-btn i {
+    font-size: 3rem;
+}
+
+.bill-btn:first-child {
+    color: #28a745;
+}
+
+.bill-btn:last-child {
+    color: #dc3545;
+}
+
+.voucher-btn span, .bill-btn span {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Bills Styles */
+.bills-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.sales-row {
+    background-color: rgba(40, 167, 69, 0.05);
+}
+
+.purchase-row {
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+.sales-badge {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.purchase-badge {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.bills-list {
+    background-color: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: block;
+    width: 100%;
+}
+
+/* Preview Document Styles */
+.preview-modal {
+    max-width: 800px;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    justify-content: flex-start;
+}
+
+.preview-actions button {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.preview-actions button:hover {
+    background-color: #5a6268;
+}
+
+#printDocumentBtn {
+    background-color: #17a2b8;
+}
+
+#printDocumentBtn:hover {
+    background-color: #138496;
+}
+
+#editDocumentBtn {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+#editDocumentBtn:hover {
+    background-color: #e0a800;
+}
+
+#deleteDocumentBtn {
+    background-color: #dc3545;
+}
+
+#deleteDocumentBtn:hover {
+    background-color: #c82333;
+}
+
+.preview-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.preview-btn:hover {
+    background-color: #5a6268;
+}
+
+.preview-document {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+}
+
+.document-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #333;
+}
+
+.document-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 1rem;
+    font-size: 1.8rem;
+}
+
+.transfer-document .document-logo {
+    background-color: #007bff;
+    color: white;
+}
+
+.custody-document .document-logo {
+    background-color: #6c757d;
+    color: white;
+}
+
+.deposit-document .document-logo {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.document-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.document-body {
+    margin-bottom: 2rem;
+}
+
+.document-row {
+    display: flex;
+    margin-bottom: 1rem;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 0.5rem;
+}
+
+.document-field {
+    width: 150px;
+    font-weight: bold;
+    color: #555;
+}
+
+.document-value {
+    flex: 1;
+}
+
+.document-description {
+    white-space: pre-line;
+}
+
+.document-footer {
+    margin-top: 2rem;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+}
+
+.document-bank {
+    display: flex;
+    margin-bottom: 2rem;
+}
+
+.document-signatures {
+    display: flex;
+    justify-content: space-between;
+}
+
+.document-signature {
+    text-align: center;
+    width: 200px;
+}
+
+.signature-line {
+    margin-top: 3rem;
+    border-top: 1px solid #333;
+}
+
+.statistics-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card {
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+    font-size: 1.8rem;
+    color: white;
+}
+
+.stat-total-balance .stat-icon {
+    background-color: #28a745;
+}
+
+.stat-total-accounts .stat-icon {
+    background-color: #007bff;
+}
+
+.stat-total-transactions .stat-icon {
+    background-color: #17a2b8;
+}
+
+.stat-highest-balance .stat-icon {
+    background-color: #6f42c1;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.stat-total-balance .stat-value {
+    color: #28a745;
+}
+
+.stat-total-accounts .stat-value {
+    color: #007bff;
+}
+
+.stat-total-transactions .stat-value {
+    color: #17a2b8;
+}
+
+.stat-highest-balance .stat-value {
+    color: #6f42c1;
+}
+/* Form Styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: #fff;
+}
+
+form button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+
+form button:hover {
+    background-color: #218838;
+}
+
+/* Sidebar Styles */
+.main-container {
+    /* display: flex; */
+
+    min-height: 100vh;
+}
+
+/* .sidebar {
+    width: 60px;
+    background-color: #2c3e50;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    transition: width 0.3s;
+    overflow: hidden;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar.active {
+    width: 220px;
+}
+
+.sidebar-header {
+    padding: 20px 0;
+    text-align: center;
+    color: white;
+    border-bottom: 1px solid #34495e;
+}
+
+.sidebar-header h3 {
+    display: none;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.sidebar.active .sidebar-header h3 {
+    display: block;
+}
+
+.sidebar-menu {
+    padding-top: 20px;
+} */
+
+.menu-item {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+/* .sidebar.active .menu-item {
+    justify-content: flex-start;
+    padding-right: 30px;
+} */
+
+.menu-item:hover, .menu-item.active {
+    background-color: #34495e;
+    color: #3498db;
+}
+
+.menu-item i {
+    font-size: 1.5rem;
+    min-width: 30px;
+    text-align: center;
+}
+
+.menu-item span {
+    display: none;
+    margin-right: 10px;
+}
+
+.menu-item span {
+    display: inline-block;
+}
+/*
+.sidebar.active .menu-item span {
+    display: inline-block;
+} */
+
+.toggle-btn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+.content-wrapper {
+    flex: 1;
+    margin-right: 60px;
+    transition: margin-right 0.3s;
+}
+
+ .content-wrapper {
+    margin-right: 220px;
+}
+/* .sidebar.active ~ .content-wrapper {
+    margin-right: 220px;
+} */
+
+/* Funds Styles */
+.fund-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.fund-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.fund-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.8rem;
+    color: #333;
+}
+
+.fund-cashier, .fund-location {
+    color: #666;
+    margin-bottom: 0.6rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+.fund-cashier i, .fund-location i {
+    margin-left: 0.5rem;
+    color: #6c757d;
+}
+
+.fund-balance {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #28a745;
+    margin: 0.8rem 0;
+}
+
+.fund-options {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 10;
+}
+
+.fund-options button {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0.2rem;
+    font-size: 0.9rem;
+}
+
+.fund-options button:hover {
+    color: #343a40;
+}
+
+.fund-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    gap: 0.5rem;
+}
+
+.add-income {
+    background-color: #28a745;
+    color: white;
+}
+
+.add-income:hover {
+    background-color: #218838;
+}
+
+.add-expense {
+    background-color: #dc3545;
+    color: white;
+}
+
+.add-expense:hover {
+    background-color: #c82333;
+}
+
+/* Search and Filter Styles */
+.search-filter-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.search-box {
+    display: flex;
+    width: 100%;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-left: none;
+    border-radius: 5px 0 0 5px;
+    font-size: 1rem;
+}
+
+.search-box button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+
+.filter-options {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-options select,
+.filter-options input {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    flex: 1;
+    min-width: 150px;
+}
+
+#resetFiltersBtn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#resetFiltersBtn:hover {
+    background-color: #5a6268;
+}
+
+#resetBillFiltersBtn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#resetBillFiltersBtn:hover {
+    background-color: #5a6268;
+}
+
+/* Invoice Form Styles */
+.invoice-form {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #eaeaea;
+    margin-top: 1rem;
+}
+
+.invoice-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #28a745;
+}
+
+#purchaseInvoiceModal .invoice-header {
+    border-bottom: 2px solid #dc3545;
+}
+
+.invoice-logo {
+    background-color: #28a745;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 1rem;
+    font-size: 1.5rem;
+}
+
+#purchaseInvoiceModal .invoice-logo {
+    background-color: #dc3545;
+}
+
+.invoice-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.invoice-items {
+    margin: 2rem 0;
+}
+
+.invoice-items h3 {
+    margin-bottom: 1rem;
+    color: #555;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.items-table th {
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    text-align: right;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.items-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.items-table input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.item-total {
+    font-weight: bold;
+}
+
+.add-item-btn {
+    margin-top: 1rem;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.add-item-btn:hover {
+    background-color: #5a6268;
+}
+
+.remove-item {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+}
+
+.invoice-totals {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 5px;
+    margin: 1rem 0;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+}
+
+.grand-total {
+    font-weight: bold;
+    font-size: 1.2rem;
+    border-top: 1px solid #dee2e6;
+    padding-top: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.invoice-document {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+}
+
+.sales-document .document-logo {
+    background-color: #28a745;
+    color: white;
+}
+
+.purchase-document .document-logo {
+    background-color: #dc3545;
+    color: white;
+}
+
+.invoice-info {
+    margin-bottom: 2rem;
+}
+
+.invoice-items-table {
+    margin: 2rem 0;
+}
+
+.invoice-items-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.invoice-items-table th {
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    text-align: right;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.invoice-items-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.invoice-totals-preview {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 5px;
+    margin: 1rem 0;
+}
+
+.invoice-notes {
+    margin: 1.5rem 0;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.anmaat-zar-elfawateer {
+    margin-bottom: 1rem;
+}
+
+.bills-back-button {
+    margin-bottom: 1rem;
+}
+
+.bills-back-button button {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.bills-back-button button:hover {
+    background-color: #5a6268;
+}
+
+#billsButtons {
+    display: flex;
+}
+
+/* #billsSearchContainer {
+    display: block;
+} */
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    /* .sidebar {
+        width: 0;
+    }
+
+    .sidebar.active {
+        width: 200px;
+    } */
+
+    .content-wrapper {
+        margin-right: 0;
+    }
+
+    /* .sidebar.active ~ .content-wrapper {
+        margin-right: 200px;
+    } */
+}
+
+/* Print Styles */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    #printableDocument, #printableDocument * {
+        visibility: visible;
+    }
+
+    #printableDocument {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    .preview-actions {
+        display: none;
+    }
+}

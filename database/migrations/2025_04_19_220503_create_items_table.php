@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('items', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('bills_id')->constrained()->onDelete('cascade'); // ربط بالحساب البنكي
-            $table->text('name');
-            $table->decimal('quantity', 15, 2);
-            $table->decimal('price', 15, 2);
-            $table->text('total');
-            $table->string('code')->nullable();
-            $table->decimal('tax_rate', 5, 2)->default(0);
-            $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('set null');
-
-            $table->timestamps();
-        });
+//        Schema::create('items', function (Blueprint $table) {
+//            $table->id();
+//            $table->foreignId('bills_id')->constrained()->onDelete('cascade'); // ربط بالحساب البنكي
+//            $table->text('name');
+//            $table->decimal('quantity', 15, 2);
+//            $table->decimal('price', 15, 2);
+//            $table->text('total');
+//            $table->string('code')->nullable();
+//            $table->decimal('tax_rate', 5, 2)->default(0);
+//            $table->foreignId('product_id')->nullable()->constrained('products_c')->onDelete('set null');
+//
+//            $table->timestamps();
+//        });
     }
 
     /**

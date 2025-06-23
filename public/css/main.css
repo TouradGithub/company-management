@@ -1,0 +1,389 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+} */
+
+.header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.tabs {
+    display: flex;
+    background-color: #ecf0f1;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.tab {
+    padding: 15px 25px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    text-align: center;
+    flex: 1;
+}
+
+.tab:hover {
+    background-color: #bdc3c7;
+}
+
+.tab.active {
+    background-color: #3498db;
+    color: white;
+}
+
+.tab-content {
+    display: none;
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #3498db;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    color: #3498db;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+}
+
+.icon-button:hover {
+    color: #2980b9;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1111;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    border-radius: 5px;
+    direction: rtl;
+}
+
+.close {
+    color: #aaa;
+    float: left;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+.transaction-card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.transaction-type {
+    font-weight: bold;
+    margin-bottom: 8px;
+    padding: 5px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.purchase {
+    background-color: #e8f4f8;
+    color: #2980b9;
+}
+
+.depreciation {
+    background-color: #f8e8e8;
+    color: #c0392b;
+}
+
+.sale {
+    background-color: #e8f8e8;
+    color: #27ae60;
+}
+
+.transaction-details {
+    margin-top: 10px;
+}
+
+.transaction-date {
+    color: #7f8c8d;
+    font-size: 0.9em;
+}
+
+.annual-depreciation-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.annual-depreciation-table th,
+.annual-depreciation-table td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.annual-depreciation-table th {
+    background-color: #3498db;
+    color: white;
+}
+
+.year-column {
+    font-weight: bold;
+    background-color: #f2f2f2;
+}
+
+.total-row {
+    font-weight: bold;
+    background-color: #e8f4f8;
+}
+
+/* أنماط جديدة للقيود المحاسبية */
+.journal-entries-examples {
+    margin-top: 20px;
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.journal-entry {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #ccc;
+}
+
+.journal-entry h4 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.entry-details {
+    display: grid;
+    grid-template-columns: 60% 20% 20%;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+.entry-row {
+    display: grid;
+    grid-template-columns: 60% 20% 20%;
+    padding: 5px 0;
+}
+
+.entry-row.debit {
+    padding-right: 20px;
+}
+
+.entry-date {
+    color: #7f8c8d;
+    font-style: italic;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+/* أنماط جديدة للاختيار المساعد */
+.autocomplete-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.autocomplete-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.autocomplete-results {
+    position: absolute;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    background-color: white;
+    z-index: 10;
+    display: none;
+}
+
+.autocomplete-item {
+    padding: 10px;
+    cursor: pointer;
+    text-align: right;
+}
+
+.autocomplete-item:hover {
+    background-color: #f2f2f2;
+}
+
+/* أنماط لشاشة تفاصيل الإهلاكات */
+.asset-depreciation-details {
+    padding: 15px;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+.detail-label {
+    display: block;
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.detail-value {
+    font-size: 16px;
+    color: #333;
+}
+
+.depreciation-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.depreciation-history-table th,
+.depreciation-history-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.depreciation-history-table th {
+    background-color: #3498db;
+    color: white;
+}
+
+.depreciation-history-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.editable-cell {
+    padding: 0 !important;
+}
+
+.editable-cell input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background-color: rgba(52, 152, 219, 0.1);
+    text-align: center;
+}
+
+#saveDepreciationChangesBtn {
+    background-color: #27ae60;
+}
+
+#saveDepreciationChangesBtn:hover {
+    background-color: #2ecc71;
+}
+
+.asset-row-changed {
+    background-color: rgba(46, 204, 113, 0.1) !important;
+}

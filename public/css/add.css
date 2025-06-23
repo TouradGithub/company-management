@@ -1,0 +1,31 @@
+
+.nav-tabs .nav-link.active {
+    font-weight: bold;
+    background-color: #f8f9fa;
+    border-bottom: 3px solid #0d6efd;
+}
+.tab-content {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-left: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 0 0 5px 5px;
+}
+.image-preview {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border: 1px dashed #ccc;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+.image-preview:hover {
+    border-color: #0d6efd;
+}
+.required-field::after {
+    content: " *";
+    color: red;
+}
+

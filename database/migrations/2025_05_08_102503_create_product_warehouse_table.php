@@ -20,8 +20,8 @@ return new class extends Migration
 
             $table->unique(['product_id', 'warehouse_id']); // كل منتج في كل فرع مرة واحدة فقط
 
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            $table->unsignedInteger('warehouse_id');
+            $table->foreign('product_id')->references('id')->on('products_c')->onDelete('cascade');
+
             $table->foreign('warehouse_id')->references('id')->on('branches')->onDelete('cascade');
                     });
 

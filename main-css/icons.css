@@ -1,0 +1,56 @@
+/* Icon-specific styles */
+.icon {
+    width: 64p;
+    height: 64px;
+    fill: none;
+    stroke: var(--secondary-color);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: all 0.3s ease;
+}
+
+.module-card:hover .icon {
+    stroke: var(--accent-color);
+    transform: scale(1.1);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.tool-card .icon {
+    width: 48px;
+    height: 48px;
+    stroke: white;
+    stroke-width: 1.5;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.tool-card:hover .icon {
+    transform: scale(1.15);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.search-icon {
+    width: 24px;
+    height: 24px;
+    stroke: var(--primary-color);
+    stroke-width: 2;
+}
+
+.task-icon {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 2;
+}
+
+/* Icon animations */
+@keyframes iconPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.module-card:hover .icon,
+.tool-card:hover .icon {
+    animation: iconPulse 1s ease infinite;
+}
