@@ -31,6 +31,9 @@ function branchId()
         return $branch;
     }
     function getCompanyId(){
+//        log(\auth()->user()->model_type));
+//        log(\auth()->user()->model_id));
+
         if(auth()->user()->model_type == "BRANCH"){
             $branch = Branch::find(auth()->user()->model_id);
             return $branch->company_id;

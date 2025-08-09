@@ -301,6 +301,7 @@
 
         const invoiceData = {
             customer_id: section.includes('sales') ? $(`#${sectionIds}CustomerSelect`).val() : null,
+            branch_id: section.includes('sales') ? $(`#${sectionIds}BranchSelect`).val() : null,
             supplier_id: section.includes('purchase') ? $(`#${sectionIds}SupplierSelect`).val() : null, // تصحيح هنا
             invoice_date: $(`#${sectionIds}InvoiceDate`).val(),
             original_invoice_number: section.includes('return') ? $(`#original${section.includes('sales') ? 'Sales' : 'Purchase'}InvoiceNumber`).val() : null,
@@ -314,10 +315,10 @@
         };
         console.log(section);
 
-        const url = section === 'sales' ? '/branch/invoices/store' :
-            section === 'purchase' ? '/branch/invoices/purchases/store' :
-                section === 'sales-return' ? '/branch/invoices/sales-returns/store' :
-                    '/branch/invoices/purchase-returns/store';
+        const url = section === 'sales' ? '/invoices/store' :
+            section === 'purchase' ? '/invoices/purchases/store' :
+                section === 'sales-return' ? '/invoices/sales-returns/store' :
+                    '/invoices/purchase-returns/store';
 
         $.ajax({
             url: url,
@@ -335,7 +336,7 @@
                     text: 'تم حفظ الفاتورة بنجاح!',
                 }).then(() => {
                     const invoiceId = response.invoice_id;
-                    window.location.href = `/branch/invoices/index`;
+                    // window.location.href = `/branch/invoices/index`;
                 });
             },
             error: function(xhr) {

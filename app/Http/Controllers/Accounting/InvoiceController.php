@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Accounting;
+use App\Jobs\CreateJournalEntryFromInvoiceJob;
 use Mpdf\Mpdf;
 use setasign\Fpdi\Fpdi;
 use App\Helpers\AccountTransactionHelper;
@@ -192,6 +193,8 @@ class InvoiceController extends Controller
             ]);
             $product->decrement('stock', $item['quantity']);
         }
+
+        CreateJournalEntryFromInvoiceJob::dispatch($invoice);
         return response()->json([
             'status' => true,
             'message' => 'تم إضافة الفاتورة بنجاح',
@@ -279,7 +282,8 @@ class InvoiceController extends Controller
             ]);
             $product->decrement('stock', $item['quantity']);
         }
-
+        CreateJournalEntryFromInvoiceJob::dispatch($invoice);
+//        AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
         return response()->json([
             'status' => true,
             'message' => 'تم إضافة الفاتورة بنجاح',
@@ -289,7 +293,7 @@ class InvoiceController extends Controller
 
     public function salesReturn(Request $request)
     {
-
+dd("OK");
         $validated = $request->validate([
             'invoice_date' => 'required|date',
             'customer_id' => 'required',
@@ -380,6 +384,9 @@ class InvoiceController extends Controller
             ]);
             $product->increment('stock', $item['quantity']);
         }
+        CreateJournalEntryFromInvoiceJob::dispatch($invoice);
+
+//        AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
 
         return response()->json([
             'status' => true,
@@ -479,6 +486,8 @@ class InvoiceController extends Controller
             ]);
             $product->increment('stock', $item['quantity']);
         }
+        CreateJournalEntryFromInvoiceJob::dispatch($invoice);
+//        AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
 
         return response()->json([
             'status' => true,
@@ -742,7 +751,7 @@ class InvoiceController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'تم إضافة الفاتورة بنجاح',
-            'invoice_id' => $invoice->id, // Return invoice ID for printing
+            'invoice_id' => $invoice->id,
         ], 201);
     }
 
