@@ -6,6 +6,9 @@ use App\Models\AccountTransaction;
 use App\Models\JournalEntry;
 use App\Models\Invoice;
 use App\Models\Account;
+use App\Models\JournalEntryDetail;
+use App\Models\Supplier;
+use Illuminate\Support\Facades\Log;
 
 class AccountTransactionHelper
 {
@@ -22,6 +25,73 @@ class AccountTransactionHelper
 
         self::updateRunningBalance($model->company_id);
 
+    }
+
+
+
+    public static function getSupplierAccountId($supplierId)
+    {
+        return Supplier::find($supplierId)->account_id ?? null;
+    }
+
+    public static function getCustomerAccountId($customerId)
+    {
+        return \App\Models\Customer::find($customerId)->account_id ?? null;
+    }
+    public static function getInventoryAccountId($company_id)
+    {
+        return Account::where('type_account_register', 3)->where('company_id' ,$company_id)->first()->id ?? null;
+    }
+    public static function createJournalEntryFromInvoice(Invoice $invoice)
+    {
+
+        $entryNumber = JournalEntry::generateEntryNumber("INV" , $invoice->company_id );
+        Log::info("Creating journal entry for invoice #{$invoice->id} with type {$invoice->invoice_type}");
+        $journalEntry = JournalEntry::create([
+            'entry_number' => $entryNumber,
+            'entry_date' => $invoice->invoice_date,
+            'company_id' => $invoice->company_id,
+            'branch_id' => $invoice->branch_id,
+            'source_type' => 'Invoice',
+            'source_id' => $invoice->id,
+            'session_year' => $invoice->session_year,
+        ]);
+
+        if ($invoice->invoice_type === 'Purchases') {
+            JournalEntryDetail::create([
+                'journal_entry_id' => $journalEntry->id,
+                'account_id' => self::getInventoryAccountId($invoice->company_id),
+                'debit' => $invoice->subtotal,
+                "cost_center_id"=>1,
+                'credit' => 0,
+                'comment' => 'المخزون - فاتورة مشتريات',
+            ]);
+
+            JournalEntryDetail::create([
+                'journal_entry_id' => $journalEntry->id,
+                "cost_center_id"=>1,
+                'account_id' => self::getSupplierAccountId($invoice->supplier_id),
+                'debit' => 0,
+                'credit' => $invoice->total,
+                'comment' => 'المورد - فاتورة مشتريات',
+            ]);
+        }
+
+        elseif ($invoice->invoice_type === 'Sales') {
+
+            JournalEntryDetail::create([
+                'journal_entry_id' => $journalEntry->id,
+                "cost_center_id"=>1,
+                'account_id' => self::getCustomerAccountId($invoice->customer_id),
+                'debit' => $invoice->total,
+                'credit' => 0,
+                'comment' => 'العميل - فاتورة مبيعات',
+            ]);
+
+
+        }
+
+        self::handleJournalEntry($journalEntry);
     }
 
 

@@ -13,7 +13,7 @@ use App\Http\Controllers\Branch\AuthBranchController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\PayrollController;
-
+use App\Http\Controllers\Accounting\ProductController;
 use App\Http\Controllers\Accounting\InvoiceController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\DeductionController;
@@ -21,6 +21,9 @@ use App\Http\Controllers\Accounting\JournalController;
 
 use App\Http\Controllers\Assets\DepreciationController;
 use App\Http\Controllers\BankManagment\BillsController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\TransferController;
+use App\Http\Controllers\ProductController as PProductController ;
 use App\Http\Controllers\BankManagment\FundsController;
 use App\Http\Controllers\BankManagment\AccountController;
 use App\Http\Controllers\BankManagment\vouchersContainer;
@@ -179,13 +182,13 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
     Route::get('/trial-balance', [App\Http\Controllers\Accounting\TrialBalanceController::class, 'index'])->name('trial.balance');
     Route::get('/trial-balance/data', [App\Http\Controllers\Accounting\TrialBalanceController::class, 'getTrialBalance'])->name('trial.balance.data');
 
-    Route::get('/products/index', [App\Http\Controllers\Accounting\ProductController::class, 'index'])->name('products.index');
-    Route::post('/products/store', [App\Http\Controllers\Accounting\ProductController::class, 'store'])->name('products.store');
-    Route::get('/products/fetch', [App\Http\Controllers\Accounting\ProductController::class, 'getProducts'])->name('products.fetch');
-    Route::get('/products/edit/{id}', [App\Http\Controllers\Accounting\ProductController::class, 'edit']);
-    Route::post('/products/update/{id}', [App\Http\Controllers\Accounting\ProductController::class, 'update']); // Use POST with _method=PUT
-    Route::delete('/products/delete/{id}', [App\Http\Controllers\Accounting\ProductController::class, 'destroy']);
-    Route::post('/products/import', [App\Http\Controllers\Accounting\ProductController::class, 'importProducts'])->name('products.import');
+    Route::get('/products/index', [ProductController::class, 'index'])->name('products.index');
+    Route::post('/products/store', [ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/fetch', [ProductController::class, 'getProducts'])->name('products.fetch');
+    Route::get('/products/edit/{id}', [ProductController::class, 'edit']);
+    Route::post('/products/update/{id}', [ProductController::class, 'update']); // Use POST with _method=PUT
+    Route::delete('/products/delete/{id}', [ProductController::class, 'destroy']);
+    Route::post('/products/import', [ProductController::class, 'importProducts'])->name('products.import');
 
     //start new routes
 
@@ -318,18 +321,18 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
         })->name('add');
 
 
-        Route::get('/products/list', [ProductController::class, 'fetchProducts']);
-        Route::get('/products/cost-details', [ProductController::class, 'fetchCostDetails']);
-        Route::get('/transfer/products', [ProductController::class, 'getTransferProducts']);
+        Route::get('/products/list', [PProductController::class, 'fetchProducts']);
+        Route::get('/products/cost-details', [PProductController::class, 'fetchCostDetails']);
+        Route::get('/transfer/products', [PProductController::class, 'getTransferProducts']);
         Route::post('/transfer/store', [TransferController::class, 'storeTransfer']);
         Route::get('/transfer/list', [TransferController::class, 'getTransfers']);
 
 
         Route::get('branches', function () {
-            return Branch::all(); // جلب جميع الفروع
+            return \App\Models\Branch::all(); // جلب جميع الفروع
         });
 // routes/web.php
-        Route::post('/wastes/store', [WasteController::class, 'store'])->name('wastes.store');
+        Route::post('/wastes/store', [\App\Http\Controllers\WasteController::class, 'store'])->name('wastes.store');
 
         Route::get('/sales-data', [BillsController::class, 'getSalesData']);
 
@@ -355,10 +358,10 @@ Route::middleware(['auth', 'verify.company' ])->group(function () {
         Route::get('/report/products', [ReportController::class, 'index'])->name('report.products');
 //
 
-        Route::get('/products/{id}', [ProductController::class, 'show']);
-        Route::get('/getselects', [ProductController::class, 'getSelects']);
-        Route::post('/products/{id}', [ProductController::class, 'update']);
-        Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+        Route::get('/products/{id}', [PProductController::class, 'show']);
+        Route::get('/getselects', [PProductController::class, 'getSelects']);
+        Route::post('/products/{id}', [PProductController::class, 'update']);
+        Route::delete('/products/{id}', [PProductController::class, 'destroy']);
         Route::get('/reports/profit', [ReportController::class, 'profitReport'])->name('reports.profit');
         Route::get('/profit-per-bill', [ReportController::class, 'profitPerBill']);
         Route::get('/delivery-types', [BillsController::class, 'deliveryTypes']);
