@@ -748,12 +748,71 @@ dd("OK");
             $product->decrement('stock', $item['quantity']);
         }
 
+        // إعادة إنشاء القيد بعد التعديل
+        \App\Jobs\CreateJournalEntryFromInvoiceJob::dispatch($invoice);
+
         return response()->json([
             'status' => true,
             'message' => 'تم إضافة الفاتورة بنجاح',
             'invoice_id' => $invoice->id,
         ], 201);
     }
+    // إضافة دالة لإنشاء فاتورة مصروفات وتحويلها إلى قيد يومية
+    public function expenses(Request $request)
+    {
+        $validated = $request->validate([
+            'invoice_date' => 'required|date',
+            'branch_id' => 'required',
+            'account_id' => 'required', // حساب المصروف
+            'amount' => 'required|numeric|min:0.01',
+            'description' => 'nullable|string',
+        ], [
+            'invoice_date.required' => 'تاريخ المصروف مطلوب.',
+            'invoice_date.date' => 'تاريخ المصروف يجب أن يكون تاريخًا صالحًا.',
+            'branch_id.required' => 'الفرع مطلوب.',
+            'account_id.required' => 'حساب المصروف مطلوب.',
+            'amount.required' => 'المبلغ مطلوب.',
+            'amount.numeric' => 'المبلغ يجب أن يكون رقمًا.',
+            'amount.min' => 'المبلغ يجب أن يكون أكبر من صفر.',
+        ]);
+
+        // إنشاء فاتورة مصروفات
+        $invoice = Invoice::create([
+            'invoice_number' => Invoice::generateEntryNumber(getCompanyId()),
+            'invoice_date' => $validated['invoice_date'],
+            'branch_id' => $validated['branch_id'],
+            'company_id' => getCompanyId(),
+            'employee_id' => Auth::user()->name,
+            'subtotal' => $validated['amount'],
+            'discount' => 0,
+            'tax' => 0,
+            'total' => $validated['amount'],
+            'invoice_type' => 'Expense',
+            'status' => Invoice::STATUS_CONFIRMED,
+            'description' => $validated['description'] ?? null,
+        ]);
+
+        // ربط حساب المصروف كمصروف رئيسي (يمكنك التعديل حسب هيكل قاعدة البيانات)
+        InvoiceItem::create([
+            'invoice_id' => $invoice->id,
+            'product_id' => null,
+            'product_name' => 'مصروف',
+            'quantity' => 1,
+            'price' => $validated['amount'],
+            'total' => $validated['amount'],
+            'account_id' => $validated['account_id'],
+        ]);
+
+        // تحويل المصروف إلى قيد يومية
+        \App\Jobs\CreateJournalEntryFromInvoiceJob::dispatch($invoice);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم إضافة المصروف بنجاح',
+            'invoice_id' => $invoice->id,
+        ], 201);
+    }
+    
 
     public function scanCodeQr($id)
     {
