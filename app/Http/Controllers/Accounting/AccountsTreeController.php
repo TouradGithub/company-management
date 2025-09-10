@@ -39,7 +39,7 @@ class AccountsTreeController extends Controller
             'id' => 'required',
             'name' => 'required|string|max:255',
             'account_type_id' => 'required',
-            'ref_account_id' => 'required|exists:ref_account,id',
+            'ref_account_id' => 'required',
             'parent_id' => 'required',
             'opening_balance' => 'nullable|numeric',
             'closing_list_type' => 'required|in:1,2',
@@ -92,6 +92,7 @@ class AccountsTreeController extends Controller
         $account->opening_balance = $validated['opening_balance'] && $validated['islast'] ? $validated['opening_balance'] : 0;
         $account->islast = $validated['islast']  ?? 0;
         $account->closing_list_type = $validated['closing_list_type'];
+        $account->ref_account_id = $validated['ref_account_id'];
         $account->save();
         $curent_year = getCurrentYear();
         $account->updateOwnBalance($curent_year);
