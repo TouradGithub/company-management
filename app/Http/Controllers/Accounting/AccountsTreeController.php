@@ -13,17 +13,19 @@ class AccountsTreeController extends Controller
 {
     public function index(){
         $accounttypes =  AccountType::all();
+        $refAccounts = \App\Models\RefAccount::all();
         $accounts = Account::where('company_id', getCompanyId())->get();
         $addAccounts = Account::where('company_id', getCompanyId())
             ->where('islast','!=' ,1)->get();
         $accountsTree = $this->buildTree($accounts);
-        return view('financialaccounting.accountsTree.index', compact('addAccounts' ,'accounttypes', 'accountsTree','accounts'));
+        return view('financialaccounting.accountsTree.index', compact('addAccounts' ,'accounttypes', 'accountsTree','accounts', 'refAccounts'));
     }
     public function accountTable(){
         $accounttypes =  AccountType::all();
+        $refAccounts = \App\Models\RefAccount::all();
         $accounts = Account::where('company_id', getCompanyId())->get();
         $accountsTree = $this->buildTree($accounts);
-        return view('financialaccounting.accountsTree.account-table', compact('accounttypes', 'accountsTree','accounts'));
+        return view('financialaccounting.accountsTree.account-table', compact('accounttypes', 'accountsTree','accounts', 'refAccounts'));
     }
     public  function edit($id)
     {
@@ -37,11 +39,11 @@ class AccountsTreeController extends Controller
             'id' => 'required',
             'name' => 'required|string|max:255',
             'account_type_id' => 'required',
+            'ref_account_id' => 'required|exists:ref_account,id',
             'parent_id' => 'required',
             'opening_balance' => 'nullable|numeric',
             'closing_list_type' => 'required|in:1,2',
             'islast' => 'nullable|boolean',
-
         ],
             [
             'account_number.required' => 'رقم الحساب مطلوب.',
@@ -51,6 +53,8 @@ class AccountsTreeController extends Controller
             'name.max' => 'اسم الحساب يجب ألا يتجاوز 255 حرفًا.',
             'account_type_id.required' => 'نوع الحساب مطلوب.',
             'account_type_id.exists' => 'نوع الحساب غير صحيح.',
+            'ref_account_id.required' => 'تصنيف الحساب مطلوب.',
+            'ref_account_id.exists' => 'تصنيف الحساب غير صحيح.',
             'parent_id.exists' => 'الحساب الرئيسي المحدد غير موجود.',
             'opening_balance.numeric' => 'الرصيد الافتتاحي يجب أن يكون رقمًا.',
             'closing_list_type.in' => 'نوع القائمة الختامية يجب أن يكون إما "قائمة الدخل" أو "الميزانيه العموميه".',
@@ -74,7 +78,15 @@ class AccountsTreeController extends Controller
         }
         $account->account_number = $validated['account_number'];
         $account->name = $validated['name'];
-        $account->account_type_id = $validated['account_type_id'];
+        // إذا كان الحساب له أب، يأخذ التصنيف من الأب
+        if (!empty($validated['parent_id']) && $validated['parent_id'] != 0) {
+            $parent = Account::find($validated['parent_id']);
+            $account->account_type_id = $parent ? $parent->account_type_id : $validated['account_type_id'];
+            $account->ref_account_id = $parent ? $parent->ref_account_id : $validated['ref_account_id'];
+        } else {
+            $account->account_type_id = $validated['account_type_id'];
+            $account->ref_account_id = $validated['ref_account_id'];
+        }
         $account->parent_id = $validated['parent_id'] ?? null;
         $account->company_id = auth()->user()->model_id;
         $account->opening_balance = $validated['opening_balance'] && $validated['islast'] ? $validated['opening_balance'] : 0;
@@ -90,16 +102,15 @@ class AccountsTreeController extends Controller
     }
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'account_number' => 'required|unique:accounts,account_number,NULL,id,company_id,' . auth()->user()->model_id,
             'name' => 'required|string|max:255',
             'account_type_id' => 'required',
+            'ref_account_id' => 'required|exists:ref_account,id',
             'parent_id' => 'required',
             'opening_balance' => 'nullable|numeric',
             'closing_list_type' => 'required|in:1,2',
             'islast' => 'nullable|boolean',
-
         ],
             [
             'account_number.required' => 'رقم الحساب مطلوب.',
@@ -109,17 +120,25 @@ class AccountsTreeController extends Controller
             'name.max' => 'اسم الحساب يجب ألا يتجاوز 255 حرفًا.',
             'account_type_id.required' => 'نوع الحساب مطلوب.',
             'account_type_id.exists' => 'نوع الحساب غير صحيح.',
+            'ref_account_id.required' => 'تصنيف الحساب مطلوب.',
+            'ref_account_id.exists' => 'تصنيف الحساب غير صحيح.',
             'parent_id.exists' => 'الحساب الرئيسي المحدد غير موجود.',
             'opening_balance.numeric' => 'الرصيد الافتتاحي يجب أن يكون رقمًا.',
             'closing_list_type.in' => 'نوع القائمة الختامية يجب أن يكون إما "قائمة الدخل" أو "الميزانيه العموميه".',
             'closing_list_type.required' => ' القائمة الختامية  مطلوبه".',
         ]);
-
-
         $account = new Account();
         $account->account_number = $validated['account_number'];
         $account->name = $validated['name'];
-        $account->account_type_id = $validated['account_type_id'];
+        // إذا كان الحساب له أب، يأخذ التصنيف من الأب
+        if (!empty($validated['parent_id']) && $validated['parent_id'] != 0) {
+            $parent = Account::find($validated['parent_id']);
+            $account->account_type_id = $parent ? $parent->account_type_id : $validated['account_type_id'];
+            $account->ref_account_id = $parent ? $parent->ref_account_id : $validated['ref_account_id'];
+        } else {
+            $account->account_type_id = $validated['account_type_id'];
+            $account->ref_account_id = $validated['ref_account_id'];
+        }
         $account->parent_id = $validated['parent_id'] ?? null;
         $account->company_id = auth()->user()->model_id;
         $account->opening_balance = $validated['opening_balance']  ?? 0;
@@ -129,9 +148,7 @@ class AccountsTreeController extends Controller
         $curent_year = getCurrentYear();
         $account->updateOwnBalance($curent_year);
         $account->updateParentBalanceFromChildren($curent_year);
-
         return redirect()->back()->with('success', 'تم إنشاء الحساب بنجاح!');
-
     }
     public function importAccounts(Request $request)
     {

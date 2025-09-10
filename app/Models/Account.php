@@ -9,7 +9,12 @@ use Illuminate\Support\Facades\Auth;
 class Account extends Model
 {
     use HasFactory;
-    protected $fillable = ['account_number', 'name', 'account_type_id', 'parent_id', 'company_id','opening_balance', 'closing_list_type','islast'];
+    protected $fillable = ['account_number', 'name', 'account_type_id', 'parent_id', 'company_id','opening_balance', 'closing_list_type','islast', 'ref_account_id'];
+
+    public function refAccount()
+    {
+        return $this->belongsTo(RefAccount::class, 'ref_account_id');
+    }
 
 
     public function accountType()

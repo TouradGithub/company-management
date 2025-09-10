@@ -49,6 +49,15 @@
                             </select>
                         </div>
                         <div class="form-group-model">
+                            <label>تصنيف الحساب</label>
+                            <select name="ref_account_id" id="refAccount" required>
+                                <option value="">اختر التصنيف...</option>
+                                @foreach($refAccounts as $ref)
+                                    <option value="{{ $ref->id }}">{{ $ref->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group-model">
                             <label>الحساب الرئيسي</label>
                             <select name="parent_id" id="parentAccount" required>
                                 <option value="">اختر الحساب الرئيسي...</option>
@@ -108,6 +117,15 @@
                             <select name="account_type_id" id="accountTypeShow" required>
                                 @foreach($accounttypes as $item)
                                     <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group-model">
+                            <label>تصنيف الحساب</label>
+                            <select name="ref_account_id" id="refAccountShow" required>
+                                <option value="">اختر التصنيف...</option>
+                                @foreach($refAccounts as $ref)
+                                    <option value="{{ $ref->id }}">{{ $ref->name }}</option>
                                 @endforeach
                             </select>
                         </div>

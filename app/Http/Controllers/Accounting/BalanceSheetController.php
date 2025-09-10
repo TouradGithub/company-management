@@ -10,29 +10,36 @@ class BalanceSheetController extends Controller
 {
     public function index()
     {
-        $assets = [
-//            ['name' => 'النقدية', 'value' => cach_register()->sessionBalance->balance],
-//            ['name' => 'المدينون', 'value' => credit_and_debit()->total_debit],
-//            ['name' => 'المخزون', 'value' => 0],
-//            ['name' => ' الأصول', 'value' => ousoul()],
-        ];
-        $liabilitiesEquity = [
-            ['name' => 'الدائنون', 'value' => credit_and_debit()->total_credit],
-            ['name' => 'القروض', 'value' => 0],
-            ['name' => 'رأس المال', 'value' => openiing_balance_of_all_company()],
-            ['name' => 'الأرباح المحتجزة', 'value' => 0],
-        ];
-        $parentAccounts = Account::where('company_id' , getCompanyId())
+
+        // أنواع الحسابات: 1=أصل، 2=خصم، 3=حقوق ملكية (تأكد من القيم الصحيحة في قاعدة البيانات)
+        $assets = [];
+        $liabilities = [];
+        $equity = [];
+        $parentAccounts = Account::where('company_id', getCompanyId())
             ->where('parent_id', 0)
+            ->with(['sessionBalance', 'refAccount'])
             ->get();
-        //add this accounts to assets
+
         foreach ($parentAccounts as $parentAccount) {
-//            dd($parentAccount->sessionBalance->balance);
-            $assets[] = [
-                'name' => $parentAccount->name,
-                'value' => $parentAccount->sessionBalance->balance
-            ];
+            $balance = $parentAccount->sessionBalance->balance ?? 0;
+            $type = $parentAccount->refAccount->type ?? null;
+            if ($type === 'أصل') {
+                $assets[] = [
+                    'name' => $parentAccount->name,
+                    'value' => $balance
+                ];
+            } elseif ($type === 'خصم') {
+                $liabilities[] = [
+                    'name' => $parentAccount->name,
+                    'value' => $balance
+                ];
+            } elseif ($type === 'حقوق ملكية') {
+                $equity[] = [
+                    'name' => $parentAccount->name,
+                    'value' => $balance
+                ];
+            }
         }
-        return view('financialaccounting.balance-sheet.index', compact('assets', 'liabilitiesEquity'));
+        return view('financialaccounting.balance-sheet.index', compact('assets', 'liabilities', 'equity'));
     }
 }
