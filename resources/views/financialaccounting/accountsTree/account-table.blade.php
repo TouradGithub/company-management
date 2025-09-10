@@ -157,17 +157,26 @@
                 <div class="form-row">
                     <div class="form-group-model">
                         <label>رقم الحساب</label>
-                        <input type="text" name="account_number" id="accountNumber" required>
+                        <input type="text" name="account_number" id="accountNumber" required class="input-beautiful">
                     </div>
                     <div class="form-group-model">
                         <label>اسم الحساب</label>
-                        <input type="text" name="name" id="accountName" required>
+                        <input type="text" name="name" id="accountName" required class="input-beautiful">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group-model">
+                        <label>نوع الحساب</label>
+                        <select name="account_type_id" id="accountType" required class="select-beautiful">
+                            <option value="">اختر النوع...</option>
+                            @foreach($accounttypes as $type)
+                                <option value="{{ $type->id }}">{{ $type->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group-model">
                         <label>تصنيف الحساب</label>
-                        <select name="ref_account_id" id="refAccount" required>
+                        <select name="ref_account_id" id="refAccount" required class="select-beautiful">
                             <option value="">اختر التصنيف...</option>
                             @foreach($refAccounts as $ref)
                                 <option value="{{ $ref->id }}">{{ $ref->name }}</option>
@@ -176,7 +185,7 @@
                     </div>
                     <div class="form-group-model">
                         <label>الحساب الرئيسي</label>
-                        <select name="parent_id" id="parentAccount" required>
+                        <select name="parent_id" id="parentAccount" required class="select-beautiful">
                             <option value="">اختر الحساب الرئيسي...</option>
                             <option value="0">حساب رئيسي</option>
                             @foreach($accounts as $item)
@@ -188,11 +197,11 @@
                 <div class="form-row">
                     <div class="form-group-model">
                         <label>الرصيد الافتتاحي</label>
-                        <input type="number" name="opening_balance" id="openingBalance" step="0.01" value="0" required>
+                        <input type="number" name="opening_balance" id="openingBalance" step="0.01" value="0" required class="input-beautiful">
                     </div>
                     <div class="form-group-model">
                         <label>القائمة الختامية</label>
-                        <select name="closing_list_type" id="closingListType">
+                        <select name="closing_list_type" id="closingListType" class="select-beautiful">
                             <option value="">اختر نوع</option>
                             <option value="1">قائمة الدخل</option>
                             <option value="2">الميزانيه العموميه</option>
@@ -205,7 +214,6 @@
                         <label>
                             هل هو حساب فرعي (نهائي)؟ </label>
                         <input type="checkbox"  id="isLastCheckboxEdit" name="islast" value="1">
-
                     </div>
                 </div>
                 <input type="hidden" id="accountId">
@@ -213,6 +221,123 @@
                     <button type="button" class="cancel-btn">إلغاء</button>
                     <button type="button" class="save-btn">حفظ</button>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .input-beautiful {
+            border: 1px solid #b3b3b3;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 15px;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+        .input-beautiful:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 4px #007bff44;
+        }
+        .select-beautiful {
+            border: 1px solid #b3b3b3;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 15px;
+            background: #f8f8f8;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+        .select-beautiful:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 4px #007bff44;
+        }
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 12px;
+        }
+        .form-group-model {
+            flex: 1;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px #00000022;
+            padding: 32px 24px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+        .save-btn {
+            background: linear-gradient(90deg,#007bff 0%,#00c6ff 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #007bff22;
+            transition: background 0.3s;
+        }
+        .save-btn:hover {
+            background: linear-gradient(90deg,#0056b3 0%,#00aaff 100%);
+        }
+        .cancel-btn {
+            background: #eee;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .cancel-btn:hover {
+            background: #ddd;
+        }
+    </style>
+
+    <script>
+        $('#refAccount').on('change', function() {
+            var refId = $(this).val();
+            var accountId = $('#accountId').val();
+            if(refId && accountId) {
+                alert(refId , accountId);
+                $.ajax({
+                    url: '/accounting/accountsTree/update-children-ref',
+                    method: 'POST',
+                    data: {
+                        account_id: accountId,
+                        ref_account_id: refId,
+                        _token: $('input[name="_token"]').val()
+                    },
+                    success: function(res) {
+                        if(res.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'تم تحديث تصنيف الأبناء بنجاح',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'حدث خطأ في تحديث الأبناء',
+                                text: res.message || '',
+                            });
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'فشل الاتصال بالخادم',
+                        });
+                    }
+                });
+            }
+        });
+    </script>
             </form>
         </div>
     </div>
@@ -233,8 +358,17 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group-model">
+                        <label>نوع الحساب</label>
+                        <select name="account_type_id" id="accountTypeShow" required class="select-beautiful">
+                            <option value="">اختر النوع...</option>
+                            @foreach($accounttypes as $type)
+                                <option value="{{ $type->id }}">{{ $type->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group-model">
                         <label>تصنيف الحساب</label>
-                        <select name="ref_account_id" id="refAccountShow" required>
+                        <select name="ref_account_id" id="refAccountShow" required class="select-beautiful">
                             <option value="">اختر التصنيف...</option>
                             @foreach($refAccounts as $ref)
                                 <option value="{{ $ref->id }}">{{ $ref->name }}</option>
@@ -243,7 +377,7 @@
                     </div>
                     <div class="form-group-model">
                         <label>الحساب الرئيسي</label>
-                        <select name="parent_id" id="parentAccountShow" required>
+                        <select name="parent_id" id="parentAccountShow" required class="select-beautiful">
                             <option value="">اختر الحساب الرئيسي...</option>
                             <option value="0">حساب رئيسي</option>
                             @foreach($accounts as $item)
@@ -476,6 +610,7 @@
                             $('#accountName').val(response.name);
                             $('#accountType').val(response.account_type_id);
                             $('#parentAccount').val(response.parent_id);
+                            $('#refAccount').val(response.ref_account_id); // تعيين التصنيف المختار
                             $('#openingBalance').val(response.opening_balance);
                             if(response.islast == 1){
                                 $('#openingBalance').show();
@@ -554,6 +689,7 @@
                     account_number: $('#accountNumber').val(),
                     name: $('#accountName').val(),
                     account_type_id: $('#accountType').val(),
+                    ref_account_id: $('#refAccount').val(),
                     islast: $('#isLastCheckboxEdit').is(':checked') ? 1 : 0,
                     parent_id: $('#parentAccount').val(),
                     opening_balance: $('#openingBalance').val(),
