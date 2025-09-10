@@ -1,7 +1,6 @@
 @extends('financialaccounting.layouts.master')
 @section('content')
-    <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <title>الميزانية العمومية</title>
@@ -59,17 +58,26 @@
         <div class="total item"><span>إجمالي الأصول</span><span>{{ number_format($totalAssets) }}</span></div>
     </div>
     <div class="section">
-        <h3>الخصوم وحقوق الملكية</h3>
-        @php $totalLE = 0; @endphp
-        @foreach($liabilitiesEquity as $item)
+        <h3>الخصوم</h3>
+        @php $totalLiabilities = 0; @endphp
+        @foreach($liabilities as $item)
             <div class="item"><span>{{ $item['name'] }}</span><span>{{ number_format($item['value']) }}</span></div>
-            @php $totalLE += $item['value']; @endphp
+            @php $totalLiabilities += $item['value']; @endphp
         @endforeach
-        <div class="total item"><span>إجمالي الخصوم وحقوق الملكية</span><span>{{ number_format($totalLE) }}</span></div>
+        <div class="total item"><span>إجمالي الخصوم</span><span>{{ number_format($totalLiabilities) }}</span></div>
+
+        <h3 style="margin-top:30px">حقوق الملكية</h3>
+        @php $totalEquity = 0; @endphp
+        @foreach($equity as $item)
+            <div class="item"><span>{{ $item['name'] }}</span><span>{{ number_format($item['value']) }}</span></div>
+            @php $totalEquity += $item['value']; @endphp
+        @endforeach
+        <div class="total item"><span>إجمالي حقوق الملكية</span><span>{{ number_format($totalEquity) }}</span></div>
+
+        <div class="total item" style="background:#f5f5f5"><span>إجمالي الخصوم وحقوق الملكية</span><span>{{ number_format($totalLiabilities + $totalEquity) }}</span></div>
     </div>
 </div>
 </body>
-</html>
 @endsection
 @section('js')
 @endsection

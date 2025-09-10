@@ -166,10 +166,11 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group-model">
-                        <label>نوع الحساب</label>
-                        <select name="account_type_id" id="accountType" required>
-                            @foreach($accounttypes as $item)
-                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                        <label>تصنيف الحساب</label>
+                        <select name="ref_account_id" id="refAccount" required>
+                            <option value="">اختر التصنيف...</option>
+                            @foreach($refAccounts as $ref)
+                                <option value="{{ $ref->id }}">{{ $ref->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -232,10 +233,11 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group-model">
-                        <label>نوع الحساب</label>
-                        <select name="account_type_id" id="accountTypeShow" required>
-                            @foreach($accounttypes as $item)
-                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                        <label>تصنيف الحساب</label>
+                        <select name="ref_account_id" id="refAccountShow" required>
+                            <option value="">اختر التصنيف...</option>
+                            @foreach($refAccounts as $ref)
+                                <option value="{{ $ref->id }}">{{ $ref->name }}</option>
                             @endforeach
                         </select>
                     </div>
