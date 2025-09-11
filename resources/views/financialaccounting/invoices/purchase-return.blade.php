@@ -16,38 +16,25 @@
                 <svg viewBox="0 0 40 40"></svg>
             </div>
 
-            <div class="invoice-info" style="border: 2px solid var(--secondary); padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
-                <div style="display: flex; gap: 2rem; align-items: center; width: 100%;">
-                    <div class="return-info-group" style="flex: 1;">
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--secondary); font-weight: bold;">رقم فاتورة المشتريات:</label>
-                        <input type="text" id="originalPurchaseInvoiceNumber" style="background: #e6f4ff; border: 1px solid var(--secondary); padding: 8px 12px; border-radius: 6px; width: 100%;">
+            <div class="invoice-header-section return-header purchase-return">
+                <div class="header-fields">
+                    <div class="field-group">
+                        <label>رقم فاتورة المشتريات الأصلية</label>
+                        <input type="text" id="originalPurchaseInvoiceNumber" class="original-invoice">
                     </div>
-                    <div class="return-date-group" style="flex: 1;">
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--secondary); font-weight: bold;">تاريخ المرتجع:</label>
-                        <input type="date" id="purchaseReturnInvoiceDate" value="{{ date('Y-m-d') }}" style="border: 1px solid var(--secondary); padding: 8px; border-radius: 6px; width: 100%;">
+                    <div class="field-group">
+                        <label>تاريخ المرتجع</label>
+                        <input type="date" id="purchaseReturnInvoiceDate" value="{{ date('Y-m-d') }}">
                     </div>
-                </div>
-                <div style="display: flex; gap: 2rem; align-items: center; width: 100%;">
-                    <div class="employee-info-group" style="flex: 1;">
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--secondary); font-weight: bold;">اسم الموظف:</label>
-                        <input type="text" id="purchaseReturnEmployeeName" list="employeeListPurchaseReturn" style="border: 1px solid var(--secondary); padding: 8px 12px; border-radius: 6px; width: 100%;">
-                        <datalist id="employeeListPurchaseReturn"></datalist>
-                    </div>
-                    <div class="shift-info-group" style="flex: 1;">
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--secondary); font-weight: bold;">الوردية:</label>
-                        <select id="purchaseReturnShiftSelect" style="border: 1px solid var(--secondary); padding: 8px 12px; border-radius: 6px; width: 100%;">
-                            <option value="صباح">صباح</option>
-                            <option value="مساء">مساء</option>
-                        </select>
-                    </div>
-                    <div class="branch-info-group" style="flex: 1;">
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--secondary); font-weight: bold;">الفرع:</label>
-                        <select id="purchaseReturnBranchSelect" style="border: 1px solid var(--secondary); padding: 8px 12px; border-radius: 6px; width: 100%;">
+                    <div class="field-group">
+                        <label>الفرع</label>
+                        <select id="purchaseReturnBranchSelect">
                             @foreach($branches as $branch)
                                 <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                             @endforeach
                         </select>
                     </div>
+                </div>
                 </div>
             </div>
 
@@ -159,6 +146,62 @@
             width: 40px;
             height: 40px;
         }
+
+        /* Simple and Clean Purchase Return Header */
+        .invoice-header-section.return-header.purchase-return {
+            background: #f0f8ff;
+            border: 1px solid var(--secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
+        }
+
+        .header-fields {
+            display: flex;
+            gap: 2rem;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .field-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .field-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .field-group input,
+        .field-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--secondary);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #374151;
+            background: #ffffff;
+            transition: all 0.2s ease;
+        }
+
+        .field-group input:focus,
+        .field-group select:focus {
+            outline: none;
+            border-color: #2980b9;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .original-invoice {
+            background: #e6f4ff !important;
+            border-color: var(--secondary) !important;
+            font-weight: 600;
+        }
+
         .info-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -364,6 +407,42 @@
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 999;
             display: none;
+        }
+
+        /* Spinner Styles */
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 0.8s linear infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .save-btn:disabled {
+            opacity: 0.8;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+            background-color: #27ae60 !important;
+        }
+
+        /* تحسين أسلوب النص أثناء التحميل */
+        .btn-loading {
+            font-weight: bold;
+            letter-spacing: 0.5px;
         }
     </style>
     <link rel="stylesheet" href="{{ asset('invoice.css') }}">

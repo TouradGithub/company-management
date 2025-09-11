@@ -30,22 +30,38 @@ function branchId()
         $branch = Branch::find( auth()->user()->model_id);
         return $branch;
     }
-    function getCompanyId(){
-//        log(\auth()->user()->model_type));
-//        log(\auth()->user()->model_id));
 
-        if(auth()->user()->model_type == "BRANCH"){
-            $branch = Branch::find(auth()->user()->model_id);
-            return $branch->company_id;
-        }else{
-            return auth()->user()->model_id;
+    function getCompanyId($model = null)
+    {
+        // إذا تم تمرير كائن فيه company_id
+        if ($model && isset($model->company_id)) {
+            return $model->company_id;
         }
-
+        // إذا تم تمرير معرف الشركة مباشرة
+        if (is_numeric($model)) {
+            return $model;
+        }
+        // fallback: إذا كان هناك مستخدم مسجل
+        if (auth()->check()) {
+            if (auth()->user()->model_type == "BRANCH") {
+                $branch = Branch::find(auth()->user()->model_id);
+                return $branch ? $branch->company_id : null;
+            } else {
+                return auth()->user()->model_id;
+            }
+        }
+        return null;
     }
 
-    // get the curect year
-    function getCurrentYear(){
-        $currentYear = \App\Models\SessionYear::where('is_current', true)->where('company_id', getCompanyId())->first();
+
+    // get the current year
+    function getCurrentYear($companyId = null)
+    {
+        $companyId = getCompanyId($companyId);
+        if (!$companyId) {
+            return null;
+        }
+        $currentYear = \App\Models\SessionYear::where('is_current', true)->where('company_id', $companyId)->first();
         if ($currentYear) {
             return $currentYear->id;
         }

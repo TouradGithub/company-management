@@ -26,46 +26,82 @@ class IncomeStatementController extends Controller
         $branchId = $request->input('branch_id');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
+        $companyId = getCompanyId();
 
-        $invoicesQuery = Invoice::where('company_id' , getCompanyId())->where('invoice_type', 'Sales')
-            ->whereBetween('invoice_date', [$startDate, $endDate])
-            ->with('items');
-        if ($branchId) {
-            $invoicesQuery->where('branch_id', $branchId);
+        // جلب حسابات الإيرادات (تبدأ بـ 15 أو 5)
+        $revenueAccounts = Account::select('accounts.*', 'syc.balance')
+            ->leftJoin('session_years_company_balance as syc', function($join) {
+                $join->on('accounts.id', '=', 'syc.account_id')
+                     ->where('syc.session_year_id', getCurrentYear());
+            })
+            ->where('accounts.company_id', $companyId)
+            ->where(function($query) {
+                $query->where('accounts.account_number', 'LIKE', '15%')
+                      ->orWhere('accounts.account_number', 'LIKE', '5%');
+            })
+            ->whereNotNull('syc.balance')
+            ->where('syc.balance', '!=', 0)
+            ->orderBy('accounts.account_number')
+            ->get();
+
+        // جلب حسابات المصروفات (تبدأ بـ 4)
+        $expenseAccounts = Account::select('accounts.*', 'syc.balance')
+            ->leftJoin('session_years_company_balance as syc', function($join) {
+                $join->on('accounts.id', '=', 'syc.account_id')
+                     ->where('syc.session_year_id', getCurrentYear());
+            })
+            ->where('accounts.company_id', $companyId)
+            ->where('accounts.account_number', 'LIKE', '4%')
+            ->whereNotNull('syc.balance')
+            ->where('syc.balance', '!=', 0)
+            ->orderBy('accounts.account_number')
+            ->get();
+
+        // تحويل الإيرادات (الرصيد سالب يعني إيراد)
+        $revenues = [];
+        $totalRevenues = 0;
+        foreach ($revenueAccounts as $account) {
+            $amount = abs($account->balance); // تحويل السالب إلى موجب
+            $revenues[] = [
+                'name' => $account->name,
+                'amount' => $amount
+            ];
+            $totalRevenues += $amount;
         }
-        $invoices = $invoicesQuery->get();
 
-        $grossSales = 0;
-        $totalCost = 0;
-        foreach ($invoices as $invoice) {
-            $grossSales += $invoice->total;
-            foreach ($invoice->items as $item) {
-                $product = Product::find($item->product_id);
-                $totalCost += $product ? ($product->cost * $item->quantity) : 0;
-            }
+        // تحويل المصروفات (الرصيد موجب)
+        $expenses = [];
+        $totalExpenses = 0;
+        foreach ($expenseAccounts as $account) {
+            $amount = abs($account->balance);
+            $expenses[] = [
+                'name' => $account->name,
+                'amount' => $amount
+            ];
+            $totalExpenses += $amount;
         }
-        $grossProfit = $grossSales - $totalCost;
 
-        $company = Company::find(getCompanyId());
-        $branchIds = $company->branches()->pluck('id')->toArray();
+        // إضافة الرواتب كمصروف إضافي
+        // جلب معرفات فروع الشركة
+        $companyBranchIds = Branch::where('company_id', $companyId)->pluck('id')->toArray();
 
-        $payrollQuery = Payroll::whereIn('branch_id',$branchIds)->whereBetween('date', [$startDate, $endDate]);
+        $payrollQuery = Payroll::whereIn('branch_id', $companyBranchIds);
         if ($branchId) {
             $payrollQuery->where('branch_id', $branchId);
         }
-        $totalPayroll = $payrollQuery->sum('net_salary');
+        if ($startDate && $endDate) {
+            $payrollQuery->whereBetween('date', [$startDate, $endDate]);
+        }
+        $totalPayroll = $payrollQuery->sum('net_salary') ?? 0;
 
-        $revenues = [
-            ['name' => 'إجمالي المبيعات', 'amount' => $grossSales],
-        ];
+        if ($totalPayroll > 0) {
+            $expenses[] = [
+                'name' => 'مصاريف الرواتب',
+                'amount' => $totalPayroll
+            ];
+            $totalExpenses += $totalPayroll;
+        }
 
-        $expenses = [
-            ['name' => 'تكلفة المبيعات', 'amount' => $totalCost],
-            ['name' => 'مصاريف الرواتب', 'amount' => $totalPayroll],
-        ];
-
-        $totalRevenues = $grossSales;
-        $totalExpenses = array_sum(array_column($expenses, 'amount'));
         $netIncome = $totalRevenues - $totalExpenses;
 
         return response()->json([
@@ -75,8 +111,7 @@ class IncomeStatementController extends Controller
                 'expenses' => $expenses,
                 'total_revenues' => $totalRevenues,
                 'total_expenses' => $totalExpenses,
-                'net_income' => $netIncome,
-                'gross_profit' => $grossProfit
+                'net_income' => $netIncome
             ]
         ]);
     }
