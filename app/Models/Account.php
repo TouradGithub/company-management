@@ -135,11 +135,34 @@ class Account extends Model
                 ['account_id' => $this->id, 'company_id' => $this->company_id,'session_year_id' => $sessionYearId],
                 ['balance' => $balance ,'credit'=>$credit,'debit'=>$debit]
             );
+
+            // تحديث جدول session_years_company_balance أيضاً
+            $this->updateSessionYearBalance($sessionYearId, $balance, $debit, $credit);
+
             return $balance;
         }
 
         return 0;
+    }
 
+    /**
+     * تحديث رصيد الحساب في جدول session_years_company_balance
+     */
+    public function updateSessionYearBalance($sessionYearId, $balance, $debit, $credit)
+    {
+        \DB::table('session_years_company_balance')->updateOrInsert(
+            [
+                'account_id' => $this->id,
+                'company_id' => $this->company_id,
+                'session_year_id' => $sessionYearId
+            ],
+            [
+                'balance' => $balance,
+                'debit' => $debit,
+                'credit' => $credit,
+                'updated_at' => now()
+            ]
+        );
     }
 
 }

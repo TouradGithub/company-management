@@ -73,15 +73,11 @@ class InvoiceController extends Controller
     }
     public function destroy($id)
     {
-//        dd($id);
         $invoice = Invoice::where('invoice_number',$id)->first();
-
         if (!$invoice) {
             return response()->json(['success' => false, 'message' => 'الفاتورة غير موجودة.'], 404);
         }
-
         foreach ($invoice->items as $item) {
-
             $product = Product::find($item->product_id);
             $product->increment('stock', $item->quantity);
         }
@@ -115,7 +111,6 @@ class InvoiceController extends Controller
 
     public function store(Request $request)
     {
-//dd("OK");
         $validated = $request->validate([
             'invoice_date' => 'required|date',
             'customer_id' => 'required',
@@ -194,7 +189,8 @@ class InvoiceController extends Controller
             $product->decrement('stock', $item['quantity']);
         }
 
-        CreateJournalEntryFromInvoiceJob::dispatch($invoice);
+        // CreateJournalEntryFromInvoiceJob::dispatch($invoice);
+        \App\Helpers\AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
         return response()->json([
             'status' => true,
             'message' => 'تم إضافة الفاتورة بنجاح',
@@ -282,8 +278,8 @@ class InvoiceController extends Controller
             ]);
             $product->decrement('stock', $item['quantity']);
         }
-        CreateJournalEntryFromInvoiceJob::dispatch($invoice);
-//        AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
+        // CreateJournalEntryFromInvoiceJob::dispatch($invoice);
+        \App\Helpers\AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
         return response()->json([
             'status' => true,
             'message' => 'تم إضافة الفاتورة بنجاح',
@@ -293,7 +289,6 @@ class InvoiceController extends Controller
 
     public function salesReturn(Request $request)
     {
-dd("OK");
         $validated = $request->validate([
             'invoice_date' => 'required|date',
             'customer_id' => 'required',
@@ -384,9 +379,8 @@ dd("OK");
             ]);
             $product->increment('stock', $item['quantity']);
         }
-        CreateJournalEntryFromInvoiceJob::dispatch($invoice);
-
-//        AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
+        // CreateJournalEntryFromInvoiceJob::dispatch($invoice);
+        \App\Helpers\AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
 
         return response()->json([
             'status' => true,
@@ -486,8 +480,8 @@ dd("OK");
             ]);
             $product->increment('stock', $item['quantity']);
         }
-        CreateJournalEntryFromInvoiceJob::dispatch($invoice);
-//        AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
+        // CreateJournalEntryFromInvoiceJob::dispatch($invoice);
+        \App\Helpers\AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
 
         return response()->json([
             'status' => true,
@@ -749,7 +743,7 @@ dd("OK");
         }
 
         // إعادة إنشاء القيد بعد التعديل
-        \App\Jobs\CreateJournalEntryFromInvoiceJob::dispatch($invoice);
+        \App\Helpers\AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
 
         return response()->json([
             'status' => true,
@@ -804,7 +798,7 @@ dd("OK");
         ]);
 
         // تحويل المصروف إلى قيد يومية
-        \App\Jobs\CreateJournalEntryFromInvoiceJob::dispatch($invoice);
+        \App\Helpers\AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
 
         return response()->json([
             'status' => true,
@@ -812,7 +806,7 @@ dd("OK");
             'invoice_id' => $invoice->id,
         ], 201);
     }
-    
+
 
     public function scanCodeQr($id)
     {

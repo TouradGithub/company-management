@@ -274,6 +274,36 @@
     }
 
     function saveInvoice(section) {
+        // Get the save button based on section type
+        let saveBtnId;
+        switch(section) {
+            case 'sales':
+                saveBtnId = '#saveSalesInvoiceBtn';
+                break;
+            case 'purchase':
+                saveBtnId = '#savePurchaseInvoiceBtn';
+                break;
+            case 'sales-return':
+                saveBtnId = '#saveSalesReturnInvoiceBtn';
+                break;
+            case 'purchase-return':
+                saveBtnId = '#savePurchaseReturnInvoiceBtn';
+                break;
+            default:
+                saveBtnId = `#save${section.charAt(0).toUpperCase() + section.slice(1).replace('-', '')}InvoiceBtn`;
+        }
+
+        const saveBtn = $(saveBtnId);
+        const originalText = saveBtn.html();
+
+        // Add spinner and disable button
+        saveBtn.html('<span class="spinner"></span> جاري الحفظ...');
+        saveBtn.prop('disabled', true);
+        saveBtn.addClass('btn-loading');
+
+        // إضافة تأثير بصري لإشعار المستخدم
+        $('body').css('cursor', 'wait');
+
         let sectionIds = section;
 
         if(section == 'sales-return'){
@@ -308,7 +338,7 @@
             subtotal: parseFloat($(`${tableId} #${section}Subtotal`).text()) || 0,
             discount: parseFloat($(`${tableId} #${section}DiscountPercent`).val()) || 0,
             discount_amount: parseFloat($(`${tableId} #${section}DiscountAmount`).text()) || 0,
-            tax: parseFloat($(`${tableId} #${section}TaxPercent`).val()) || 0,
+            tax: parseFloat($(`${tableId} #${section}TaxAmount`).text()) || 0,
             tax_amount: parseFloat($(`${tableId} #${section}TaxAmount`).text()) || 0,
             total: parseFloat($(`${tableId} #${section}GrandTotal`).text()) || 0,
             items: items
@@ -329,6 +359,11 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
+                // Remove spinner and restore button
+                saveBtn.html(originalText);
+                saveBtn.prop('disabled', false);
+                saveBtn.removeClass('btn-loading');
+                $('body').css('cursor', 'default');
 
                 Swal.fire({
                     icon: 'success',
@@ -340,6 +375,12 @@
                 });
             },
             error: function(xhr) {
+                // Remove spinner and restore button
+                saveBtn.html(originalText);
+                saveBtn.prop('disabled', false);
+                saveBtn.removeClass('btn-loading');
+                $('body').css('cursor', 'default');
+
                 console.log(xhr.responseJSON);
                 let message = xhr.responseJSON?.message || 'حدث خطأ غير معروف';
 

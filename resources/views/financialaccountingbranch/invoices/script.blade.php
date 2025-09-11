@@ -306,7 +306,7 @@
             subtotal: parseFloat($(`${tableId} #${section}Subtotal`).text()) || 0,
             discount: parseFloat($(`${tableId} #${section}DiscountPercent`).val()) || 0,
             discount_amount: parseFloat($(`${tableId} #${section}DiscountAmount`).text()) || 0,
-            tax: parseFloat($(`${tableId} #${section}TaxPercent`).val()) || 0,
+            tax: parseFloat($(`${tableId} #${section}TaxAmount`).text()) || 0,
             tax_amount: parseFloat($(`${tableId} #${section}TaxAmount`).text()) || 0,
             total: parseFloat($(`${tableId} #${section}GrandTotal`).text()) || 0,
             items: items

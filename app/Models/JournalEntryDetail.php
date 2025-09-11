@@ -16,6 +16,7 @@ class JournalEntryDetail extends Model
         'cost_center_id',
         'credit',
         'comment',
+        'session_year',
     ];
 
 
