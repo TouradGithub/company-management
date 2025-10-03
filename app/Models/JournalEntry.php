@@ -15,7 +15,6 @@ class JournalEntry extends Model
         'company_id',
         'created_by',
         'session_year',
-        'session_year',
     ];
     public function sessionYear()
     {

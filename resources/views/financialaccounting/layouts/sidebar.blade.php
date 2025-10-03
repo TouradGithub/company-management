@@ -82,25 +82,25 @@
                     </li>
 
                     <li>
-                        <a href="{{route('invoices.sales')}}">
+                        <a href="{{route('invoices.modern-sales')}}">
                             <i class="fas fa-file-alt"></i>
                             <span>فاتورة المبيعات</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('invoices.sales-returns') }}">
+                        <a href="{{ route('invoices.modern-sales-returns') }}">
                             <i class="fas fa-undo"></i>
                             <span>مرتجع فاتورة مبيعات</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{route('invoices.purchases')}}">
+                        <a href="{{route('invoices.modern-purchases')}}">
                             <i class="fas fa-shopping-cart"></i>
                             <span>فاتورة المشتريات</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('invoices.purchase-returns') }}">
+                        <a href="{{ route('invoices.modern-purchase-returns') }}">
                             <i class="fas fa-reply"></i>
                             <span>مرتجع فاتورة المشتريات</span>
                         </a>

@@ -1,0 +1,548 @@
+/* 🎨 Modern Invoice Stable CSS - إصلاحات مستقرة للتصميم العصري */
+
+/* إصلاحات أساسية لتطبيق التصميم العصري المستقر */
+body[data-modern-invoice="true"] {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh !important;
+}
+
+/* إخفاء العناصر القديمة عند تطبيق التصميم العصري */
+body[data-modern-invoice="true"] .sidebar {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: 280px !important;
+    height: 100vh !important;
+    z-index: 1000 !important;
+    transition: transform 0.3s ease !important;
+}
+
+/* إصلاح المحتوى الرئيسي */
+body[data-modern-invoice="true"] .main-content {
+    margin-right: 280px !important;
+    padding: 20px !important;
+    min-height: 100vh !important;
+}
+
+/* إصلاح حاوي الفاتورة العصرية */
+body[data-modern-invoice="true"] .modern-invoice-container {
+    background: transparent !important;
+    padding: 2rem !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    max-width: none !important;
+    margin: 0 !important;
+}
+
+/* إصلاح رأس الفاتورة */
+body[data-modern-invoice="true"] .invoice-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    padding: 2rem !important;
+    border-radius: 16px !important;
+    margin-bottom: 2rem !important;
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3) !important;
+}
+
+body[data-modern-invoice="true"] .invoice-title h1 {
+    font-size: 2rem !important;
+    margin: 0 0 1rem 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+}
+
+body[data-modern-invoice="true"] .invoice-number {
+    background: rgba(255, 255, 255, 0.2) !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    font-weight: 600 !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+/* إصلاح الإحصائيات السريعة */
+body[data-modern-invoice="true"] .quick-stats {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    gap: 1.5rem !important;
+    margin-bottom: 2rem !important;
+}
+
+body[data-modern-invoice="true"] .stat-card {
+    background: white !important;
+    padding: 1.5rem !important;
+    border-radius: 12px !important;
+    text-align: center !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+body[data-modern-invoice="true"] .stat-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+body[data-modern-invoice="true"] .stat-icon {
+    font-size: 2rem !important;
+    margin-bottom: 0.5rem !important;
+    display: block !important;
+}
+
+body[data-modern-invoice="true"] .stat-number {
+    font-size: 1.8rem !important;
+    font-weight: bold !important;
+    color: #667eea !important;
+    margin: 0.5rem 0 !important;
+}
+
+body[data-modern-invoice="true"] .stat-label {
+    color: #64748b !important;
+    font-size: 0.875rem !important;
+    margin: 0 !important;
+}
+
+/* إصلاح قسم معلومات الفاتورة */
+body[data-modern-invoice="true"] .invoice-info-section {
+    background: white !important;
+    padding: 2rem !important;
+    border-radius: 12px !important;
+    margin-bottom: 2rem !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+body[data-modern-invoice="true"] .info-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+    gap: 1.5rem !important;
+    margin-top: 1.5rem !important;
+}
+
+body[data-modern-invoice="true"] .info-card {
+    background: #f8fafc !important;
+    padding: 1.5rem !important;
+    border-radius: 8px !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+body[data-modern-invoice="true"] .info-card-header {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    margin-bottom: 1rem !important;
+    padding-bottom: 0.5rem !important;
+    border-bottom: 2px solid #e5e7eb !important;
+}
+
+/* إصلاح حقول الإدخال */
+body[data-modern-invoice="true"] .modern-input-group {
+    margin-bottom: 1rem !important;
+}
+
+body[data-modern-invoice="true"] .modern-label {
+    display: block !important;
+    margin-bottom: 0.5rem !important;
+    font-weight: 500 !important;
+    color: #374151 !important;
+    font-size: 0.875rem !important;
+}
+
+body[data-modern-invoice="true"] .modern-input,
+body[data-modern-invoice="true"] .modern-select {
+    width: 100% !important;
+    padding: 0.75rem !important;
+    border: 2px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    font-size: 1rem !important;
+    background: white !important;
+    transition: all 0.3s ease !important;
+}
+
+body[data-modern-invoice="true"] .modern-input:focus,
+body[data-modern-invoice="true"] .modern-select:focus {
+    outline: none !important;
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* إصلاح البحث الذكي */
+body[data-modern-invoice="true"] .smart-search-container {
+    position: relative !important;
+    background: white !important;
+    padding: 1.5rem !important;
+    border-radius: 12px !important;
+    margin-bottom: 2rem !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid #e5e7eb !important;
+    z-index: 100 !important;
+}
+
+body[data-modern-invoice="true"] .smart-search-input {
+    width: 100% !important;
+    padding: 1rem 1rem 1rem 3rem !important;
+    border: 2px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    font-size: 1.1rem !important;
+    background: #f8fafc !important;
+    transition: all 0.3s ease !important;
+}
+
+body[data-modern-invoice="true"] .smart-search-input:focus {
+    outline: none !important;
+    border-color: #667eea !important;
+    background: white !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+body[data-modern-invoice="true"] .search-icon {
+    position: absolute !important;
+    left: 2rem !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: #9ca3af !important;
+    font-size: 1.2rem !important;
+    z-index: 10 !important;
+}
+
+body[data-modern-invoice="true"] .search-results {
+    position: absolute !important;
+    top: 100% !important;
+    left: 1.5rem !important;
+    right: 1.5rem !important;
+    background: white !important;
+    border: 2px solid #e5e7eb !important;
+    border-top: none !important;
+    border-radius: 0 0 12px 12px !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    z-index: 1000 !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+    display: none !important;
+}
+
+body[data-modern-invoice="true"] .search-result-item {
+    padding: 1rem !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+}
+
+body[data-modern-invoice="true"] .search-result-item:hover {
+    background: #f8fafc !important;
+}
+
+body[data-modern-invoice="true"] .search-result-item:last-child {
+    border-bottom: none !important;
+}
+
+/* إصلاح قسم الأصناف */
+body[data-modern-invoice="true"] .items-section {
+    background: white !important;
+    padding: 2rem !important;
+    border-radius: 12px !important;
+    margin-bottom: 2rem !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+body[data-modern-invoice="true"] .items-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 1.5rem !important;
+    padding-bottom: 1rem !important;
+    border-bottom: 2px solid #e5e7eb !important;
+}
+
+body[data-modern-invoice="true"] .items-header h3 {
+    margin: 0 !important;
+    color: #374151 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+}
+
+body[data-modern-invoice="true"] .items-counter {
+    background: #667eea !important;
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 20px !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+}
+
+/* إصلاح الجدول */
+body[data-modern-invoice="true"] .modern-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-bottom: 1rem !important;
+    background: white !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+body[data-modern-invoice="true"] .modern-table th {
+    background: #f8fafc !important;
+    padding: 1rem !important;
+    text-align: right !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    border-bottom: 2px solid #e5e7eb !important;
+}
+
+body[data-modern-invoice="true"] .modern-table td {
+    padding: 1rem !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    text-align: right !important;
+}
+
+body[data-modern-invoice="true"] .modern-table tbody tr:hover {
+    background: #f8fafc !important;
+}
+
+body[data-modern-invoice="true"] .table-input {
+    width: 100% !important;
+    padding: 0.5rem !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 6px !important;
+    text-align: center !important;
+    background: white !important;
+}
+
+body[data-modern-invoice="true"] .table-input:focus {
+    outline: none !important;
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* إصلاح الأزرار */
+body[data-modern-invoice="true"] .action-buttons {
+    display: flex !important;
+    gap: 1rem !important;
+    margin: 2rem 0 !important;
+    flex-wrap: wrap !important;
+}
+
+body[data-modern-invoice="true"] .modern-btn {
+    padding: 0.75rem 1.5rem !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    text-decoration: none !important;
+    font-size: 0.875rem !important;
+}
+
+body[data-modern-invoice="true"] .btn-primary {
+    background: #667eea !important;
+    color: white !important;
+}
+
+body[data-modern-invoice="true"] .btn-primary:hover {
+    background: #5a67d8 !important;
+    transform: translateY(-2px) !important;
+}
+
+body[data-modern-invoice="true"] .btn-success {
+    background: #10b981 !important;
+    color: white !important;
+}
+
+body[data-modern-invoice="true"] .btn-success:hover {
+    background: #059669 !important;
+    transform: translateY(-2px) !important;
+}
+
+body[data-modern-invoice="true"] .btn-info {
+    background: #3b82f6 !important;
+    color: white !important;
+}
+
+body[data-modern-invoice="true"] .btn-info:hover {
+    background: #2563eb !important;
+    transform: translateY(-2px) !important;
+}
+
+body[data-modern-invoice="true"] .btn-outline {
+    background: white !important;
+    color: #667eea !important;
+    border: 2px solid #667eea !important;
+}
+
+body[data-modern-invoice="true"] .btn-outline:hover {
+    background: #667eea !important;
+    color: white !important;
+    transform: translateY(-2px) !important;
+}
+
+/* إصلاح ملخص الفاتورة */
+body[data-modern-invoice="true"] .invoice-summary {
+    background: white !important;
+    padding: 2rem !important;
+    border-radius: 12px !important;
+    margin-bottom: 2rem !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+body[data-modern-invoice="true"] .summary-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 2rem !important;
+    align-items: start !important;
+}
+
+body[data-modern-invoice="true"] .summary-calculations {
+    background: #f8fafc !important;
+    padding: 1.5rem !important;
+    border-radius: 8px !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+body[data-modern-invoice="true"] .calc-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 1rem !important;
+    padding: 0.5rem 0 !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+
+body[data-modern-invoice="true"] .calc-row:last-child {
+    border-bottom: 2px solid #667eea !important;
+    font-weight: 600 !important;
+    margin-bottom: 0 !important;
+    padding-top: 1rem !important;
+}
+
+body[data-modern-invoice="true"] .calc-input {
+    width: 80px !important;
+    padding: 0.25rem 0.5rem !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 4px !important;
+    text-align: center !important;
+}
+
+/* إصلاح الإشعارات */
+body[data-modern-invoice="true"] .notification {
+    position: fixed !important;
+    top: 2rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    padding: 1rem 2rem !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    z-index: 10000 !important;
+    opacity: 0 !important;
+    transition: all 0.3s ease !important;
+    pointer-events: none !important;
+}
+
+body[data-modern-invoice="true"] .notification.show {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+body[data-modern-invoice="true"] .notification.success {
+    background: #10b981 !important;
+    color: white !important;
+}
+
+body[data-modern-invoice="true"] .notification.error {
+    background: #ef4444 !important;
+    color: white !important;
+}
+
+body[data-modern-invoice="true"] .notification.info {
+    background: #3b82f6 !important;
+    color: white !important;
+}
+
+/* إصلاح مؤشر التحميل */
+body[data-modern-invoice="true"] .loading-spinner {
+    display: none !important;
+    width: 16px !important;
+    height: 16px !important;
+    border: 2px solid transparent !important;
+    border-top: 2px solid currentColor !important;
+    border-radius: 50% !important;
+    animation: spin 1s linear infinite !important;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* إصلاح التجاوب */
+@media (max-width: 768px) {
+    body[data-modern-invoice="true"] .sidebar {
+        transform: translateX(100%) !important;
+    }
+
+    body[data-modern-invoice="true"] .main-content {
+        margin-right: 0 !important;
+    }
+
+    body[data-modern-invoice="true"] .info-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    body[data-modern-invoice="true"] .summary-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    body[data-modern-invoice="true"] .action-buttons {
+        flex-direction: column !important;
+    }
+}
+
+/* إصلاحات إضافية للتوافق */
+body[data-modern-invoice="true"] .modern-table th:first-child,
+body[data-modern-invoice="true"] .modern-table td:first-child {
+    text-align: center !important;
+}
+
+body[data-modern-invoice="true"] .item-total {
+    font-weight: 600 !important;
+    color: #10b981 !important;
+}
+
+body[data-modern-invoice="true"] .modern-select-small {
+    padding: 0.25rem !important;
+    font-size: 0.75rem !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 4px !important;
+}
+
+/* إصلاح Select2 */
+body[data-modern-invoice="true"] .select2-container {
+    width: 100% !important;
+}
+
+body[data-modern-invoice="true"] .select2-container .select2-selection {
+    border: 2px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    padding: 0.75rem !important;
+    min-height: auto !important;
+}
+
+body[data-modern-invoice="true"] .select2-container .select2-selection:focus {
+    outline: none !important;
+    border-color: #667eea !important;
+}

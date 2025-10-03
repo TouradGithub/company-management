@@ -583,13 +583,14 @@ class AccountTransactionHelper
             while (AccountTransaction::where('transaction_number', $transactionNumber)->exists()) {
                 $transactionNumber = "{$baseNumber}-" . sprintf('%03d', $counter++);
             }
+
             AccountTransaction::create([
                 'account_id' => $detail->account_id,
                 'transaction_number' => $transactionNumber,
                 'transaction_date' => $journalEntry->entry_date,
                 'debit' => $detail->debit,
                 'credit' => $detail->credit,
-                'session_year' => $detail->session_year,
+                'session_year' => $journalEntry->session_year,
                 'company_id' => $journalEntry->company_id,
                 'branch_id' => $journalEntry->branch_id,
                 'description' => $detail->comment ?? 'Journal Entry #' . $journalEntry->entry_number,

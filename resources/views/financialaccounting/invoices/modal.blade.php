@@ -1,6 +1,7 @@
 
 <div class="invoice-form-modal">
     <div class="modal-content">
+        <button type="button" class="modal-close" onclick="closeModal()">&times;</button>
         <h2 id="modal-title">إضافة عميل/مورد</h2>
         <form id="customer-supplier-form">
             <div class="invoice-header-section">

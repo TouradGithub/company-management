@@ -1,40 +1,38 @@
 <?php
 
 namespace App\Http\Controllers\Accounting;
-use App\Jobs\CreateJournalEntryFromInvoiceJob;
-use Mpdf\Mpdf;
-use setasign\Fpdi\Fpdi;
-use App\Helpers\AccountTransactionHelper;
+
 use App\Http\Controllers\Controller;
+use App\Jobs\CreateJournalEntryFromInvoiceJob;
 use App\Models\Account;
 use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
-use App\Models\Journal;
-use FPDF;
 use App\Models\Product;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
+use Mpdf\Mpdf;
+
 class InvoiceController extends Controller
 {
     public function index(Request $request)
     {
-        $branches = Branch::where('company_id' , getCompanyId())->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
 
-        $products = Product::where('company_id' , getCompanyId())->get();
+        $products = Product::where('company_id', getCompanyId())->get();
 
         $customers = Customer::where('company_id', getCompanyId())->get();
-        return view('financialaccounting.invoices.index', compact('products','branches' , 'customers'));
+
+        return view('financialaccounting.invoices.index', compact('products', 'branches', 'customers'));
     }
 
     public function create(Request $request)
     {
-        $branches = Branch::where('company_id' , getCompanyId())->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
 
-        $products = Product::where('company_id' , getCompanyId())->get();
+        $products = Product::where('company_id', getCompanyId())->get();
         $customers = Customer::where('company_id', getCompanyId())->get();
 
         $mainCustomerAccount = Account::where('company_id', getCompanyId())
@@ -44,7 +42,7 @@ class InvoiceController extends Controller
         // If there is a main account, get its complete tree
         if ($mainCustomerAccount) {
             // Collect all account IDs in the tree starting from this account
-            $accountIds =getAccountTreeIds(collect([$mainCustomerAccount]));
+            $accountIds = getAccountTreeIds(collect([$mainCustomerAccount]));
 
             // Get all accounts that belong to this tree
             $accounts = Account::where('company_id', getCompanyId())
@@ -53,10 +51,12 @@ class InvoiceController extends Controller
         } else {
             $accounts = collect(); // Return empty collection if no main account
         }
-        return view('financialaccounting.invoices.create', compact('products','branches' , 'customers' , 'accounts'));
+
+        return view('financialaccounting.invoices.create', compact('products', 'branches', 'customers', 'accounts'));
     }
 
-    public function getInvoices(Request $request) {
+    public function getInvoices(Request $request)
+    {
         $query = Invoice::query();
         $query->latest()->limit(10);
         if ($request->has('status') && $request->status != 'all') {
@@ -66,15 +66,15 @@ class InvoiceController extends Controller
             $query->where('invoice_number', 'like', "%$request->search%");
         }
 
+        $invoices = $query->where('company_id', getCompanyId())->where('session_year', getCurrentYear())->with(['branch', 'customer', 'Supplier'])->get();
 
-
-        $invoices = $query->where('company_id',getCompanyId())->where('session_year',getCurrentYear())->with(['branch','customer' , 'Supplier'])->get();
         return response()->json($invoices);
     }
+
     public function destroy($id)
     {
-        $invoice = Invoice::where('invoice_number',$id)->first();
-        if (!$invoice) {
+        $invoice = Invoice::where('invoice_number', $id)->first();
+        if (! $invoice) {
             return response()->json(['success' => false, 'message' => 'الفاتورة غير موجودة.'], 404);
         }
         foreach ($invoice->items as $item) {
@@ -86,11 +86,12 @@ class InvoiceController extends Controller
 
         return response()->json(['success' => true, 'message' => 'تم حذف الفاتورة بنجاح.']);
     }
+
     public function updateStatus(Request $request, $id)
     {
         $invoice = Invoice::find($id);
 
-        if (!$invoice) {
+        if (! $invoice) {
             return response()->json(['success' => false, 'message' => 'الفاتورة غير موجودة.'], 404);
         }
 
@@ -104,10 +105,9 @@ class InvoiceController extends Controller
         return response()->json([
             'success' => true,
             'new_status' => $invoice->status,
-            'message' => 'تم تحديث حالة الفاتورة بنجاح.'
+            'message' => 'تم تحديث حالة الفاتورة بنجاح.',
         ]);
     }
-
 
     public function store(Request $request)
     {
@@ -126,54 +126,54 @@ class InvoiceController extends Controller
             'total' => 'required|numeric',
         ],
             [
-            'invoice_date.required' => 'تاريخ الفاتورة مطلوب.',
-            'invoice_date.date' => 'تاريخ الفاتورة يجب أن يكون تاريخًا صالحًا.',
-            'customer_id.required' => 'العميل مطلوب.',
-            'branch_id.required' => 'الفرع مطلوب.',
-            'items.required' => 'الأصناف مطلوبة.',
-            'items.array' => 'الأصناف يجب أن تكون مصفوفة.',
-            'items.*.productId.required' => 'معرف المنتج مطلوب لكل صنف.',
-            'items.*.quantity.required' => 'الكمية مطلوبة لكل صنف.',
-            'items.*.quantity.numeric' => 'الكمية يجب أن تكون رقمًا.',
-            'items.*.quantity.min' => 'الكمية يجب أن لا تقل عن 1.',
-            'items.*.price.required' => 'السعر مطلوب لكل صنف.',
-            'items.*.price.numeric' => 'السعر يجب أن يكون رقمًا.',
-            'items.*.total.required' => 'الإجمالي للصنف مطلوب.',
-            'items.*.total.numeric' => 'الإجمالي للصنف يجب أن يكون رقمًا.',
-            'subtotal.required' => 'الإجمالي الفرعي مطلوب.',
-            'subtotal.numeric' => 'الإجمالي الفرعي يجب أن يكون رقمًا.',
-            'discount.required' => 'الخصم مطلوب.',
-            'discount.numeric' => 'الخصم يجب أن يكون رقمًا.',
-            'tax.required' => 'الضريبة مطلوبة.',
-            'tax.numeric' => 'الضريبة يجب أن تكون رقمًا.',
-            'total.required' => 'الإجمالي مطلوب.',
-            'total.numeric' => 'الإجمالي يجب أن يكون رقمًا.',
-        ]);
+                'invoice_date.required' => 'تاريخ الفاتورة مطلوب.',
+                'invoice_date.date' => 'تاريخ الفاتورة يجب أن يكون تاريخًا صالحًا.',
+                'customer_id.required' => 'العميل مطلوب.',
+                'branch_id.required' => 'الفرع مطلوب.',
+                'items.required' => 'الأصناف مطلوبة.',
+                'items.array' => 'الأصناف يجب أن تكون مصفوفة.',
+                'items.*.productId.required' => 'معرف المنتج مطلوب لكل صنف.',
+                'items.*.quantity.required' => 'الكمية مطلوبة لكل صنف.',
+                'items.*.quantity.numeric' => 'الكمية يجب أن تكون رقمًا.',
+                'items.*.quantity.min' => 'الكمية يجب أن لا تقل عن 1.',
+                'items.*.price.required' => 'السعر مطلوب لكل صنف.',
+                'items.*.price.numeric' => 'السعر يجب أن يكون رقمًا.',
+                'items.*.total.required' => 'الإجمالي للصنف مطلوب.',
+                'items.*.total.numeric' => 'الإجمالي للصنف يجب أن يكون رقمًا.',
+                'subtotal.required' => 'الإجمالي الفرعي مطلوب.',
+                'subtotal.numeric' => 'الإجمالي الفرعي يجب أن يكون رقمًا.',
+                'discount.required' => 'الخصم مطلوب.',
+                'discount.numeric' => 'الخصم يجب أن يكون رقمًا.',
+                'tax.required' => 'الضريبة مطلوبة.',
+                'tax.numeric' => 'الضريبة يجب أن تكون رقمًا.',
+                'total.required' => 'الإجمالي مطلوب.',
+                'total.numeric' => 'الإجمالي يجب أن يكون رقمًا.',
+            ]);
         $errors = [];
         foreach ($validated['items'] as $key => $item) {
             $product = Product::find($item['productId']);
-            if (!$product || $product->stock < $item['quantity']) {
+            if (! $product || $product->stock < $item['quantity']) {
                 $errors["items.$key.quantity"] = "الكمية المطلوبة للمنتج {$product->name} غير متوفرة، المتاح فقط: {$product->stock}.";
             }
         }
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             return response()->json(['errors' => $errors], 422);
         }
         $invoice = Invoice::create([
             'invoice_number' => Invoice::generateEntryNumber(getCompanyId()),
             'invoice_date' => $validated['invoice_date'],
             'customer_id' => $validated['customer_id'],
-            'branch_id' =>$validated['branch_id'],
+            'branch_id' => $validated['branch_id'],
             'company_id' => getCompanyId(),
             'employee_id' => Auth::user()->name,
             'subtotal' => $validated['subtotal'],
-            'session_year'=>getCurrentYear(),
+            'session_year' => getCurrentYear(),
             'discount' => $validated['discount'] ?? 0,
-            'tax' => $validated['tax']??0,
+            'tax' => $validated['tax'] ?? 0,
             'total' => $validated['total'],
-            'invoice_type'=>'Sales',
-            'status' =>Invoice::STATUS_CONFIRMED,
+            'invoice_type' => 'Sales',
+            'status' => Invoice::STATUS_CONFIRMED,
         ]);
 
         foreach ($validated['items'] as $item) {
@@ -191,6 +191,7 @@ class InvoiceController extends Controller
 
         // CreateJournalEntryFromInvoiceJob::dispatch($invoice);
         \App\Helpers\AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
+
         return response()->json([
             'status' => true,
             'message' => 'تم إضافة الفاتورة بنجاح',
@@ -242,28 +243,28 @@ class InvoiceController extends Controller
         $errors = [];
         foreach ($validated['items'] as $key => $item) {
             $product = Product::find($item['productId']);
-            if (!$product || $product->stock < $item['quantity']) {
+            if (! $product || $product->stock < $item['quantity']) {
                 $errors["items.$key.quantity"] = "الكمية المطلوبة للمنتج {$product->name} غير متوفرة، المتاح فقط: {$product->stock}.";
             }
         }
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             return response()->json(['errors' => $errors], 422);
         }
         $invoice = Invoice::create([
             'invoice_number' => Invoice::generateEntryNumber(getCompanyId()),
             'invoice_date' => $validated['invoice_date'],
             'supplier_id' => $validated['supplier_id'],
-            'branch_id' =>$validated['branch_id'],
+            'branch_id' => $validated['branch_id'],
             'company_id' => getCompanyId(),
             'employee_id' => Auth::user()->name,
             'subtotal' => $validated['subtotal'],
-            'session_year'=>getCurrentYear(),
+            'session_year' => getCurrentYear(),
             'discount' => $validated['discount'] ?? 0,
-            'tax' => $validated['tax']??0,
+            'tax' => $validated['tax'] ?? 0,
             'total' => $validated['total'],
-            'invoice_type'=>'Purchases',
-            'status' =>Invoice::STATUS_CONFIRMED,
+            'invoice_type' => 'Purchases',
+            'status' => Invoice::STATUS_CONFIRMED,
         ]);
 
         foreach ($validated['items'] as $item) {
@@ -280,6 +281,7 @@ class InvoiceController extends Controller
         }
         // CreateJournalEntryFromInvoiceJob::dispatch($invoice);
         \App\Helpers\AccountTransactionHelper::createJournalEntryFromInvoice($invoice);
+
         return response()->json([
             'status' => true,
             'message' => 'تم إضافة الفاتورة بنجاح',
@@ -292,7 +294,7 @@ class InvoiceController extends Controller
         $validated = $request->validate([
             'invoice_date' => 'required|date',
             'customer_id' => 'required',
-            'original_invoice_number'=>'required',
+            'original_invoice_number' => 'required',
             'branch_id' => 'required',
             'items' => 'required|array',
             'items.*.productId' => 'required',
@@ -305,48 +307,48 @@ class InvoiceController extends Controller
             'total' => 'required|numeric',
         ],
             [
-            'invoice_date.required' => 'تاريخ الفاتورة مطلوب.',
-            'invoice_date.date' => 'تاريخ الفاتورة يجب أن يكون تاريخًا صالحًا.',
-            'original_invoice_number.required' => 'قم الفاتورة المرتجعه مطلوب.',
-            'customer_id.required' => 'العميل مطلوب.',
-            'branch_id.required' => 'الفرع مطلوب.',
-            'items.required' => 'الأصناف مطلوبة.',
-            'items.array' => 'الأصناف يجب أن تكون مصفوفة.',
-            'items.*.productId.required' => 'معرف المنتج مطلوب لكل صنف.',
-            'items.*.quantity.required' => 'الكمية مطلوبة لكل صنف.',
-            'items.*.quantity.numeric' => 'الكمية يجب أن تكون رقمًا.',
-            'items.*.quantity.min' => 'الكمية يجب أن لا تقل عن 1.',
-            'items.*.price.required' => 'السعر مطلوب لكل صنف.',
-            'items.*.price.numeric' => 'السعر يجب أن يكون رقمًا.',
-            'items.*.total.required' => 'الإجمالي للصنف مطلوب.',
-            'items.*.total.numeric' => 'الإجمالي للصنف يجب أن يكون رقمًا.',
-            'subtotal.required' => 'الإجمالي الفرعي مطلوب.',
-            'subtotal.numeric' => 'الإجمالي الفرعي يجب أن يكون رقمًا.',
-            'discount.required' => 'الخصم مطلوب.',
-            'discount.numeric' => 'الخصم يجب أن يكون رقمًا.',
-            'tax.required' => 'الضريبة مطلوبة.',
-            'tax.numeric' => 'الضريبة يجب أن تكون رقمًا.',
-            'total.required' => 'الإجمالي مطلوب.',
-            'total.numeric' => 'الإجمالي يجب أن يكون رقمًا.',
-        ]);
+                'invoice_date.required' => 'تاريخ الفاتورة مطلوب.',
+                'invoice_date.date' => 'تاريخ الفاتورة يجب أن يكون تاريخًا صالحًا.',
+                'original_invoice_number.required' => 'قم الفاتورة المرتجعه مطلوب.',
+                'customer_id.required' => 'العميل مطلوب.',
+                'branch_id.required' => 'الفرع مطلوب.',
+                'items.required' => 'الأصناف مطلوبة.',
+                'items.array' => 'الأصناف يجب أن تكون مصفوفة.',
+                'items.*.productId.required' => 'معرف المنتج مطلوب لكل صنف.',
+                'items.*.quantity.required' => 'الكمية مطلوبة لكل صنف.',
+                'items.*.quantity.numeric' => 'الكمية يجب أن تكون رقمًا.',
+                'items.*.quantity.min' => 'الكمية يجب أن لا تقل عن 1.',
+                'items.*.price.required' => 'السعر مطلوب لكل صنف.',
+                'items.*.price.numeric' => 'السعر يجب أن يكون رقمًا.',
+                'items.*.total.required' => 'الإجمالي للصنف مطلوب.',
+                'items.*.total.numeric' => 'الإجمالي للصنف يجب أن يكون رقمًا.',
+                'subtotal.required' => 'الإجمالي الفرعي مطلوب.',
+                'subtotal.numeric' => 'الإجمالي الفرعي يجب أن يكون رقمًا.',
+                'discount.required' => 'الخصم مطلوب.',
+                'discount.numeric' => 'الخصم يجب أن يكون رقمًا.',
+                'tax.required' => 'الضريبة مطلوبة.',
+                'tax.numeric' => 'الضريبة يجب أن تكون رقمًا.',
+                'total.required' => 'الإجمالي مطلوب.',
+                'total.numeric' => 'الإجمالي يجب أن يكون رقمًا.',
+            ]);
         $errors = [];
         foreach ($validated['items'] as $key => $item) {
             $product = Product::find($item['productId']);
-            if (!$product || $product->stock < $item['quantity']) {
+            if (! $product || $product->stock < $item['quantity']) {
                 $errors["items.$key.quantity"] = "الكمية المطلوبة للمنتج {$product->name} غير متوفرة، المتاح فقط: {$product->stock}.";
             }
         }
         $parentInvoice = Invoice::where('invoice_number', $validated['original_invoice_number'])
-            ->where('invoice_type','Sales')
+            ->where('invoice_type', 'Sales')
             ->first();
-        if(!$parentInvoice){
+        if (! $parentInvoice) {
             return response()->json([
-                'status' =>false,
-                'message' =>'رقم الفاتورة غير موجود'
-            ],422);
+                'status' => false,
+                'message' => 'رقم الفاتورة غير موجود',
+            ], 422);
         }
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             return response()->json(['errors' => $errors], 422);
         }
 
@@ -355,16 +357,16 @@ class InvoiceController extends Controller
             'parent_invoice_id' => $parentInvoice->id,
             'invoice_date' => $validated['invoice_date'],
             'customer_id' => $validated['customer_id'],
-            'branch_id' =>$validated['branch_id'],
+            'branch_id' => $validated['branch_id'],
             'company_id' => getCompanyId(),
-            'session_year'=>getCurrentYear(),
+            'session_year' => getCurrentYear(),
             'employee_id' => Auth::user()->name,
             'subtotal' => $validated['subtotal'],
             'discount' => $validated['discount'] ?? 0,
-            'tax' => $validated['tax']??0,
+            'tax' => $validated['tax'] ?? 0,
             'total' => $validated['total'],
-            'invoice_type'=>'SalesReturn',
-            'status' =>Invoice::STATUS_CONFIRMED,
+            'invoice_type' => 'SalesReturn',
+            'status' => Invoice::STATUS_CONFIRMED,
         ]);
 
         foreach ($validated['items'] as $item) {
@@ -388,13 +390,14 @@ class InvoiceController extends Controller
             'invoice_id' => $invoice->id, // Return invoice ID for printing
         ], 201);
     }
+
     public function purchaseReturn(Request $request)
     {
 
         $validated = $request->validate([
             'invoice_date' => 'required|date',
             'supplier_id' => 'required',
-            'original_invoice_number'=>'required',
+            'original_invoice_number' => 'required',
             'branch_id' => 'required',
             'items' => 'required|array',
             'items.*.productId' => 'required',
@@ -407,48 +410,48 @@ class InvoiceController extends Controller
             'total' => 'required|numeric',
         ],
             [
-            'invoice_date.required' => 'تاريخ الفاتورة مطلوب.',
-            'original_invoice_number.required' => 'قم الفاتورة المرتجعه مطلوب.',
-            'invoice_date.date' => 'تاريخ الفاتورة يجب أن يكون تاريخًا صالحًا.',
-            'supplier_id.required' => 'المورد مطلوب.',
-            'branch_id.required' => 'الفرع مطلوب.',
-            'items.required' => 'الأصناف مطلوبة.',
-            'items.array' => 'الأصناف يجب أن تكون مصفوفة.',
-            'items.*.productId.required' => 'معرف المنتج مطلوب لكل صنف.',
-            'items.*.quantity.required' => 'الكمية مطلوبة لكل صنف.',
-            'items.*.quantity.numeric' => 'الكمية يجب أن تكون رقمًا.',
-            'items.*.quantity.min' => 'الكمية يجب أن لا تقل عن 1.',
-            'items.*.price.required' => 'السعر مطلوب لكل صنف.',
-            'items.*.price.numeric' => 'السعر يجب أن يكون رقمًا.',
-            'items.*.total.required' => 'الإجمالي للصنف مطلوب.',
-            'items.*.total.numeric' => 'الإجمالي للصنف يجب أن يكون رقمًا.',
-            'subtotal.required' => 'الإجمالي الفرعي مطلوب.',
-            'subtotal.numeric' => 'الإجمالي الفرعي يجب أن يكون رقمًا.',
-            'discount.required' => 'الخصم مطلوب.',
-            'discount.numeric' => 'الخصم يجب أن يكون رقمًا.',
-            'tax.required' => 'الضريبة مطلوبة.',
-            'tax.numeric' => 'الضريبة يجب أن تكون رقمًا.',
-            'total.required' => 'الإجمالي مطلوب.',
-            'total.numeric' => 'الإجمالي يجب أن يكون رقمًا.',
-        ]);
+                'invoice_date.required' => 'تاريخ الفاتورة مطلوب.',
+                'original_invoice_number.required' => 'قم الفاتورة المرتجعه مطلوب.',
+                'invoice_date.date' => 'تاريخ الفاتورة يجب أن يكون تاريخًا صالحًا.',
+                'supplier_id.required' => 'المورد مطلوب.',
+                'branch_id.required' => 'الفرع مطلوب.',
+                'items.required' => 'الأصناف مطلوبة.',
+                'items.array' => 'الأصناف يجب أن تكون مصفوفة.',
+                'items.*.productId.required' => 'معرف المنتج مطلوب لكل صنف.',
+                'items.*.quantity.required' => 'الكمية مطلوبة لكل صنف.',
+                'items.*.quantity.numeric' => 'الكمية يجب أن تكون رقمًا.',
+                'items.*.quantity.min' => 'الكمية يجب أن لا تقل عن 1.',
+                'items.*.price.required' => 'السعر مطلوب لكل صنف.',
+                'items.*.price.numeric' => 'السعر يجب أن يكون رقمًا.',
+                'items.*.total.required' => 'الإجمالي للصنف مطلوب.',
+                'items.*.total.numeric' => 'الإجمالي للصنف يجب أن يكون رقمًا.',
+                'subtotal.required' => 'الإجمالي الفرعي مطلوب.',
+                'subtotal.numeric' => 'الإجمالي الفرعي يجب أن يكون رقمًا.',
+                'discount.required' => 'الخصم مطلوب.',
+                'discount.numeric' => 'الخصم يجب أن يكون رقمًا.',
+                'tax.required' => 'الضريبة مطلوبة.',
+                'tax.numeric' => 'الضريبة يجب أن تكون رقمًا.',
+                'total.required' => 'الإجمالي مطلوب.',
+                'total.numeric' => 'الإجمالي يجب أن يكون رقمًا.',
+            ]);
         $errors = [];
         foreach ($validated['items'] as $key => $item) {
             $product = Product::find($item['productId']);
-            if (!$product || $product->stock < $item['quantity']) {
+            if (! $product || $product->stock < $item['quantity']) {
                 $errors["items.$key.quantity"] = "الكمية المطلوبة للمنتج {$product->name} غير متوفرة، المتاح فقط: {$product->stock}.";
             }
         }
         $parentInvoice = Invoice::where('invoice_number', $validated['original_invoice_number'])
-            ->where('invoice_type','Purchases')
+            ->where('invoice_type', 'Purchases')
             ->first();
-        if(!$parentInvoice){
+        if (! $parentInvoice) {
             return response()->json([
-                'status' =>false,
-                'message' =>'رقم الفاتورة غير موجود'
-            ],422);
+                'status' => false,
+                'message' => 'رقم الفاتورة غير موجود',
+            ], 422);
         }
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             return response()->json(['errors' => $errors], 422);
         }
         $invoice = Invoice::create([
@@ -456,16 +459,16 @@ class InvoiceController extends Controller
             'parent_invoice_id' => $parentInvoice->id,
             'invoice_date' => $validated['invoice_date'],
             'supplier_id' => $validated['supplier_id'],
-            'branch_id' =>$validated['branch_id'],
+            'branch_id' => $validated['branch_id'],
             'company_id' => getCompanyId(),
             'employee_id' => Auth::user()->name,
-            'session_year'=>getCurrentYear(),
+            'session_year' => getCurrentYear(),
             'subtotal' => $validated['subtotal'],
             'discount' => $validated['discount'] ?? 0,
-            'tax' => $validated['tax']??0,
+            'tax' => $validated['tax'] ?? 0,
             'total' => $validated['total'],
-            'invoice_type'=>'PurchasesReturn',
-            'status' =>Invoice::STATUS_CONFIRMED,
+            'invoice_type' => 'PurchasesReturn',
+            'status' => Invoice::STATUS_CONFIRMED,
         ]);
 
         foreach ($validated['items'] as $item) {
@@ -493,11 +496,12 @@ class InvoiceController extends Controller
     public function getInvoiceByNumber($invoiceNumber)
     {
         $invoice = Invoice::where('invoice_number', $invoiceNumber)
-            ->where('invoice_type', "Sales")
+            ->where('invoice_type', 'Sales')
             ->with('items')->first();
-        if (!$invoice) {
+        if (! $invoice) {
             return response()->json(['message' => 'الفاتورة غير موجودة'], 404);
         }
+
         return response()->json([
             'customer_id' => $invoice->customer_id,
             'invoice_date' => $invoice->invoice_date,
@@ -517,11 +521,12 @@ class InvoiceController extends Controller
     public function getPurchaseByNumber($invoiceNumber)
     {
         $purchase = Invoice::where('invoice_number', $invoiceNumber)
-            ->where('invoice_type', "Purchases")
+            ->where('invoice_type', 'Purchases')
             ->with('items')->first();
-        if (!$purchase) {
+        if (! $purchase) {
             return response()->json(['message' => ' الفاتورة غير موجودة'], 404);
         }
+
         return response()->json([
             'supplier_id' => $purchase->supplier_id,
             'invoice_date' => $purchase->invoice_date,
@@ -540,48 +545,180 @@ class InvoiceController extends Controller
 
     public function sales()
     {
-        $branches = Branch::where('company_id' , getCompanyId())->get();
-        $accounts = Account::where('company_id' , getCompanyId())->get();
-        $products = Product::where('company_id' , getCompanyId())->get();
-        $customers = Customer::where('company_id' , getCompanyId())->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
+        $accounts = Account::where('company_id', getCompanyId())->get();
+        $products = Product::where('company_id', getCompanyId())->get();
+        $customers = Customer::where('company_id', getCompanyId())->get();
 
         return view('financialaccounting.invoices.sales', compact('branches', 'accounts', 'products', 'customers'));
     }
 
+    public function modernSales()
+    {
+        $companyId = getCompanyId();
+
+        // إذا لم تكن هناك company_id، استخدم جميع البيانات مؤقتاً للاختبار
+        if (! $companyId) {
+            $customers = Customer::all();
+            $branches = Branch::all();
+            $products = Product::with('category')->get();
+            $accounts = Account::all();
+        } else {
+            $customers = Customer::where('company_id', $companyId)->get();
+            $branches = Branch::where('company_id', $companyId)->get();
+            $products = Product::with('category')->where('company_id', $companyId)->get();
+            $accounts = Account::where('company_id', $companyId)->get();
+        }
+
+        // إحصائيات الفواتير مع معالجة الأخطاء
+        try {
+            // فواتير اليوم
+            $todayQuery = Invoice::whereDate('invoice_date', today())
+                ->where('invoice_type', 'Sales');
+            if ($companyId) {
+                $todayQuery->where('company_id', $companyId);
+            }
+            $todayInvoices = $todayQuery->count();
+
+            // فواتير الشهر الحالي
+            $monthQuery = Invoice::whereMonth('invoice_date', now()->month)
+                ->whereYear('invoice_date', now()->year)
+                ->where('invoice_type', 'Sales');
+            if ($companyId) {
+                $monthQuery->where('company_id', $companyId);
+            }
+            $monthInvoices = $monthQuery->count();
+
+            // إجمالي المبيعات للشهر الحالي
+            $totalQuery = Invoice::whereMonth('invoice_date', now()->month)
+                ->whereYear('invoice_date', now()->year)
+                ->where('invoice_type', 'Sales');
+            if ($companyId) {
+                $totalQuery->where('company_id', $companyId);
+            }
+            $totalSalesAmount = $totalQuery->sum('total') ?: 0;
+
+            // عدد العملاء
+            $customersCount = $customers->count();
+
+            \Log::info('Statistics calculated:', [
+                'today_invoices' => $todayInvoices,
+                'month_invoices' => $monthInvoices,
+                'total_amount' => $totalSalesAmount,
+                'customers_count' => $customersCount,
+                'company_id' => $companyId,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error calculating statistics: '.$e->getMessage());
+
+            $todayInvoices = 0;
+            $monthInvoices = 0;
+            $totalSalesAmount = 0;
+            $customersCount = 0;
+        }
+
+        $stats = [
+            'today_invoices' => $todayInvoices,
+            'month_invoices' => $monthInvoices,
+            'total_amount' => $totalSalesAmount,
+            'customers_count' => $customersCount,
+            'current_month' => now()->format('F'),
+            'current_date' => now()->format('Y-m-d'),
+        ];
+
+        return view('financialaccounting.invoices.modern-sales', compact('customers', 'branches', 'products', 'accounts', 'stats'));
+    }
+
+    public function modernPurchases()
+    {
+        $companyId = getCompanyId();
+
+        if (! $companyId) {
+            $branches = Branch::all();
+            $accounts = Account::all();
+            $products = Product::with('category')->get();
+            $suppliers = Supplier::all();
+        } else {
+            $branches = Branch::where('company_id', $companyId)->get();
+            $accounts = Account::where('company_id', $companyId)->get();
+            $products = Product::with('category')->where('company_id', $companyId)->get();
+            $suppliers = Supplier::where('company_id', $companyId)->get();
+        }
+
+        return view('financialaccounting.invoices.modern-purchases', compact('branches', 'accounts', 'products', 'suppliers'));
+    }
+
+    public function modernSalesReturns()
+    {
+        $companyId = getCompanyId();
+
+        if (! $companyId) {
+            $branches = Branch::all();
+            $accounts = Account::all();
+            $products = Product::with('category')->get();
+            $customers = Customer::all();
+        } else {
+            $branches = Branch::where('company_id', $companyId)->get();
+            $accounts = Account::where('company_id', $companyId)->get();
+            $products = Product::with('category')->where('company_id', $companyId)->get();
+            $customers = Customer::where('company_id', $companyId)->get();
+        }
+
+        return view('financialaccounting.invoices.modern-sales-returns', compact('branches', 'accounts', 'products', 'customers'));
+    }
+
+    public function modernPurchaseReturns()
+    {
+        $companyId = getCompanyId();
+
+        if (! $companyId) {
+            $branches = Branch::all();
+            $accounts = Account::all();
+            $products = Product::with('category')->get();
+            $suppliers = Supplier::all();
+        } else {
+            $branches = Branch::where('company_id', $companyId)->get();
+            $accounts = Account::where('company_id', $companyId)->get();
+            $products = Product::with('category')->where('company_id', $companyId)->get();
+            $suppliers = Supplier::where('company_id', $companyId)->get();
+        }
+
+        return view('financialaccounting.invoices.modern-purchase-returns', compact('branches', 'accounts', 'products', 'suppliers'));
+    }
+
     public function purchasePage()
     {
-        $branches = Branch::where('company_id' , getCompanyId())->get();
-        $accounts = Account::where('company_id' , getCompanyId())->get();
-        $products = Product::where('company_id' , getCompanyId())->get();
-        $customers = Customer::where('company_id' , getCompanyId())->get();
-        $suppliers = Supplier::where('company_id' , getCompanyId())->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
+        $accounts = Account::where('company_id', getCompanyId())->get();
+        $products = Product::where('company_id', getCompanyId())->get();
+        $customers = Customer::where('company_id', getCompanyId())->get();
+        $suppliers = Supplier::where('company_id', getCompanyId())->get();
 
         return view('financialaccounting.invoices.purchase', compact('branches', 'accounts', 'products', 'customers', 'suppliers'));
     }
 
     public function salesReturns()
     {
-        $branches = Branch::where('company_id' , getCompanyId())->get();
-        $accounts = Account::where('company_id' , getCompanyId())->get();
-        $products = Product::where('company_id' , getCompanyId())->get();
-        $customers = Customer::where('company_id' , getCompanyId())->get();
-        $suppliers = Supplier::where('company_id' , getCompanyId())->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
+        $accounts = Account::where('company_id', getCompanyId())->get();
+        $products = Product::where('company_id', getCompanyId())->get();
+        $customers = Customer::where('company_id', getCompanyId())->get();
+        $suppliers = Supplier::where('company_id', getCompanyId())->get();
 
         return view('financialaccounting.invoices.sales-return', compact('branches', 'accounts', 'products', 'customers', 'suppliers'));
     }
 
     public function purchaseReturns()
     {
-        $branches = Branch::where('company_id' , getCompanyId())->get();
-        $accounts = Account::where('company_id' , getCompanyId())->get();
-        $products = Product::where('company_id' , getCompanyId())->get();
-        $customers = Customer::where('company_id' , getCompanyId())->get();
-        $suppliers = Supplier::where('company_id' , getCompanyId())->get();
+        $branches = Branch::where('company_id', getCompanyId())->get();
+        $accounts = Account::where('company_id', getCompanyId())->get();
+        $products = Product::where('company_id', getCompanyId())->get();
+        $customers = Customer::where('company_id', getCompanyId())->get();
+        $suppliers = Supplier::where('company_id', getCompanyId())->get();
 
         return view('financialaccounting.invoices.purchase-return', compact('branches', 'accounts', 'products', 'customers', 'suppliers'));
     }
-
-
 
     // New method to print the invoice
     public function printInvoice($id)
@@ -611,15 +748,14 @@ class InvoiceController extends Controller
         $mpdf->WriteHTML($html);
 
         // إخراج الملف كـ PDF
-        $mpdf->Output('invoice_' . $invoice->invoice_number . '.pdf', 'I');
+        $mpdf->Output('invoice_'.$invoice->invoice_number.'.pdf', 'I');
     }
-
 
     public function editInvoice($id)
     {
         $invoice = Invoice::with('items')->findOrFail($id);
 
-        if (!$invoice) {
+        if (! $invoice) {
             return redirect()->back()->with('error', 'Invoice Not Found');
         }
 
@@ -640,16 +776,14 @@ class InvoiceController extends Controller
 
         $config = $sectionsMap[$type] ?? null;
 
-        if (!$config) {
+        if (! $config) {
             return redirect()->back()->with('error', 'نوع الفاتورة غير معروف');
         }
 
-
-        return view('financialaccounting.invoices.' . $config['view'], compact(
-            'invoice', 'branches', 'accounts', 'products', 'customers','suppliers'
+        return view('financialaccounting.invoices.'.$config['view'], compact(
+            'invoice', 'branches', 'accounts', 'products', 'customers', 'suppliers'
         ))->with('section', $config['section']);
     }
-
 
     public function updateInvoice(Request $request)
     {
@@ -697,29 +831,29 @@ class InvoiceController extends Controller
         $errors = [];
         foreach ($validated['items'] as $key => $item) {
             $product = Product::find($item['productId']);
-            if (!$product || $product->stock < $item['quantity']) {
+            if (! $product || $product->stock < $item['quantity']) {
                 $errors["items.$key.quantity"] = "الكمية المطلوبة للمنتج {$product->name} غير متوفرة، المتاح فقط: {$product->stock}.";
             }
         }
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             return response()->json(['errors' => $errors], 422);
         }
 
         $invoice = Invoice::find($validated['id']);
 
-//        $invoice->invoice_number = Invoice::generateEntryNumber(getCompanyId());
+        //        $invoice->invoice_number = Invoice::generateEntryNumber(getCompanyId());
         $invoice->invoice_date = $validated['invoice_date'];
         $invoice->supplier_id = $validated['supplier_id'];
         $invoice->customer_id = $validated['customer_id'];
-        $invoice->branch_id =$validated['branch_id'];
+        $invoice->branch_id = $validated['branch_id'];
         $invoice->company_id = getCompanyId();
         $invoice->employee_id = Auth::user()->name;
         $invoice->subtotal = $validated['subtotal'];
         $invoice->discount = $validated['discount'] ?? 0;
-        $invoice->tax = $validated['tax']??0;
+        $invoice->tax = $validated['tax'] ?? 0;
         $invoice->total = $validated['total'];
-        $invoice->status =Invoice::STATUS_CONFIRMED;
+        $invoice->status = Invoice::STATUS_CONFIRMED;
         $invoice->save();
 
         foreach ($invoice->items as $item) {
@@ -751,6 +885,7 @@ class InvoiceController extends Controller
             'invoice_id' => $invoice->id,
         ], 201);
     }
+
     // إضافة دالة لإنشاء فاتورة مصروفات وتحويلها إلى قيد يومية
     public function expenses(Request $request)
     {
@@ -807,12 +942,10 @@ class InvoiceController extends Controller
         ], 201);
     }
 
-
     public function scanCodeQr($id)
     {
         $invoice = Invoice::with(['items.product', 'customer', 'supplier'])->findOrFail($id);
+
         return view('financialaccounting.invoices.exports.print-scan', compact('invoice'));
     }
-
-
 }
